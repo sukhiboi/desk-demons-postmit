@@ -4,7 +4,8 @@
   "description": "a microbloging app",
   "main": "index.js",
   "scripts": {
-    "test": "nyc mocha"
+    "test": "nyc mocha",
+    "lint": "eslint --ignore-pattern 'node_modules/' . --ext .js"
   },
   "repository": {
     "type": "git",
@@ -16,5 +17,7 @@
     "url": "https://github.com/sukhiboi/desk-demons-postmit/issues"
   },
   "homepage": "https://github.com/sukhiboi/desk-demons-postmit#readme",
-  "dependencies": {}
+  "dependencies": {
+    "eslint": "^7.4.0"
+  }
 }
