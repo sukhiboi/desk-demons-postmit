@@ -1,0 +1,20 @@
+{
+  "name": "postmit",
+  "version": "1.0.0",
+  "description": "a microbloging app",
+  "main": "index.js",
+  "scripts": {
+    "test": "nyc mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sukhiboi/desk-demons-postmit.git"
+  },
+  "author": "sukhiboi naveen-kumar-vadla nooranasrin imvaishu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sukhiboi/desk-demons-postmit/issues"
+  },
+  "homepage": "https://github.com/sukhiboi/desk-demons-postmit#readme",
+  "dependencies": {}
+}
