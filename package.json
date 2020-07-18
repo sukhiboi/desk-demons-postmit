@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "nyc mocha",
-    "lint": "eslint --ignore-pattern 'node_modules/' . --ext .js"
+    "lint": "eslint --ignore-pattern 'node_modules/' . --ext .js",
+    "setup": "./bin/setup.sh"
   },
   "repository": {
     "type": "git",
