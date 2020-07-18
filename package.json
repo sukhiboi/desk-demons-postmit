@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/sukhiboi/desk-demons-postmit#readme",
   "dependencies": {
-    "eslint": "^7.4.0"
+    "eslint": "^7.4.0",
+    "mocha": "^8.0.1",
+    "nyc": "^15.1.0"
   }
 }
