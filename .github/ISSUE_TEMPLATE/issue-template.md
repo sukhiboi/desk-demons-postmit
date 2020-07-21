@@ -7,9 +7,9 @@ assignees: ''
 
 ---
 
-*As a* ...
-*I want to* ...
-*So that I can* ...
+*As a* 
+*I want to* 
+*So that I can* 
 
 **Buisness Context**
 
@@ -23,6 +23,6 @@ assignees: ''
 **Acceptance Criteria**
 
 - [ ] Criteria 1
-- *Given* ...
-- *When* ...
-- *Then* ...
+- *Given* 
+- *When* 
+- *Then* 
