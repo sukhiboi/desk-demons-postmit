@@ -20,6 +20,9 @@ assignees: ''
 
 - (List of in scope's)
 
+**Dependencies**
+> #1
+
 **Acceptance Criteria**
 
 - [ ] Criteria 1
