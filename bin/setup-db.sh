@@ -1,7 +1,16 @@
-#! /bin/bash
+if [ $1 == 'production' ]
+then 
+mkdir -p database 
+databasePath=./database/postmitDatabase.db
+fi
 
-sqlite3 $1 <<'END_SQL'
+if [ $1 == 'test' ]
+then 
+mkdir -p test/database 
+databasePath=./test/database/testDatabase.db
+fi
 
+sqlite3 $databasePath <<'END_SQL'
 CREATE TABLE IF NOT EXISTS users (
 	user_id NUMERIC PRIMARY KEY,
 	username VARCHAR(39) UNIQUE NOT NULL,
@@ -48,4 +57,7 @@ CREATE TABLE IF NOT EXISTS hashtags (
 	post_id NUMBER NOT NULL,
 	hashtag VARCHAR(10) NOT NULL
 );
+.mode csv
+.import "|tail -n +2 ./data/usersData.csv" users
+.import "|tail -n +2 ./data/postsData.csv" posts
 END_SQL
