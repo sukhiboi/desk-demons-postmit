@@ -5,6 +5,7 @@ mkdir -p database;
 sqlite3 ./database/postmitDatabase.db <<'END_SQL'
 CREATE TABLE IF NOT EXISTS users (
 	username VARCHAR(39) PRIMARY KEY,
+	github_username VARCHAR(39) UNIQUE NOT NULL,
 	name VARCHAR(100),
 	bio VARCHAR(200),
 	dob DATE,

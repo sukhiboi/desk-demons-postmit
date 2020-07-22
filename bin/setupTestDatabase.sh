@@ -6,6 +6,7 @@ sqlite3 ./test/database/testDatabase.db <<'END_SQL'
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
 	username VARCHAR(39) PRIMARY KEY,
+	github_username VARCHAR(39) UNIQUE NOT NULL,
 	name VARCHAR(100),
 	bio VARCHAR(200),
 	dob DATE,
