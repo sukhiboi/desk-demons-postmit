@@ -1,11 +1,11 @@
-id,username,message,posted_at
-1,naveen-kumar-vadla,good morning everyone,2020-07-21 10:45:16
-2,nooranasrin,good afternoon everyone,2020-07-21 12:05:16
-3,imvaishu,good evening everyone,2020-08-21 17:45:16
-4,sukhiboi,good night everyone,2020-07-21 02:45:16
-5,prashanth,how are you all,2020-09-21 12:45:16
-6,mahesh,wow today is sunday...,2020-03-19 09:45:16
-7,sana,good bye everyone going to bangalore,2020-02-21 12:45:16
-8,vandana,hi everyone,2020-05-21 12:45:16
-9,rahul,hello everyone,2020-07-21 12:45:16
-10,deepika,hey @bernie i will take you to satyabar,2020-01-21 12:45:16
+id,user_id,message,posted_at
+1,1,good morning everyone,2020-07-21 10:45:16
+2,2,good afternoon everyone,2020-07-21 12:05:16
+3,3,good evening everyone,2020-08-21 17:45:16
+4,4,good night everyone,2020-07-21 02:45:16
+5,5,how are you all,2020-09-21 12:45:16
+6,6,wow today is sunday...,2020-03-19 09:45:16
+7,7,good bye everyone going to bangalore,2020-02-21 12:45:16
+8,8,hi everyone,2020-05-21 12:45:16
+9,9,hello everyone,2020-02-21 12:45:16
+10,10,hey @bernie i will take you to satyabar,2020-02-21 12:45:16

@@ -3,7 +3,8 @@
 sqlite3 $1 <<'END_SQL'
 
 CREATE TABLE IF NOT EXISTS users (
-	username VARCHAR(39) PRIMARY KEY,
+	user_id NUMERIC PRIMARY KEY,
+	username VARCHAR(39) UNIQUE NOT NULL,
 	github_username VARCHAR(39) UNIQUE NOT NULL,
 	name VARCHAR(100),
 	bio VARCHAR(200),
@@ -13,9 +14,9 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS posts (
 	id NUMBER primary key,
-	username VARCHAR(39),
+	user_id NUMERIC NOT NULL,
 	message VARCHAR(180) NOT NULL,
-	posted_at datetime NOT NULL
+	posted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS responses (
@@ -25,22 +26,22 @@ CREATE TABLE IF NOT EXISTS responses (
 
 CREATE TABLE IF NOT EXISTS likes (
 	post_id NUMBER NOT NULL,
-	username VARCHAR(39) NOT NULL
+	user_id NUMERIC NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS reposts (
 	post_id NUMBER NOT NULL,
-	username VARCHAR(39) NOT NULL
+	user_id NUMERIC NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS bookmarks (
 	post_id NUMBER NOT NULL,
-	username VARCHAR(39) NOT NULL
+	user_id NUMERIC NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS followers (
-	username VARCHAR(39) NOT NULL,
-	follower VARCHAR(39) NOT NULL
+	user_id NUMERIC NOT NULL,
+	follower_id NUMERIC NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS hashtags (
