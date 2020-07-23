@@ -1,0 +1,114 @@
+.big-profile {
+  display: flex;
+}
+
+.details {
+  padding-left: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.profile-box {
+  height: 6rem;
+  width: 6rem;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  position: relative;
+}
+
+.profile-box .initials {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  color: #fff;
+  font-size: 2rem;
+}
+
+.name {
+  /* margin-top: 1rem; */
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+
+.username {
+  color: #8898a6;
+  font-weight: 300;
+  font-size: 1.1rem;
+  margin-top: 4px;
+}
+
+.bio {
+  margin-top: 1rem;
+  color: #fff;
+  line-height: 24px;
+}
+
+.joined_date {
+  margin-top: 8px;
+  display: inline-flex;
+}
+
+.joined_date img {
+  width: 24px;
+}
+
+.joined_date > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.joined_date span {
+  color: #8898a6;
+  font-size: 1rem;
+  padding-left: 10px;
+}
+
+.extra-details {
+  display: flex;
+}
+
+.extra-details > div {
+  color: #8898a6;
+  margin-top: 8px;
+}
+
+.extra-details > div:first-child {
+  margin-left: 0;
+}
+
+.extra-details > div {
+  margin-left: 10px;
+}
+
+.extra-details > div .count {
+  color: #fff;
+  font-weight: 700;
+  padding-right: 5px;
+}
+
+.user-activity {
+  border-bottom: 1px solid #8898a6;
+  margin-top: 2rem;
+  box-sizing: border-box;
+}
+
+.activity-bar {
+  display: flex;
+  width: auto;
+}
+
+.activity-title {
+  font-weight: 700;
+  font-size: 1.2rem;
+  padding: 10px 1rem;
+  color: #1da1f2;
+}
+
+.activity-title:hover {
+  border-bottom: 2px solid #1da1f2;
+}

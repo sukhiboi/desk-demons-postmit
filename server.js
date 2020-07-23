@@ -1,8 +1,4 @@
 const { app } = require('./lib/app');
 
-const main = function (args) {
-  const [, , port] = args;
-  app.listen(port, () => process.stdout.write(`started listening ${port}\n`));
-};
-
-main(process.argv);
+const [, , PORT] = process.argv;
+app.listen(PORT, () => process.stdout.write(`listening on ${PORT}\n`));
