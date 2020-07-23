@@ -1,0 +1,42 @@
+doctype
+html(lang='en')
+    head
+        meta(charset='UTF-8')
+        meta(name='viewport' content='width=device-width, initial-scale=1.0')
+        link(rel='stylesheet' href='/styles/styles.css' type='text/css')
+        link(rel='stylesheet' href='/styles/profile.css' type='text/css')
+        title Postmit
+    body
+    .root
+        .menu
+            .center
+            .app-name POSTMIT
+            .pages
+                a.page(href='/') Home
+                a.page.active-page(href='#') Profile
+        .main-panel
+            .header
+                span= name
+            .profile
+            .big-profile
+                .profile-box
+                    .initials= initials
+                .details
+                    .name= name
+                    .name.username= username
+            .bio= bio
+            .joined_date
+                img(src='./assets/calendar.svg' alt='Joined Date')
+                div
+                    span Joined on #{joined_date}
+            .extra-details
+                div
+                    span.count 14
+                    span Following
+                div
+                    span.count 6
+                    span Followers
+            .user-activity
+                .activity-bar
+                    .activity-title Posts
+            .feed
