@@ -14,6 +14,8 @@ describe('DBClient', () => {
       } catch (err) {
         assert.isNull(err);
       }
+
+      //
     });
 
     it('should give error when the posts table is not existing', async () => {
@@ -30,7 +32,7 @@ describe('DBClient', () => {
   });
 
   describe('getUserDetails', () => {
-    it('should resolve the user details of a valid userId', () => {
+    it('should resolve the user details of a valid userId', async () => {
       const expectedUserDetail = {
         id: 1,
         username: 'sukhiboi',
@@ -39,21 +41,23 @@ describe('DBClient', () => {
       const getStub = sinon.stub().yields(null, expectedUserDetail);
       const client = new DBClient({ get: getStub });
       const userId = 1;
-      client.getUserDetails(userId).then((userDetails) => {
-        assert.deepStrictEqual(userDetails, expectedUserDetail);
-        sinon.assert.calledOnce(getStub);
-      });
+      const userDetails = await client.getUserDetails(userId);
+      assert.deepStrictEqual(userDetails, expectedUserDetail);
+      sinon.assert.calledOnce(getStub);
     });
 
-    it('should reject giving user details for invalid userId', () => {
+    it('should reject giving user details for invalid userId', async () => {
       const expectedError = new Error('userId not found');
       const getStub = sinon.stub().yields(expectedError, null);
       const client = new DBClient({ get: getStub });
       const userId = 1;
-      client.getUserDetails(userId).catch((error) => {
-        assert.equal(error, expectedError);
+
+      try {
+        await client.getUserDetails(userId);
+      } catch (err) {
+        assert.equal(err, expectedError);
         sinon.assert.calledOnce(getStub);
-      });
+      }
     });
   });
 });
