@@ -1,12 +1,12 @@
-const { assert } = require('chai');
 const sinon = require('sinon');
+const { assert } = require('chai');
 const { DBClient } = require('../lib/DBClient');
 
 describe('DBClient', () => {
   describe('getPosts', () => {
     it('should give all the records from the posts table', async () => {
       const expected = [{ id: 1 }];
-      const all = (str, callback) => callback(null, expected);
+      const all = sinon.stub().yields(null, expected);
       const dbClient = new DBClient({ all });
       try {
         const actual = await dbClient.getPosts();
@@ -14,13 +14,23 @@ describe('DBClient', () => {
       } catch (err) {
         assert.isNull(err);
       }
+    });
 
-      //
+    it('should not give aby records when posts table is empty', async () => {
+      const expected = [];
+      const all = sinon.stub().yields(null, expected);
+      const dbClient = new DBClient({ all });
+      try {
+        const actual = await dbClient.getPosts();
+        assert.deepStrictEqual(actual, expected);
+      } catch (err) {
+        assert.isNull(err);
+      }
     });
 
     it('should give error when the posts table is not existing', async () => {
-      const expected = 'table posts not exists';
-      const all = (str, callback) => callback(expected, null);
+      const expected = new Error('table posts not exists');
+      const all = sinon.stub().yields(expected, null);
       const dbClient = new DBClient({ all });
       try {
         const posts = await dbClient.getPosts();
@@ -51,7 +61,6 @@ describe('DBClient', () => {
       const getStub = sinon.stub().yields(expectedError, null);
       const client = new DBClient({ get: getStub });
       const userId = 1;
-
       try {
         await client.getUserDetails(userId);
       } catch (err) {
