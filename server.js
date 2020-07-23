@@ -1,5 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
-const { DBClient } = require('./DBClient');
+const { DBClient } = require('./lib/DBClient');
 const { app } = require('./lib/app');
 
 const db = new sqlite3.Database('./database/postmitDatabase.db');
