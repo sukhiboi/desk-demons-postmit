@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "setup-db": "./bin/setup-db.sh production",
-    "start": "node server.js",
+    "start": "node server.js 8000",
     "test": "./bin/setup-db.sh test && nyc mocha",
     "lint": "eslint --ignore-pattern 'node_modules/' . --ext .js",
     "setup": "./bin/setup.sh"
@@ -23,6 +23,13 @@
   "dependencies": {
     "eslint": "^7.4.0",
     "mocha": "^8.0.1",
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "pug": "^3.0.0"
+  },
+  "devDependencies": {
+    "morgan": "^1.10.0",
+    "chai": "^4.2.0",
+    "sinon": "^9.0.2",
+    "supertest": "^4.0.2"
   }
 }
