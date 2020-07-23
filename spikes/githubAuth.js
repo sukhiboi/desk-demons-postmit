@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-/* eslint-disable camelcase */
 const app = require('express')();
 const axios = require('axios');
 const clientId = 'your_client_id';
@@ -41,4 +39,4 @@ const authorizeUser = function (request, response) {
 app.get('/', authorizeUser);
 app.get('/callback', fetchUserDetails);
 const PORT = 8000;
-app.listen(PORT, () => console.log(`listening on ${PORT}`));
+app.listen(PORT);

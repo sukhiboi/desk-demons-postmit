@@ -31,7 +31,6 @@
             "error",
             "always"
         ],
-        "camelcase": "error",
         "class-methods-use-this": "warn",
         "array-bracket-spacing": [
             "error"
