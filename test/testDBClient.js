@@ -69,4 +69,31 @@ describe('DBClient', () => {
       }
     });
   });
+
+  describe('getPostsByUserId', () => {
+    it('should resolve the posts of a valid userId', async () => {
+      const expectedPosts = [
+        { id: 1, userId: 2, message: 'hi', posted_at: '2020-02-21 12:45:16' },
+      ];
+      const allStub = sinon.stub().yields(null, expectedPosts);
+      const client = new DBClient({ all: allStub });
+      const userId = 2;
+      const posts = await client.getPostsByUserId(userId);
+      assert.deepStrictEqual(posts, expectedPosts);
+      sinon.assert.calledOnce(allStub);
+    });
+
+    it('should reject giving posts for invalid userId', async () => {
+      const expectedError = new Error('userId not found');
+      const allStub = sinon.stub().yields(expectedError, null);
+      const client = new DBClient({ all: allStub });
+      const userId = 2;
+      try {
+        await client.getPostsByUserId(userId);
+      } catch (err) {
+        assert.equal(err, expectedError);
+        sinon.assert.calledOnce(allStub);
+      }
+    });
+  });
 });

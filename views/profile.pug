@@ -40,3 +40,7 @@ html(lang='en')
                 .activity-bar
                     .activity-title Posts
             .feed
+                .posts
+                    each item in posts 
+                        include components/post.pug
+                        +post(item)
