@@ -24,7 +24,8 @@
     "eslint": "^7.4.0",
     "mocha": "^8.0.1",
     "nyc": "^15.1.0",
-    "pug": "^3.0.0"
+    "pug": "^3.0.0",
+    "sqlite3": "^5.0.0"
   },
   "devDependencies": {
     "morgan": "^1.10.0",
