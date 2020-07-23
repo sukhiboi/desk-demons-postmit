@@ -1,0 +1,20 @@
+doctype html
+head
+  meta(charset='UTF-8')
+  meta(name='viewport' content='width=device-width, initial-scale=1.0')
+  link(rel='stylesheet' href='/styles/styles.css' type='text/css')
+  title Postmit
+.root
+  .menu
+    div
+      .app-name POSTMIT
+      .pages
+        .page.active-page Home
+  .main-panel
+    .header
+      span Home
+    .feed
+      .posts
+        each item in posts 
+          include components/post.pug
+          +post(item)

@@ -1,0 +1,20 @@
+mixin post(post)
+  .post
+    .flex
+      .profile-pic
+        span= post.profileName
+      .user-details
+        .name
+          span= post.name
+        .username
+          span= `@${post.username}`
+    .post-content= post.message
+    .actions.flex
+      .action
+        img(src='/images/chat.svg' alt='Comment')
+      .action
+        img(src='/images/heart.svg' alt='Like')
+      .action
+        img(src='/images/refresh.svg' alt='Repost')
+      .action
+        img(src='/images/bookmark.svg' alt='Bookmark')
