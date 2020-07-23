@@ -1,7 +1,9 @@
+/* eslint-disable no-console */
+/* eslint-disable camelcase */
 const app = require('express')();
 const axios = require('axios');
 const clientId = 'your_client_id';
-const clientSecret = 'your_client_seceret';
+const clientSecret = 'your_client_secret';
 
 const getGithubAccessToken = async function (OAuthDetails) {
   const headers = { headers: { accept: 'application/json' } };
