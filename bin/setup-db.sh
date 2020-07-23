@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [ $1 == 'production' ]
 then 
 mkdir -p database 
