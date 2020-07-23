@@ -4,9 +4,9 @@
   "description": "a microbloging app",
   "main": "index.js",
   "scripts": {
-    "setup-db": "./bin/setup-db.sh",
+    "setup-db": "./bin/setup-db.sh production",
     "start": "node server.js",
-    "test": "nyc mocha",
+    "test": "./bin/setup-db.sh test && nyc mocha",
     "lint": "eslint --ignore-pattern 'node_modules/' . --ext .js",
     "setup": "./bin/setup.sh"
   },

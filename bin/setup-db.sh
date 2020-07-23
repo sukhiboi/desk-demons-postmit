@@ -6,6 +6,7 @@ fi
 
 if [ $1 == 'test' ]
 then 
+rm -rf test/database
 mkdir -p test/database 
 databasePath=./test/database/testDatabase.db
 fi
