@@ -6,11 +6,19 @@ describe('getPosts', () => {
   const user_id = 1;
   it('should give all the posts with user details', async () => {
     const userDetails = { name: 'john', username: 'john' };
-    const getPostsStub = sinon.stub().resolves([{ id: 1, user_id }]);
+    const posts = [{ id: 1, user_id: 1, posted_at: new Date() }];
+    const getPostsStub = sinon.stub().resolves(posts);
     const getUserDetails = sinon.stub().resolves(userDetails);
     const dbClient = { getPosts: getPostsStub, getUserDetails };
     const expected = [
-      { id: 1, user_id: 1, initials: 'J', name: 'john', username: 'john' },
+      {
+        id: 1,
+        user_id: 1,
+        initials: 'J',
+        name: 'john',
+        username: 'john',
+        posted_at: 'a few seconds ago',
+      },
     ];
     assert.deepStrictEqual(await getPosts(dbClient), expected);
     sinon.assert.calledOnce(getPostsStub);
@@ -29,10 +37,19 @@ describe('getPosts', () => {
 
   it('should give initials from username when name is not existing', async () => {
     const userDetails = { username: 'john' };
-    const getPostsStub = sinon.stub().resolves([{ id: 1, user_id }]);
+    const posts = [{ id: 1, user_id: 1, posted_at: new Date() }];
+    const getPostsStub = sinon.stub().resolves(posts);
     const getUserDetails = sinon.stub().resolves(userDetails);
     const dbClient = { getPosts: getPostsStub, getUserDetails };
-    const expected = [{ id: 1, user_id, initials: 'J', username: 'john' }];
+    const expected = [
+      {
+        id: 1,
+        user_id: 1,
+        initials: 'J',
+        username: 'john',
+        posted_at: 'a few seconds ago',
+      },
+    ];
     assert.deepStrictEqual(await getPosts(dbClient), expected);
     sinon.assert.calledOnce(getPostsStub);
     sinon.assert.calledOnce(getUserDetails);

@@ -41,6 +41,6 @@ html(lang='en')
                     .activity-title Posts
             .feed
                 .posts
+                    include components/post.pug
                     each item in posts 
-                        include components/post.pug
                         +post(item)

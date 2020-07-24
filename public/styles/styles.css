@@ -119,9 +119,9 @@ body {
 .user-details .name {
   font-size: 1.1rem;
 }
-.user-details .username {
+.user-details .username,
+.user-details .timestamp {
   color: #8898a6;
-  font-weight: 700;
 }
 
 .post-content {

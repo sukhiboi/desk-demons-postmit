@@ -5,7 +5,8 @@ mixin post(post)
         span= post.initials
       .user-details
         .name
-          span= post.name
+          span= post.name 
+          span(class="timestamp")= ` ・ ${post.posted_at}`
         .username
           span= `@${post.username}`
     .post-content= post.message
