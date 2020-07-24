@@ -1,6 +1,6 @@
 const sinon = require('sinon');
 const { assert } = require('chai');
-const { getPosts, getUserProfile } = require('../lib/processes');
+const { getPosts, getUserProfile, addNewPost } = require('../lib/processes');
 
 describe('getPosts', () => {
   const user_id = 1;
@@ -130,5 +130,16 @@ describe('getUserProfile', () => {
     sinon.assert.notCalled(getPostsByUserId);
     sinon.assert.calledWithExactly(getUserDetails, user_id);
     sinon.assert.notCalled(getPostsByUserId);
+  });
+});
+
+describe('addNewPost', () => {
+  it('should add new post to database', async () => {
+    const postDetails = { user_id: 1, message: 'hi everyone' };
+    const addPostStub = sinon.stub().resolves('OK');
+    const dbClient = { addPost: addPostStub };
+    assert.deepStrictEqual(await addNewPost(dbClient, postDetails), 'OK');
+    sinon.assert.calledOnce(addPostStub);
+    sinon.assert.calledWithExactly(addPostStub, postDetails);
   });
 });
