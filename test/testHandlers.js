@@ -91,7 +91,7 @@ describe('Handlers', () => {
   context('Request for Liking a post', () => {
     it('Should should like the given post when it is not liked', (done) => {
       const likePost = sinon.stub().resolves(true);
-      expressApp.locals.dbClient = { likePost };
+      expressApp.locals.app = new App({ likePost });
       request(expressApp)
         .post('/like')
         .send({ postId: 5 })
@@ -107,7 +107,7 @@ describe('Handlers', () => {
   context('Request for Unliking a post', () => {
     it('Should should unlike the given post when it is liked', (done) => {
       const unlikePost = sinon.stub().resolves(true);
-      expressApp.locals.dbClient = { unlikePost };
+      expressApp.locals.app = new App({ unlikePost });
       request(expressApp)
         .post('/unlike')
         .send({ postId: 5 })

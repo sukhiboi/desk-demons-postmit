@@ -202,4 +202,18 @@ describe('App', () => {
       sinon.assert.calledWithExactly(addPostStub, postDetails);
     });
   });
+
+  context('likePost', () => {
+    it('Should should like the given post when it is not liked', async () => {
+      const likePost = sinon.stub().resolves(true);
+      const app = new App({ likePost });
+      assert.isUndefined(await app.likePost(1, 1));
+    });
+
+    it('Should should like the given post when it is not liked', async () => {
+      const unlikePost = sinon.stub().resolves(true);
+      const app = new App({ unlikePost });
+      assert.isUndefined(await app.unlikePost(1, 1));
+    });
+  });
 });
