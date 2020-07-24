@@ -10,7 +10,8 @@ describe('Handlers', () => {
       const userDetails = { name: 'john', username: 'john' };
       const getPosts = sinon.stub().resolves([{ id: 1, user_id: 1 }]);
       const getUserDetails = sinon.stub().resolves(userDetails);
-      app.locals.dbClient = { getPosts, getUserDetails };
+      const isLikedByUser = sinon.stub().resolves(true);
+      app.locals.dbClient = { getPosts, getUserDetails, isLikedByUser };
       request(app)
         .get('/')
         .expect(OK_STATUS_CODE)
@@ -56,6 +57,38 @@ describe('Handlers', () => {
           sinon.assert.calledOnceWithExactly(addPostStub, postDetails);
         })
         .expect(/hi everyone/, done);
+    });
+  });
+
+  context('Request for Liking a post', () => {
+    it('Should should like the given post when it is not liked', (done) => {
+      const likePost = sinon.stub().resolves(true);
+      app.locals.dbClient = { likePost };
+      request(app)
+        .post('/like')
+        .send({ postId: 5 })
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnce(likePost);
+          sinon.assert.calledOnceWithExactly(likePost, 5, userId);
+        })
+        .expect({}, done);
+    });
+  });
+
+  context('Request for Unliking a post', () => {
+    it('Should should unlike the given post when it is liked', (done) => {
+      const unlikePost = sinon.stub().resolves(true);
+      app.locals.dbClient = { unlikePost };
+      request(app)
+        .post('/unlike')
+        .send({ postId: 5 })
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnce(unlikePost);
+          sinon.assert.calledOnceWithExactly(unlikePost, 5, userId);
+        })
+        .expect({}, done);
     });
   });
 });

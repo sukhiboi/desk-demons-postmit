@@ -120,4 +120,67 @@ describe('DBClient', () => {
       }
     });
   });
+
+  describe('likePost', () => {
+    it('should like given post', async () => {
+      const runStub = sinon.stub().yields(null);
+      const client = new DBClient({ run: runStub });
+      assert.isUndefined(await client.likePost(1, 1));
+      sinon.assert.calledOnce(runStub);
+    });
+
+    it('should give error when the likes table is not existing', async () => {
+      const expected = new Error('no table found');
+      const runStub = sinon.stub().yields(expected);
+      const client = new DBClient({ run: runStub });
+      try {
+        assert.isUndefined(await client.likePost(1, 1));
+        sinon.assert.calledOnce(runStub);
+      } catch (err) {
+        assert.deepStrictEqual(err, expected);
+      }
+    });
+  });
+
+  describe('unlikePost', () => {
+    it('should unlike given post', async () => {
+      const runStub = sinon.stub().yields(null);
+      const client = new DBClient({ run: runStub });
+      assert.isUndefined(await client.unlikePost(1, 1));
+      sinon.assert.calledOnce(runStub);
+    });
+
+    it('should give error when the likes table is not existing', async () => {
+      const expected = new Error('no table found');
+      const runStub = sinon.stub().yields(expected);
+      const client = new DBClient({ run: runStub });
+      try {
+        assert.isUndefined(await client.unlikePost(1, 1));
+        sinon.assert.calledOnce(runStub);
+      } catch (err) {
+        assert.deepStrictEqual(err, expected);
+      }
+    });
+  });
+
+  describe('isLikedByUSer', () => {
+    it('should give true when the given post is liked by the user', async () => {
+      const getStub = sinon.stub().yields(null, 'liked by user');
+      const client = new DBClient({ get: getStub });
+      assert.isTrue(await client.isLikedByUser(1, 1));
+      sinon.assert.calledOnce(getStub);
+    });
+
+    it('should give error when the likes table is not existing', async () => {
+      const expected = new Error('no table found');
+      const getStub = sinon.stub().yields(expected);
+      const client = new DBClient({ get: getStub });
+      try {
+        assert.isTrue(await client.isLikedByUser(1, 1));
+        sinon.assert.calledOnce(getStub);
+      } catch (err) {
+        assert.deepStrictEqual(err, expected);
+      }
+    });
+  });
 });

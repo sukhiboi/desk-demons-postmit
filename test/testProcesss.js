@@ -3,13 +3,14 @@ const { assert } = require('chai');
 const { getPosts, getUserProfile, addNewPost } = require('../lib/processes');
 
 describe('getPosts', () => {
-  const user_id = 1;
+  const userId = 1;
   it('should give all the posts with user details', async () => {
     const userDetails = { name: 'john samuel', username: 'john' };
     const posts = [{ id: 1, user_id: 1, posted_at: new Date() }];
     const getPostsStub = sinon.stub().resolves(posts);
     const getUserDetails = sinon.stub().resolves(userDetails);
-    const dbClient = { getPosts: getPostsStub, getUserDetails };
+    const isLikedByUser = sinon.stub().resolves(true);
+    const dbClient = { getPosts: getPostsStub, getUserDetails, isLikedByUser };
     const expected = [
       {
         id: 1,
@@ -18,12 +19,14 @@ describe('getPosts', () => {
         name: 'john samuel',
         username: 'john',
         posted_at: 'a few seconds ago',
+        isLiked: true,
       },
     ];
-    assert.deepStrictEqual(await getPosts(dbClient), expected);
+    assert.deepStrictEqual(await getPosts(dbClient, userId), expected);
     sinon.assert.calledOnce(getPostsStub);
     sinon.assert.calledOnce(getUserDetails);
-    sinon.assert.calledWithExactly(getUserDetails, user_id);
+    sinon.assert.calledWithExactly(getUserDetails, userId);
+    sinon.assert.calledWithExactly(isLikedByUser, 1, userId);
   });
 
   it('should give an empty array when the dbClient rejects getPosts', async () => {
@@ -46,12 +49,24 @@ describe('getPosts', () => {
     sinon.assert.calledWithExactly(getUserDetails, invalidUserId);
   });
 
+  it('should give an empty array when the dbClient rejects isLikedByUser', async () => {
+    const getPostsStub = sinon.stub().resolves([{ user_id: 1 }]);
+    const getUserDetails = sinon.stub().resolves({});
+    const isLikedByUser = sinon.stub().rejects('no table found');
+    const dbClient = { getPosts: getPostsStub, getUserDetails, isLikedByUser };
+    assert.deepStrictEqual(await getPosts(dbClient), []);
+    sinon.assert.calledOnce(getPostsStub);
+    sinon.assert.calledOnce(getUserDetails);
+    sinon.assert.calledWithExactly(getUserDetails, 1);
+  });
+
   it('should give initials from username when name is not existing', async () => {
     const userDetails = { username: 'john' };
     const posts = [{ id: 1, user_id: 1, posted_at: '2020-05-24' }];
     const getPostsStub = sinon.stub().resolves(posts);
     const getUserDetails = sinon.stub().resolves(userDetails);
-    const dbClient = { getPosts: getPostsStub, getUserDetails };
+    const isLikedByUser = sinon.stub().resolves(true);
+    const dbClient = { getPosts: getPostsStub, getUserDetails, isLikedByUser };
     const expected = [
       {
         id: 1,
@@ -59,12 +74,13 @@ describe('getPosts', () => {
         initials: 'J',
         username: 'john',
         posted_at: 'May 24, 2020',
+        isLiked: true,
       },
     ];
     assert.deepStrictEqual(await getPosts(dbClient), expected);
     sinon.assert.calledOnce(getPostsStub);
     sinon.assert.calledOnce(getUserDetails);
-    sinon.assert.calledWithExactly(getUserDetails, user_id);
+    sinon.assert.calledWithExactly(getUserDetails, userId);
   });
 });
 
