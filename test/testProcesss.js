@@ -3,9 +3,10 @@ const { assert } = require('chai');
 const { getPosts, getUserProfile } = require('../lib/processes');
 
 describe('getPosts', () => {
+  const user_id = 1;
   it('should give all the posts with user details', async () => {
     const userDetails = { name: 'john', username: 'john' };
-    const getPostsStub = sinon.stub().resolves([{ id: 1, user_id: 1 }]);
+    const getPostsStub = sinon.stub().resolves([{ id: 1, user_id }]);
     const getUserDetails = sinon.stub().resolves(userDetails);
     const dbClient = { getPosts: getPostsStub, getUserDetails };
     const expected = [
@@ -14,7 +15,7 @@ describe('getPosts', () => {
     assert.deepStrictEqual(await getPosts(dbClient), expected);
     sinon.assert.calledOnce(getPostsStub);
     sinon.assert.calledOnce(getUserDetails);
-    sinon.assert.calledWithExactly(getUserDetails, 1);
+    sinon.assert.calledWithExactly(getUserDetails, user_id);
   });
 
   it('should give an empty when the dbClient rejects', async () => {
@@ -28,27 +29,29 @@ describe('getPosts', () => {
 
   it('should give initials from username when name is not existing', async () => {
     const userDetails = { username: 'john' };
-    const getPostsStub = sinon.stub().resolves([{ id: 1, user_id: 1 }]);
+    const getPostsStub = sinon.stub().resolves([{ id: 1, user_id }]);
     const getUserDetails = sinon.stub().resolves(userDetails);
     const dbClient = { getPosts: getPostsStub, getUserDetails };
-    const expected = [{ id: 1, user_id: 1, initials: 'J', username: 'john' }];
+    const expected = [{ id: 1, user_id, initials: 'J', username: 'john' }];
     assert.deepStrictEqual(await getPosts(dbClient), expected);
     sinon.assert.calledOnce(getPostsStub);
     sinon.assert.calledOnce(getUserDetails);
-    sinon.assert.calledWithExactly(getUserDetails, 1);
+    sinon.assert.calledWithExactly(getUserDetails, user_id);
   });
 });
 
 describe('getUserProfile', () => {
+  const user_id = 1;
+
   it('should give profile of user by userId', async () => {
-    const userDetails = { user_id: 1, name: 'john', username: 'john' };
+    const userDetails = { user_id, name: 'john', username: 'john' };
     const getUserDetails = sinon.stub().resolves(userDetails);
     const getPostsByUserId = sinon
       .stub()
       .resolves([{ message: 'hi', posted_at: '2020-02-21 12:45:16' }]);
     const dbClient = { getUserDetails, getPostsByUserId };
     const expected = {
-      user_id: 1,
+      user_id,
       initials: 'J',
       name: 'john',
       username: 'john',
@@ -62,11 +65,11 @@ describe('getUserProfile', () => {
         },
       ],
     };
-    assert.deepStrictEqual(await getUserProfile(dbClient, 1), expected);
+    assert.deepStrictEqual(await getUserProfile(dbClient, user_id), expected);
     sinon.assert.calledOnce(getUserDetails);
     sinon.assert.calledOnce(getPostsByUserId);
-    sinon.assert.calledWithExactly(getUserDetails, 1);
-    sinon.assert.calledWithExactly(getPostsByUserId, 1);
+    sinon.assert.calledWithExactly(getUserDetails, user_id);
+    sinon.assert.calledWithExactly(getPostsByUserId, user_id);
   });
 
   it('should handle the rejection of getPostsByUserId', async () => {
@@ -74,8 +77,8 @@ describe('getUserProfile', () => {
     const getUserDetails = sinon.stub().resolves(userDetails);
     const getPostsByUserId = sinon.stub().rejects('posts table not found');
     const dbClient = { getUserDetails, getPostsByUserId };
-    assert.deepStrictEqual(await getUserProfile(dbClient, 1), {
-      user_id: 1,
+    assert.deepStrictEqual(await getUserProfile(dbClient, user_id), {
+      user_id,
       initials: 'J',
       name: 'john',
       username: 'john',
@@ -83,20 +86,21 @@ describe('getUserProfile', () => {
     });
     sinon.assert.calledOnce(getUserDetails);
     sinon.assert.calledOnce(getPostsByUserId);
-    sinon.assert.calledWithExactly(getUserDetails, 1);
-    sinon.assert.calledWithExactly(getPostsByUserId, 1);
+    sinon.assert.calledWithExactly(getUserDetails, user_id);
+    sinon.assert.calledWithExactly(getPostsByUserId, user_id);
   });
 
   it('should handle the rejection of getUserDetails', async () => {
     const getUserDetails = sinon.stub().rejects('userId not found');
     const getPostsByUserId = sinon.stub().resolves([]);
     const dbClient = { getUserDetails, getPostsByUserId };
-    assert.deepStrictEqual(await getUserProfile(dbClient, 1), {
+    assert.deepStrictEqual(await getUserProfile(dbClient, user_id), {
       errMsg: 'Invalid userId',
+      posts: [],
     });
     sinon.assert.calledOnce(getUserDetails);
     sinon.assert.notCalled(getPostsByUserId);
-    sinon.assert.calledWithExactly(getUserDetails, 1);
+    sinon.assert.calledWithExactly(getUserDetails, user_id);
     sinon.assert.notCalled(getPostsByUserId);
   });
 });
