@@ -1,6 +1,7 @@
 const request = require('supertest');
 const sinon = require('sinon');
 const { app } = require('../lib/app');
+const { assert } = require('chai');
 const OK_STATUS_CODE = 200;
 
 describe('Handlers', () => {
@@ -52,11 +53,32 @@ describe('Handlers', () => {
         .post('/add-new-post')
         .send(postDetails)
         .expect(OK_STATUS_CODE)
-        .expect(() => {
+        .expect((response) => {
+          assert.deepStrictEqual(response.body, postDetails);
           sinon.assert.calledOnce(addPostStub);
           sinon.assert.calledOnceWithExactly(addPostStub, postDetails);
         })
         .expect(/hi everyone/, done);
+    });
+
+    it('should return error message if an error occurred', (done) => {
+      const postDetails = { user_id: 1, message: 'hi everyone' };
+      const addPostStub = sinon
+        .stub()
+        .rejects(new Error('posts table not found'));
+      app.locals.dbClient = { addPost: addPostStub };
+      request(app)
+        .post('/add-new-post')
+        .send(postDetails)
+        .expect(OK_STATUS_CODE)
+        .expect((response) => {
+          assert.deepStrictEqual(response.body, {
+            errMsg: 'posts table not found',
+          });
+          sinon.assert.calledOnce(addPostStub);
+          sinon.assert.calledOnceWithExactly(addPostStub, postDetails);
+        })
+        .expect(/posts table not found/, done);
     });
   });
 
