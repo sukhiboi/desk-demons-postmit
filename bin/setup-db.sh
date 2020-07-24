@@ -1,21 +1,11 @@
 #!/bin/bash
 
-if [ $1 == 'production' ]
-then 
 mkdir -p database 
 databasePath=./database/postmitDatabase.db
-fi
-
-if [ $1 == 'test' ]
-then 
-rm -rf test/database
-mkdir -p test/database 
-databasePath=./test/database/testDatabase.db
-fi
 
 sqlite3 $databasePath <<'END_SQL'
 CREATE TABLE IF NOT EXISTS users (
-	user_id NUMERIC PRIMARY KEY,
+	user_id NUMERIC PRIMARY KEY AUTOINCREMENT,
 	username VARCHAR(39) UNIQUE NOT NULL,
 	github_username VARCHAR(39) UNIQUE NOT NULL,
 	name VARCHAR(100),
@@ -25,7 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS posts (
-	id NUMBER primary key,
+	id NUMERIC PRIMARY KEY AUTOINCREMENT,
 	user_id NUMERIC NOT NULL,
 	message VARCHAR(180) NOT NULL,
 	posted_at TIMESTAMP NOT NULL
