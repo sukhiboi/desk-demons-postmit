@@ -76,9 +76,10 @@
   },
   "overrides": [
     {
-      "files": ["test*.js"],
+      "files": ["test*.js", "DBClient.js"],
       "rules": {
-        "max-len": "off"
+        "max-len": "warn",
+        "max-statements": "off"
       }
     }
   ]
