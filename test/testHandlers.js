@@ -4,7 +4,7 @@ const { app } = require('../lib/app');
 
 describe('Handlers', () => {
   context('Request for Home Page', () => {
-    it('Should serve the Home Page with Posts', done => {
+    it('Should serve the Home Page with Posts', (done) => {
       const userDetails = { name: 'john', username: 'john' };
       const getPosts = sinon.stub().resolves([{ id: 1, user_id: 1 }]);
       const getUserDetails = sinon.stub().resolves(userDetails);
