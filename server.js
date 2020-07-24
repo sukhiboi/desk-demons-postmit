@@ -1,9 +1,9 @@
 const sqlite3 = require('sqlite3').verbose();
 const { DBClient } = require('./lib/DBClient');
-const { app } = require('./lib/app');
+const { expressApp } = require('./lib/expressApp');
 
 const db = new sqlite3.Database('./database/postmitDatabase.db');
-app.locals.dbClient = new DBClient(db);
+expressApp.locals.dbClient = new DBClient(db);
 
 const [, , PORT] = process.argv;
-app.listen(PORT, () => process.stdout.write(`listening on ${PORT}\n`));
+expressApp.listen(PORT, () => process.stdout.write(`listening on ${PORT}\n`));
