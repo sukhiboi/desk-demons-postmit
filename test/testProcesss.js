@@ -86,7 +86,7 @@ describe('getUserProfile', () => {
       posts: [
         {
           message: 'hi',
-          posted_at: '2020-02-21 12:45:16',
+          posted_at: 'Feb 21, 2020',
           initials: 'J',
           name: 'john',
           username: 'john',
