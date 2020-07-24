@@ -110,7 +110,7 @@ describe('DBClient', () => {
       sinon.assert.calledOnce(allStub);
     });
 
-    it("should should reject with err when posts table doesn't exists", async () => {
+    it('should should reject with err when posts table doesn\'t exists', async () => {
       const tableError = new Error('posts table not found');
       const runStub = sinon.stub().yields(tableError);
       const allStub = sinon.stub().yields(tableError, null);

@@ -1,5 +1,5 @@
 const sinon = require('sinon');
-const { assert, use } = require('chai');
+const { assert } = require('chai');
 const { App } = require('../lib/app');
 
 describe('App', () => {

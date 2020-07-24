@@ -15,5 +15,5 @@ const toggleLikeUnlike = function (postId) {
 
 const addNewPost = function () {
   const message = document.getElementById('newPostMessage').value;
-  sendPOSTRequest('/add-new-post', { message }, console.log);
+  sendPOSTRequest('/add-new-post', { message });
 };
