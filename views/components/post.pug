@@ -12,10 +12,7 @@ mixin post(post)
     .post-content= post.message
     .actions.flex
       .action
-        img(src='/assets/chat.svg' alt='Comment')
-      .action
-        img(src='/assets/heart.svg' alt='Like')
-      .action
-        img(src='/assets/refresh.svg' alt='Repost')
-      .action
-        img(src='/assets/bookmark.svg' alt='Bookmark')
+        - let className="far fa-heart icon likeBtn";
+        if post.isLiked
+         - className="fas fa-heart icon likeBtn"
+        i(class=className onclick=`toggleLikeUnlike(${post.id})`)
