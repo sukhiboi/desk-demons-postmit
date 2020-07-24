@@ -1,8 +1,10 @@
 const request = require('supertest');
 const sinon = require('sinon');
 const { app } = require('../lib/app');
+const OK_STATUS_CODE = 200;
 
 describe('Handlers', () => {
+  const userId = 1;
   context('Request for Home Page', () => {
     it('Should serve the Home Page with Posts', (done) => {
       const userDetails = { name: 'john', username: 'john' };
@@ -11,11 +13,30 @@ describe('Handlers', () => {
       app.locals.dbClient = { getPosts, getUserDetails };
       request(app)
         .get('/')
-        .expect(200)
+        .expect(OK_STATUS_CODE)
         .expect(() => {
           sinon.assert.calledOnce(getPosts);
           sinon.assert.calledOnce(getUserDetails);
-          sinon.assert.calledOnceWithExactly(getUserDetails, 1);
+          sinon.assert.calledOnceWithExactly(getUserDetails, userId);
+        })
+        .expect(/john/, done);
+    });
+  });
+
+  context('Request for  Profile Page', () => {
+    it('Should serve the Profile Page with posts of that user', (done) => {
+      const userDetails = { name: 'john', username: 'john'};
+      const getUserDetails = sinon .stub() .resolves(userDetails);
+      const getPostsByUserId = sinon.stub().resolves([{message: 'hi'}]);
+      app.locals.dbClient = { getUserDetails, getPostsByUserId };
+      request(app)
+        .get('/profile')
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnce(getUserDetails);
+          sinon.assert.calledOnce(getPostsByUserId);
+          sinon.assert.calledOnceWithExactly(getUserDetails, userId);
+          sinon.assert.calledOnceWithExactly(getPostsByUserId, userId);
         })
         .expect(/john/, done);
     });
