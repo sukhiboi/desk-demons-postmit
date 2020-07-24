@@ -52,17 +52,45 @@ describe('Handlers', () => {
 
   context('Request for adding a new post', () => {
     it('should add a new post to database', (done) => {
-      const postDetails = { user_id: 1, message: 'hi everyone' };
-      const addPostStub = sinon.stub().resolves(postDetails);
-      expressApp.locals.app = new App({ addPost: addPostStub });
+      const user_id = 1;
+      const postDetails = {
+        user_id,
+        message: 'hi everyone',
+      };
+      const postId = 3;
+      const addPostStub = sinon
+        .stub()
+        .resolves([{ ...postDetails, id: postId }]);
+      const getUserDetailsStub = sinon
+        .stub()
+        .resolves({ user_id, name: 'sukhi' });
+      const isLikedByUserStub = sinon.stub().resolves(true);
+      expressApp.locals.app = new App({
+        addPost: addPostStub,
+        getUserDetails: getUserDetailsStub,
+        isLikedByUser: isLikedByUserStub,
+      });
+      const expectedResponse = {
+        ...postDetails,
+        id: postId,
+        isLiked: true,
+        posted_at: 'a few seconds ago',
+        initials: 'S',
+        name: 'sukhi',
+      };
       request(expressApp)
         .post('/add-new-post')
         .send(postDetails)
         .expect(OK_STATUS_CODE)
         .expect((response) => {
-          assert.deepStrictEqual(response.body, postDetails);
-          sinon.assert.calledOnce(addPostStub);
+          assert.deepStrictEqual(response.body, expectedResponse);
           sinon.assert.calledOnceWithExactly(addPostStub, postDetails);
+          sinon.assert.calledOnceWithExactly(getUserDetailsStub, user_id);
+          sinon.assert.calledOnceWithExactly(
+            isLikedByUserStub,
+            user_id,
+            postId
+          );
         })
         .expect(/hi everyone/, done);
     });

@@ -99,23 +99,28 @@ describe('DBClient', () => {
 
   describe('addPost', () => {
     it('should should resolve to OK when post added to the database', async () => {
+      const latestPosts = { message: 'hi' };
       const runStub = sinon.stub().yields(null);
-      const client = new DBClient({ run: runStub });
+      const allStub = sinon.stub().yields(null, [latestPosts]);
+      const client = new DBClient({ run: runStub, all: allStub });
       const postDetails = { user_id: 2, message: 'hello' };
       const result = await client.addPost(postDetails);
-      assert.deepStrictEqual(result, postDetails);
+      assert.deepStrictEqual(result, [latestPosts]);
       sinon.assert.calledOnce(runStub);
+      sinon.assert.calledOnce(allStub);
     });
 
-    it('should should reject with err when posts table doesn\'t exists', async () => {
+    it("should should reject with err when posts table doesn't exists", async () => {
       const tableError = new Error('posts table not found');
       const runStub = sinon.stub().yields(tableError);
-      const client = new DBClient({ run: runStub });
+      const allStub = sinon.stub().yields(tableError, null);
+      const client = new DBClient({ run: runStub, all: allStub });
       const postDetails = { user_id: 2, message: 'hello' };
       try {
         await client.addPost(postDetails);
       } catch (err) {
         sinon.assert.calledOnce(runStub);
+        sinon.assert.notCalled(allStub);
         assert.deepEqual(err, tableError);
       }
     });
