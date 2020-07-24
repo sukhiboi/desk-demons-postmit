@@ -15,6 +15,10 @@ body {
   height: 100%;
 }
 
+button:hover {
+  cursor: pointer;
+}
+
 .flex {
   display: flex;
 }
@@ -22,6 +26,32 @@ body {
 .root {
   display: flex;
   width: 90%;
+}
+
+.filter {
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.filter .create-new-post {
+  width: 40vw;
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2rem;
+}
+
+.close-btn:hover {
+  cursor: pointer;
 }
 
 .main-panel {
@@ -48,10 +78,13 @@ body {
   border-radius: 8px;
   display: flex;
   flex-direction: column;
+  background-color: #15202c;
 }
 .create-new-post .content {
   box-sizing: border-box;
   padding-left: 10px;
+  width: 100%;
+  height: 12vh;
 }
 .create-new-post .content textarea {
   background-color: transparent;
@@ -64,6 +97,8 @@ body {
   outline: none;
   line-height: 24px;
   letter-spacing: 0.8px;
+  width: 100%;
+  height: 100%;
 }
 
 .profile-pic {
@@ -85,9 +120,10 @@ body {
 }
 
 .primary-btn {
-  align-self: flex-end;
+  align-self: flex-start;
+  margin-top: 2rem;
+  padding: 12px 2rem;
   font-size: 1rem;
-  padding: 8px 2rem;
   border-radius: 10rem;
   border: none;
   outline: none;
@@ -95,6 +131,10 @@ body {
   font-weight: 700 !important;
   color: #fff;
   text-align: center;
+}
+
+.create-new-post .primary-btn {
+  align-self: flex-end;
 }
 
 .post {

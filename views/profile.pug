@@ -5,6 +5,7 @@ html(lang='en')
         meta(name='viewport' content='width=device-width, initial-scale=1.0')
         link(rel='stylesheet' href='/styles/styles.css' type='text/css')
         link(rel='stylesheet' href='/styles/profile.css' type='text/css')
+        script(src="/js/index.js")
         title Postmit
     body
     .root
@@ -14,6 +15,7 @@ html(lang='en')
             .pages
                 a.page(href='/') Home
                 a.page.active-page(href='#') Profile
+                button.primary-btn(onclick='showNewPostElement()') Tweet
         .main-panel
             .header
                 span Profile

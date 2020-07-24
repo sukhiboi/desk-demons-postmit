@@ -3,6 +3,7 @@ head
   meta(charset='UTF-8')
   meta(name='viewport' content='width=device-width, initial-scale=1.0')
   link(rel='stylesheet' href='/styles/styles.css' type='text/css')
+  script(src="/js/index.js")
   title Postmit
 .root
   .menu
@@ -11,6 +12,7 @@ head
       .pages
         a.page.active-page(href='#') Home
         a.page(href='/profile') Profile
+        button.primary-btn(onclick='showNewPostElement()') Tweet
   .main-panel
     .header
       span Home
