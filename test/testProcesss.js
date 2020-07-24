@@ -136,9 +136,9 @@ describe('getUserProfile', () => {
 describe('addNewPost', () => {
   it('should add new post to database', async () => {
     const postDetails = { user_id: 1, message: 'hi everyone' };
-    const addPostStub = sinon.stub().resolves('OK');
+    const addPostStub = sinon.stub().resolves(postDetails);
     const dbClient = { addPost: addPostStub };
-    assert.deepStrictEqual(await addNewPost(dbClient, postDetails), 'OK');
+    assert.equal(await addNewPost(dbClient, postDetails), postDetails);
     sinon.assert.calledOnce(addPostStub);
     sinon.assert.calledWithExactly(addPostStub, postDetails);
   });

@@ -25,9 +25,9 @@ describe('Handlers', () => {
 
   context('Request for  Profile Page', () => {
     it('Should serve the Profile Page with posts of that user', (done) => {
-      const userDetails = { name: 'john', username: 'john'};
-      const getUserDetails = sinon .stub() .resolves(userDetails);
-      const getPostsByUserId = sinon.stub().resolves([{message: 'hi'}]);
+      const userDetails = { name: 'john', username: 'john' };
+      const getUserDetails = sinon.stub().resolves(userDetails);
+      const getPostsByUserId = sinon.stub().resolves([{ message: 'hi' }]);
       app.locals.dbClient = { getUserDetails, getPostsByUserId };
       request(app)
         .get('/profile')
@@ -39,6 +39,23 @@ describe('Handlers', () => {
           sinon.assert.calledOnceWithExactly(getPostsByUserId, userId);
         })
         .expect(/john/, done);
+    });
+  });
+
+  context('Request for adding a new post', () => {
+    it('should add a new post to database', (done) => {
+      const postDetails = { user_id: 1, message: 'hi everyone' };
+      const addPostStub = sinon.stub().resolves(postDetails);
+      app.locals.dbClient = { addPost: addPostStub };
+      request(app)
+        .post('/add-new-post')
+        .send(postDetails)
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnce(addPostStub);
+          sinon.assert.calledOnceWithExactly(addPostStub, postDetails);
+        })
+        .expect(/hi everyone/, done);
     });
   });
 });

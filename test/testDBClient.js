@@ -96,4 +96,28 @@ describe('DBClient', () => {
       }
     });
   });
+
+  describe('addPost', () => {
+    it('should should resolve to OK when post added to the database', async () => {
+      const runStub = sinon.stub().yields(null);
+      const client = new DBClient({ run: runStub });
+      const postDetails = { user_id: 2, message: 'hello' };
+      const result = await client.addPost(postDetails);
+      assert.deepStrictEqual(result, postDetails);
+      sinon.assert.calledOnce(runStub);
+    });
+
+    it('should should reject with err when posts table doesn\'t exists', async () => {
+      const tableError = new Error('posts table not found');
+      const runStub = sinon.stub().yields(tableError);
+      const client = new DBClient({ run: runStub });
+      const postDetails = { user_id: 2, message: 'hello' };
+      try {
+        await client.addPost(postDetails);
+      } catch (err) {
+        sinon.assert.calledOnce(runStub);
+        assert.deepEqual(err, tableError);
+      }
+    });
+  });
 });
