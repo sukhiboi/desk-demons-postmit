@@ -36,13 +36,14 @@ describe('getPosts', () => {
   });
 
   it('should give an empty array when the dbClient rejects getUsers', async () => {
-    const getPostsStub = sinon.stub().resolves([{ user_id: 11 }]);
+    const invalidUserId = 11;
+    const getPostsStub = sinon.stub().resolves([{ user_id: invalidUserId }]);
     const getUserDetails = sinon.stub().rejects('no table found');
     const dbClient = { getPosts: getPostsStub, getUserDetails };
     assert.deepStrictEqual(await getPosts(dbClient), []);
     sinon.assert.calledOnce(getPostsStub);
     sinon.assert.calledOnce(getUserDetails);
-    sinon.assert.calledWithExactly(getUserDetails, 11);
+    sinon.assert.calledWithExactly(getUserDetails, invalidUserId);
   });
 
   it('should give initials from username when name is not existing', async () => {
