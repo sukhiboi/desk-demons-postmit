@@ -1,7 +1,9 @@
 const request = require('supertest');
 const sinon = require('sinon');
-const { app } = require('../lib/app');
 const { assert } = require('chai');
+const { expressApp } = require('../lib/expressApp');
+// const app = require('../lib/app');
+const { App } = require('../lib/app');
 const OK_STATUS_CODE = 200;
 
 describe('Handlers', () => {
@@ -12,8 +14,9 @@ describe('Handlers', () => {
       const getPosts = sinon.stub().resolves([{ id: 1, user_id: 1 }]);
       const getUserDetails = sinon.stub().resolves(userDetails);
       const isLikedByUser = sinon.stub().resolves(true);
-      app.locals.dbClient = { getPosts, getUserDetails, isLikedByUser };
-      request(app)
+      const app = new App({ getPosts, getUserDetails, isLikedByUser });
+      expressApp.locals.app = app;
+      request(expressApp)
         .get('/')
         .expect(OK_STATUS_CODE)
         .expect(() => {
@@ -30,8 +33,11 @@ describe('Handlers', () => {
       const userDetails = { name: 'john', username: 'john' };
       const getUserDetails = sinon.stub().resolves(userDetails);
       const getPostsByUserId = sinon.stub().resolves([{ message: 'hi' }]);
-      app.locals.dbClient = { getUserDetails, getPostsByUserId };
-      request(app)
+      expressApp.locals.app = new App({
+        getUserDetails,
+        getPostsByUserId,
+      });
+      request(expressApp)
         .get('/profile')
         .expect(OK_STATUS_CODE)
         .expect(() => {
@@ -48,8 +54,8 @@ describe('Handlers', () => {
     it('should add a new post to database', (done) => {
       const postDetails = { user_id: 1, message: 'hi everyone' };
       const addPostStub = sinon.stub().resolves(postDetails);
-      app.locals.dbClient = { addPost: addPostStub };
-      request(app)
+      expressApp.locals.app = new App({ addPost: addPostStub });
+      request(expressApp)
         .post('/add-new-post')
         .send(postDetails)
         .expect(OK_STATUS_CODE)
@@ -66,8 +72,8 @@ describe('Handlers', () => {
       const addPostStub = sinon
         .stub()
         .rejects(new Error('posts table not found'));
-      app.locals.dbClient = { addPost: addPostStub };
-      request(app)
+      expressApp.locals.app = new App({ addPost: addPostStub });
+      request(expressApp)
         .post('/add-new-post')
         .send(postDetails)
         .expect(OK_STATUS_CODE)
@@ -85,8 +91,8 @@ describe('Handlers', () => {
   context('Request for Liking a post', () => {
     it('Should should like the given post when it is not liked', (done) => {
       const likePost = sinon.stub().resolves(true);
-      app.locals.dbClient = { likePost };
-      request(app)
+      expressApp.locals.dbClient = { likePost };
+      request(expressApp)
         .post('/like')
         .send({ postId: 5 })
         .expect(OK_STATUS_CODE)
@@ -101,8 +107,8 @@ describe('Handlers', () => {
   context('Request for Unliking a post', () => {
     it('Should should unlike the given post when it is liked', (done) => {
       const unlikePost = sinon.stub().resolves(true);
-      app.locals.dbClient = { unlikePost };
-      request(app)
+      expressApp.locals.dbClient = { unlikePost };
+      request(expressApp)
         .post('/unlike')
         .send({ postId: 5 })
         .expect(OK_STATUS_CODE)

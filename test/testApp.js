@@ -1,12 +1,15 @@
 const sinon = require('sinon');
-const { assert } = require('chai');
-const { getPosts, getUserProfile, addNewPost } = require('../lib/processes');
+const { assert, use } = require('chai');
+const { App } = require('../lib/app');
 
-describe('Processes', () => {
+describe('App', () => {
   describe('getPosts', () => {
     const userId = 1;
     it('should give all the posts with user details', async () => {
-      const userDetails = { name: 'john samuel', username: 'john' };
+      const userDetails = {
+        name: 'john samuel',
+        username: 'john',
+      };
       const posts = [{ id: 1, user_id: 1, posted_at: new Date() }];
       const getPostsStub = sinon.stub().resolves(posts);
       const getUserDetails = sinon.stub().resolves(userDetails);
@@ -16,6 +19,7 @@ describe('Processes', () => {
         getUserDetails,
         isLikedByUser,
       };
+      const app = new App(dbClient);
       const expected = [
         {
           id: 1,
@@ -27,7 +31,7 @@ describe('Processes', () => {
           isLiked: true,
         },
       ];
-      assert.deepStrictEqual(await getPosts(dbClient, userId), expected);
+      assert.deepStrictEqual(await app.getPosts(userId), expected);
       sinon.assert.calledOnce(getPostsStub);
       sinon.assert.calledOnce(getUserDetails);
       sinon.assert.calledWithExactly(getUserDetails, userId);
@@ -37,8 +41,12 @@ describe('Processes', () => {
     it('should give an empty array when the dbClient rejects getPosts', async () => {
       const getPostsStub = sinon.stub().rejects('no table found');
       const getUserDetails = sinon.stub().resolves({});
-      const dbClient = { getPosts: getPostsStub, getUserDetails };
-      assert.deepStrictEqual(await getPosts(dbClient), []);
+      const dbClient = {
+        getPosts: getPostsStub,
+        getUserDetails,
+      };
+      const app = new App(dbClient);
+      assert.deepStrictEqual(await app.getPosts(userId), []);
       sinon.assert.calledOnce(getPostsStub);
       sinon.assert.notCalled(getUserDetails);
     });
@@ -47,8 +55,12 @@ describe('Processes', () => {
       const invalidUserId = 11;
       const getPostsStub = sinon.stub().resolves([{ user_id: invalidUserId }]);
       const getUserDetails = sinon.stub().rejects('no table found');
-      const dbClient = { getPosts: getPostsStub, getUserDetails };
-      assert.deepStrictEqual(await getPosts(dbClient), []);
+      const dbClient = {
+        getPosts: getPostsStub,
+        getUserDetails,
+      };
+      const app = new App(dbClient);
+      assert.deepStrictEqual(await app.getPosts(userId), []);
       sinon.assert.calledOnce(getPostsStub);
       sinon.assert.calledOnce(getUserDetails);
       sinon.assert.calledWithExactly(getUserDetails, invalidUserId);
@@ -63,7 +75,8 @@ describe('Processes', () => {
         getUserDetails,
         isLikedByUser,
       };
-      assert.deepStrictEqual(await getPosts(dbClient), []);
+      const app = new App(dbClient);
+      assert.deepStrictEqual(await app.getPosts(userId), []);
       sinon.assert.calledOnce(getPostsStub);
       sinon.assert.calledOnce(getUserDetails);
       sinon.assert.calledWithExactly(getUserDetails, 1);
@@ -80,6 +93,7 @@ describe('Processes', () => {
         getUserDetails,
         isLikedByUser,
       };
+      const app = new App(dbClient);
       const expected = [
         {
           id: 1,
@@ -90,7 +104,7 @@ describe('Processes', () => {
           isLiked: true,
         },
       ];
-      assert.deepStrictEqual(await getPosts(dbClient), expected);
+      assert.deepStrictEqual(await app.getPosts(userId), expected);
       sinon.assert.calledOnce(getPostsStub);
       sinon.assert.calledOnce(getUserDetails);
       sinon.assert.calledWithExactly(getUserDetails, userId);
@@ -107,6 +121,7 @@ describe('Processes', () => {
         .stub()
         .resolves([{ message: 'hi', posted_at: '2020-02-21 12:45:16' }]);
       const dbClient = { getUserDetails, getPostsByUserId };
+      const app = new App(dbClient);
       const expected = {
         user_id,
         initials: 'J',
@@ -122,7 +137,7 @@ describe('Processes', () => {
           },
         ],
       };
-      assert.deepStrictEqual(await getUserProfile(dbClient, user_id), expected);
+      assert.deepStrictEqual(await app.getUserProfile(user_id), expected);
       sinon.assert.calledOnce(getUserDetails);
       sinon.assert.calledOnce(getPostsByUserId);
       sinon.assert.calledWithExactly(getUserDetails, user_id);
@@ -134,7 +149,8 @@ describe('Processes', () => {
       const getUserDetails = sinon.stub().resolves(userDetails);
       const getPostsByUserId = sinon.stub().rejects('posts table not found');
       const dbClient = { getUserDetails, getPostsByUserId };
-      assert.deepStrictEqual(await getUserProfile(dbClient, user_id), {
+      const app = new App(dbClient);
+      assert.deepStrictEqual(await app.getUserProfile(user_id), {
         user_id,
         initials: 'J',
         name: 'john',
@@ -151,7 +167,8 @@ describe('Processes', () => {
       const getUserDetails = sinon.stub().rejects('userId not found');
       const getPostsByUserId = sinon.stub().resolves([]);
       const dbClient = { getUserDetails, getPostsByUserId };
-      assert.deepStrictEqual(await getUserProfile(dbClient, user_id), {
+      const app = new App(dbClient);
+      assert.deepStrictEqual(await app.getUserProfile(user_id), {
         errMsg: 'Invalid userId',
         posts: [],
       });
@@ -166,8 +183,8 @@ describe('Processes', () => {
     it('should add new post to database', async () => {
       const postDetails = { user_id: 1, message: 'hi everyone' };
       const addPostStub = sinon.stub().resolves(postDetails);
-      const dbClient = { addPost: addPostStub };
-      assert.equal(await addNewPost(dbClient, postDetails), postDetails);
+      const app = new App({ addPost: addPostStub });
+      assert.equal(await app.addNewPost(postDetails), postDetails);
       sinon.assert.calledOnce(addPostStub);
       sinon.assert.calledWithExactly(addPostStub, postDetails);
     });
@@ -177,8 +194,8 @@ describe('Processes', () => {
       const addPostStub = sinon
         .stub()
         .rejects(new Error('posts table not found'));
-      const dbClient = { addPost: addPostStub };
-      assert.deepStrictEqual(await addNewPost(dbClient, postDetails), {
+      const app = new App({ addPost: addPostStub });
+      assert.deepStrictEqual(await app.addNewPost(postDetails), {
         errMsg: 'posts table not found',
       });
       sinon.assert.calledOnce(addPostStub);
