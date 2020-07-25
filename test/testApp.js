@@ -120,7 +120,8 @@ describe('App', () => {
       const getPostsByUserId = sinon
         .stub()
         .resolves([{ message: 'hi', posted_at: '2020-02-21 12:45:16' }]);
-      const dbClient = { getUserDetails, getPostsByUserId };
+      const isLikedByUser = sinon.stub().resolves(true);
+      const dbClient = { getUserDetails, getPostsByUserId, isLikedByUser };
       const app = new App(dbClient);
       const expected = {
         user_id,
@@ -134,11 +135,13 @@ describe('App', () => {
             initials: 'J',
             name: 'john',
             username: 'john',
+            isLiked: true,
+            user_id: 1,
           },
         ],
       };
       assert.deepStrictEqual(await app.getUserProfile(user_id), expected);
-      sinon.assert.calledOnce(getUserDetails);
+      sinon.assert.calledTwice(getUserDetails);
       sinon.assert.calledOnce(getPostsByUserId);
       sinon.assert.calledWithExactly(getUserDetails, user_id);
       sinon.assert.calledWithExactly(getPostsByUserId, user_id);

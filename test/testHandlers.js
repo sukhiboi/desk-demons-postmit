@@ -2,14 +2,13 @@ const request = require('supertest');
 const sinon = require('sinon');
 const { assert } = require('chai');
 const { expressApp } = require('../lib/expressApp');
-// const app = require('../lib/app');
 const { App } = require('../lib/app');
 const OK_STATUS_CODE = 200;
 
 describe('Handlers', () => {
   const userId = 1;
   context('Request for Home Page', () => {
-    it('Should serve the Home Page with Posts', (done) => {
+    it('Should serve the Home Page with Posts', done => {
       const userDetails = { name: 'john', username: 'john' };
       const getPosts = sinon.stub().resolves([{ id: 1, user_id: 1 }]);
       const getUserDetails = sinon.stub().resolves(userDetails);
@@ -29,21 +28,25 @@ describe('Handlers', () => {
   });
 
   context('Request for  Profile Page', () => {
-    it('Should serve the Profile Page with posts of that user', (done) => {
+    it('Should serve the Profile Page with posts of that user', done => {
       const userDetails = { name: 'john', username: 'john' };
       const getUserDetails = sinon.stub().resolves(userDetails);
-      const getPostsByUserId = sinon.stub().resolves([{ message: 'hi' }]);
+      const isLikedByUser = sinon.stub().resolves(true);
+      const getPostsByUserId = sinon
+        .stub()
+        .resolves([{ message: 'hi', id: 1, user_id: 1 }]);
       expressApp.locals.app = new App({
         getUserDetails,
         getPostsByUserId,
+        isLikedByUser,
       });
       request(expressApp)
         .get('/profile')
         .expect(OK_STATUS_CODE)
         .expect(() => {
-          sinon.assert.calledOnce(getUserDetails);
+          sinon.assert.calledTwice(getUserDetails);
           sinon.assert.calledOnce(getPostsByUserId);
-          sinon.assert.calledOnceWithExactly(getUserDetails, userId);
+          sinon.assert.calledWith(getUserDetails, userId);
           sinon.assert.calledOnceWithExactly(getPostsByUserId, userId);
         })
         .expect(/john/, done);
@@ -51,7 +54,7 @@ describe('Handlers', () => {
   });
 
   context('Request for adding a new post', () => {
-    it('should add a new post to database', (done) => {
+    it('should add a new post to database', done => {
       const user_id = 1;
       const postDetails = {
         user_id,
@@ -82,7 +85,7 @@ describe('Handlers', () => {
         .post('/add-new-post')
         .send(postDetails)
         .expect(OK_STATUS_CODE)
-        .expect((response) => {
+        .expect(response => {
           assert.deepStrictEqual(response.body, expectedResponse);
           sinon.assert.calledOnceWithExactly(addPostStub, postDetails);
           sinon.assert.calledOnceWithExactly(getUserDetailsStub, user_id);
@@ -95,7 +98,7 @@ describe('Handlers', () => {
         .expect(/hi everyone/, done);
     });
 
-    it('should return error message if an error occurred', (done) => {
+    it('should return error message if an error occurred', done => {
       const postDetails = { user_id: 1, message: 'hi everyone' };
       const addPostStub = sinon
         .stub()
@@ -105,7 +108,7 @@ describe('Handlers', () => {
         .post('/add-new-post')
         .send(postDetails)
         .expect(OK_STATUS_CODE)
-        .expect((response) => {
+        .expect(response => {
           assert.deepStrictEqual(response.body, {
             errMsg: 'posts table not found',
           });
@@ -117,7 +120,7 @@ describe('Handlers', () => {
   });
 
   context('Request for Liking a post', () => {
-    it('Should should like the given post when it is not liked', (done) => {
+    it('Should should like the given post when it is not liked', done => {
       const likePost = sinon.stub().resolves(true);
       expressApp.locals.app = new App({ likePost });
       request(expressApp)
@@ -133,7 +136,7 @@ describe('Handlers', () => {
   });
 
   context('Request for Unliking a post', () => {
-    it('Should should unlike the given post when it is liked', (done) => {
+    it('Should should unlike the given post when it is liked', done => {
       const unlikePost = sinon.stub().resolves(true);
       expressApp.locals.app = new App({ unlikePost });
       request(expressApp)
