@@ -26,6 +26,8 @@ button:hover {
 .root {
   display: flex;
   margin: 0 8rem;
+  width: 100%;
+  justify-content: center;
 }
 
 .filter {
@@ -83,6 +85,7 @@ button:hover {
 .create-new-post .content {
   box-sizing: border-box;
   padding-left: 10px;
+  width: 90%;
 }
 .create-new-post .content textarea {
   background-color: transparent;
@@ -232,10 +235,9 @@ button:hover {
 
 .menu {
   margin: 6rem 1rem 0;
-  display: flex;
-  align-items: flex-start;
   height: 100vh;
   position: fixed;
+  left: 8vw;
 }
 
 .app-name {
