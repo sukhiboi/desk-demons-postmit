@@ -98,6 +98,7 @@
 .activity-bar {
   display: flex;
   width: auto;
+  justify-content: space-around;
 }
 
 .activity-title {
