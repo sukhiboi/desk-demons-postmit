@@ -35,7 +35,7 @@ describe('#Handlers', () => {
         .expect(OK_STATUS_CODE)
         .expect(() => {
           sinon.assert.calledOnce(getAllPostsStub);
-          sinon.assert.calledOnce(getUserDetailsStub);
+          sinon.assert.calledTwice(getUserDetailsStub);
           sinon.assert.calledOnceWithExactly(
             isLikedByUserStub,
             user_id,
