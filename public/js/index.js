@@ -1,21 +1,28 @@
 const toggleLikeButton = function (target, className) {
-  const classToRemove = className === 'fas' ? 'far' : 'fas';
-  target.classList.remove(classToRemove);
-  target.classList.add(className);
+  const classToRemove = className.includes('fas')
+    ? ['far', 'LikeBtn']
+    : ['fas', 'likeColor'];
+  target.classList.remove(...classToRemove);
+  target.classList.add(...className);
+  location.reload();
 };
 
 const toggleLikeUnlike = function (postId) {
   const target = event.target;
   if (target.className.includes('far')) {
-    sendPOSTRequest('/like', { postId }, () => toggleLikeButton(target, 'fas'));
+    sendPOSTRequest('/like', { postId }, () =>
+      toggleLikeButton(target, ['fas', 'likeColor'])
+    );
     return;
   }
-  sendPOSTRequest('/unlike', { postId }, () => toggleLikeButton(target, 'far'));
+  sendPOSTRequest('/unlike', { postId }, () =>
+    toggleLikeButton(target, ['far', 'LikeBtn'])
+  );
 };
 
 const addNewPost = function () {
   const message = document.getElementById('newPostMessage').value;
-  sendPOSTRequest('/add-new-post', { message });
+  sendPOSTRequest('/add-new-post', { message }, () => location.reload());
 };
 
 const main = function () {

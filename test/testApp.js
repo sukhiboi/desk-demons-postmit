@@ -24,9 +24,11 @@ describe('#App', () => {
     it('should resolve to postDetails of user with user_id', async () => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().resolves(true);
+      const getAllLikedUsersStub = sinon.stub().resolves([]);
       const dbClient = {
         getUserDetails: getUserDetailsStub,
         isLikedByUser: isLikedByUserStub,
+        getAllLikedUsers: getAllLikedUsersStub,
       };
       const app = new App(dbClient);
       assert.deepStrictEqual(await app.getPostDetails(user_id, dummyPost), {
@@ -38,6 +40,7 @@ describe('#App', () => {
         posted_at: 'a few seconds ago',
         user_id: 1,
         username: 'john',
+        likedUsers: [],
       });
       sinon.assert.calledOnceWithExactly(getUserDetailsStub, user_id);
       sinon.assert.calledOnceWithExactly(isLikedByUserStub, user_id, postId);
@@ -83,10 +86,12 @@ describe('#App', () => {
       const getAllPostsStub = sinon.stub().resolves(createDummyPosts());
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().resolves(true);
+      const getAllLikedUsersStub = sinon.stub().resolves([]);
       const dbClient = {
         getAllPosts: getAllPostsStub,
         getUserDetails: getUserDetailsStub,
         isLikedByUser: isLikedByUserStub,
+        getAllLikedUsers: getAllLikedUsersStub,
       };
       const app = new App(dbClient);
       const expectedPosts = [
@@ -99,6 +104,7 @@ describe('#App', () => {
           posted_at: 'a few seconds ago',
           isLiked: true,
           message: 'hi',
+          likedUsers: [],
         },
       ];
       assert.deepStrictEqual(await app.getAllPosts(user_id), expectedPosts);
@@ -159,10 +165,12 @@ describe('#App', () => {
       const getAllPostsStub = sinon.stub().resolves(createDummyPosts());
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().resolves(true);
+      const getAllLikedUsersStub = sinon.stub().resolves([]);
       const dbClient = {
         getAllPosts: getAllPostsStub,
         getUserDetails: getUserDetailsStub,
         isLikedByUser: isLikedByUserStub,
+        getAllLikedUsers: getAllLikedUsersStub,
       };
       const app = new App(dbClient);
       const expected = [
@@ -174,6 +182,7 @@ describe('#App', () => {
           posted_at: 'a few seconds ago',
           isLiked: true,
           message: 'hi',
+          likedUsers: [],
         },
       ];
       assert.deepStrictEqual(await app.getAllPosts(user_id), expected);
@@ -188,10 +197,12 @@ describe('#App', () => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getPostsByUserIdStub = sinon.stub().resolves(createDummyPosts());
       const isLikedByUserStub = sinon.stub().resolves(true);
+      const getAllLikedUsersStub = sinon.stub().resolves([]);
       const dbClient = {
         getUserDetails: getUserDetailsStub,
         getPostsByUserId: getPostsByUserIdStub,
         isLikedByUser: isLikedByUserStub,
+        getAllLikedUsers: getAllLikedUsersStub,
       };
       const app = new App(dbClient);
       const expected = {
@@ -209,6 +220,7 @@ describe('#App', () => {
             username: 'john',
             isLiked: true,
             user_id: 1,
+            likedUsers: [],
           },
         ],
       };
@@ -260,10 +272,12 @@ describe('#App', () => {
       const addPostStub = sinon.stub().resolves(createDummyPosts());
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().resolves(true);
+      const getAllLikedUsersStub = sinon.stub().resolves([]);
       const app = new App({
         addPost: addPostStub,
         getUserDetails: getUserDetailsStub,
         isLikedByUser: isLikedByUserStub,
+        getAllLikedUsers: getAllLikedUsersStub,
       });
       assert.deepStrictEqual(await app.addNewPost({ id: postId }), {
         name: 'john samuel',
@@ -274,6 +288,7 @@ describe('#App', () => {
         posted_at: 'a few seconds ago',
         message: 'hi',
         isLiked: true,
+        likedUsers: [],
       });
       sinon.assert.calledOnceWithExactly(addPostStub, { id: postId });
       sinon.assert.calledOnceWithExactly(getUserDetailsStub, user_id);

@@ -282,11 +282,20 @@ button:hover {
 }
 
 .icon {
-  font-size: 30px;
+  font-size: 25px;
   color: #8898a66f;
 }
 
-.fas,
+.likeColor,
 .likeBtn:hover {
   color: rgb(224, 36, 94);
+}
+
+.count {
+  font-size: 20px;
+  margin-left: 5px;
+}
+
+.action {
+  display: flex;
 }

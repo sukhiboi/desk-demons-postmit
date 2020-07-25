@@ -23,10 +23,12 @@ describe('#Handlers', () => {
       const getAllPostsStub = sinon.stub().resolves(createDummyPosts());
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().resolves(true);
+      const getAllLikedUsersStub = sinon.stub().resolves([]);
       const app = new App({
         getAllPosts: getAllPostsStub,
         getUserDetails: getUserDetailsStub,
         isLikedByUser: isLikedByUserStub,
+        getAllLikedUsers: getAllLikedUsersStub,
       });
       expressApp.locals.app = app;
       request(expressApp)
@@ -49,11 +51,13 @@ describe('#Handlers', () => {
     it('should serve the Profile Page with posts of that user', done => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().resolves(true);
+      const getAllLikedUsersStub = sinon.stub().resolves([]);
       const getPostsByUserIdStub = sinon.stub().resolves(createDummyPosts());
       expressApp.locals.app = new App({
         getUserDetails: getUserDetailsStub,
         getPostsByUserId: getPostsByUserIdStub,
         isLikedByUser: isLikedByUserStub,
+        getAllLikedUsers: getAllLikedUsersStub,
       });
       request(expressApp)
         .get('/profile')
@@ -74,10 +78,12 @@ describe('#Handlers', () => {
       const addPostStub = sinon.stub().resolves(createDummyPosts());
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().resolves(true);
+      const getAllLikedUsersStub = sinon.stub().resolves([]);
       expressApp.locals.app = new App({
         addPost: addPostStub,
         getUserDetails: getUserDetailsStub,
         isLikedByUser: isLikedByUserStub,
+        getAllLikedUsers: getAllLikedUsersStub,
       });
       const expectedResponse = {
         id: postId,
@@ -88,6 +94,7 @@ describe('#Handlers', () => {
         posted_at: 'a few seconds ago',
         user_id,
         username: 'john',
+        likedUsers: [],
       };
       request(expressApp)
         .post('/add-new-post')

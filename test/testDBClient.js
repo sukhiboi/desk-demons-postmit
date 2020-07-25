@@ -3,7 +3,7 @@ const { assert } = require('chai');
 const DBClient = require('../lib/DBClient');
 
 describe('#DBClient', () => {
-  const expectedTableError = new Error('Error: post table not found');
+  const expectedTableError = new Error('Error: table not found');
   const expectedUserDetailsError = new Error('Error: Invalid userId');
 
   describe('getPosts()', () => {
@@ -227,5 +227,27 @@ describe('#DBClient', () => {
       }
       sinon.assert.calledOnce(getStub);
     });
+  });
+
+  describe('getAllLikedUsers()', () => {
+    it('should give list of users who liked the given post', async () => {
+      const expected = [{ user_id: 1, post_id: 1 }];
+      const allStub = sinon.stub().yields(null, expected);
+      const dbClient = new DBClient({ all: allStub });
+      const actual = await dbClient.getAllLikedUsers(1);
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledOnce(allStub);
+    });
+  });
+
+  it('should give error when table not found', async () => {
+    const allStub = sinon.stub().yields(expectedTableError, null);
+    const dbClient = new DBClient({ all: allStub });
+    try {
+      assert.isNull(await dbClient.getAllLikedUsers(1));
+    } catch (err) {
+      assert.deepStrictEqual(err, expectedTableError);
+      sinon.assert.calledOnce(allStub);
+    }
   });
 });

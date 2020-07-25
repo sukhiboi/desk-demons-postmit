@@ -14,5 +14,6 @@ mixin post(post)
       .action
         - let className="far fa-heart icon likeBtn";
         if post.isLiked
-         - className="fas fa-heart icon likeBtn"
-        i(class=className onclick=`toggleLikeUnlike(${post.id})`)
+         - className="fas fa-heart icon likeColor"
+        i(class=className onclick=`toggleLikeUnlike(${post.id})`) 
+        span(class="count likeColor")= post.likedUsers.length?post.likedUsers.length:''
