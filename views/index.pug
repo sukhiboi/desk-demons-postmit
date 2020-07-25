@@ -19,7 +19,7 @@ head
       span Home
     .feed
       include components/newPost.pug
-      .posts
+      .posts#posts
         include components/post.pug
         each item in posts 
           +post(item)

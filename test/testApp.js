@@ -15,6 +15,8 @@ describe('#App', () => {
     return [{ id: postId, user_id, posted_at: new Date(), message: 'hi' }];
   };
 
+  const [dummyPost] = createDummyPosts();
+
   const expectedTableError = new Error('Error: post table not found');
   const expectedUserDetailsError = new Error('Error: Invalid userId');
 
@@ -269,7 +271,7 @@ describe('#App', () => {
 
   describe('addNewPost()', () => {
     it('should resolve to details of the new post', async () => {
-      const addPostStub = sinon.stub().resolves(createDummyPosts());
+      const addPostStub = sinon.stub().resolves(dummyPost);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().resolves(true);
       const getAllLikedUsersStub = sinon.stub().resolves([]);
@@ -279,7 +281,7 @@ describe('#App', () => {
         isLikedByUser: isLikedByUserStub,
         getAllLikedUsers: getAllLikedUsersStub,
       });
-      assert.deepStrictEqual(await app.addNewPost({ id: postId }), {
+      assert.deepStrictEqual(await app.addNewPost(dummyPost), {
         name: 'john samuel',
         username: 'john',
         user_id: 1,
@@ -290,7 +292,7 @@ describe('#App', () => {
         isLiked: true,
         likedUsers: [],
       });
-      sinon.assert.calledOnceWithExactly(addPostStub, { id: postId });
+      sinon.assert.calledOnceWithExactly(addPostStub, dummyPost);
       sinon.assert.calledOnceWithExactly(getUserDetailsStub, user_id);
       sinon.assert.calledOnceWithExactly(isLikedByUserStub, user_id, postId);
     });
@@ -304,16 +306,16 @@ describe('#App', () => {
         getUserDetails: getUserDetailsStub,
         isLikedByUser: isLikedByUserStub,
       });
-      assert.deepStrictEqual(await app.addNewPost({ id: postId }), {
+      assert.deepStrictEqual(await app.addNewPost(dummyPost), {
         errMsg: 'Error: post table not found',
       });
-      sinon.assert.calledOnceWithExactly(addPostStub, { id: postId });
+      sinon.assert.calledOnceWithExactly(addPostStub, dummyPost);
       sinon.assert.notCalled(getUserDetailsStub);
       sinon.assert.notCalled(isLikedByUserStub);
     });
 
     it('should resolves the errMsg if getUserDetails fails', async () => {
-      const addPostStub = sinon.stub().resolves(createDummyPosts());
+      const addPostStub = sinon.stub().resolves(dummyPost);
       const getUserDetailsStub = sinon.stub().rejects(expectedUserDetailsError);
       const isLikedByUserStub = sinon.stub().resolves(true);
       const app = new App({
@@ -321,16 +323,16 @@ describe('#App', () => {
         getUserDetails: getUserDetailsStub,
         isLikedByUser: isLikedByUserStub,
       });
-      assert.deepStrictEqual(await app.addNewPost({ id: postId }), {
+      assert.deepStrictEqual(await app.addNewPost(dummyPost), {
         errMsg: 'Error: Invalid userId',
       });
-      sinon.assert.calledOnceWithExactly(addPostStub, { id: postId });
+      sinon.assert.calledOnceWithExactly(addPostStub, dummyPost);
       sinon.assert.calledOnceWithExactly(getUserDetailsStub, user_id);
       sinon.assert.notCalled(isLikedByUserStub);
     });
 
     it('should resolves the errMsg if isLikedByUser fails', async () => {
-      const addPostStub = sinon.stub().resolves(createDummyPosts());
+      const addPostStub = sinon.stub().resolves(dummyPost);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().rejects(expectedTableError);
       const app = new App({
@@ -338,10 +340,10 @@ describe('#App', () => {
         getUserDetails: getUserDetailsStub,
         isLikedByUser: isLikedByUserStub,
       });
-      assert.deepStrictEqual(await app.addNewPost({ id: postId }), {
+      assert.deepStrictEqual(await app.addNewPost(dummyPost), {
         errMsg: 'Error: post table not found',
       });
-      sinon.assert.calledOnceWithExactly(addPostStub, { id: postId });
+      sinon.assert.calledOnceWithExactly(addPostStub, dummyPost);
       sinon.assert.calledOnceWithExactly(getUserDetailsStub, user_id);
       sinon.assert.calledOnceWithExactly(isLikedByUserStub, user_id, postId);
     });

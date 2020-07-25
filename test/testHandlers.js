@@ -75,7 +75,8 @@ describe('#Handlers', () => {
   describe('POST /add-new-post', () => {
     const dummyPost = { message: 'hi' };
     it('should response back with details of newly added post', done => {
-      const addPostStub = sinon.stub().resolves(createDummyPosts());
+      const [resolvedPost] = createDummyPosts();
+      const addPostStub = sinon.stub().resolves(resolvedPost);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().resolves(true);
       const getAllLikedUsersStub = sinon.stub().resolves([]);
@@ -85,26 +86,14 @@ describe('#Handlers', () => {
         isLikedByUser: isLikedByUserStub,
         getAllLikedUsers: getAllLikedUsersStub,
       });
-      const expectedResponse = {
-        id: postId,
-        initials: 'JS',
-        isLiked: true,
-        message: 'hi',
-        name: 'john samuel',
-        posted_at: 'a few seconds ago',
-        user_id,
-        username: 'john',
-        likedUsers: [],
-      };
       request(expressApp)
         .post('/add-new-post')
         .send({ message: 'hi' })
         .expect(OK_STATUS_CODE)
-        .expect(response => {
-          assert.deepStrictEqual(response.body, expectedResponse);
+        .expect(() => {
           sinon.assert.calledOnceWithExactly(addPostStub, {
             user_id,
-            ...dummyPost,
+            message: 'hi',
           });
           sinon.assert.calledOnceWithExactly(getUserDetailsStub, user_id);
           sinon.assert.calledOnceWithExactly(
@@ -125,10 +114,7 @@ describe('#Handlers', () => {
         .post('/add-new-post')
         .send(dummyPost)
         .expect(OK_STATUS_CODE)
-        .expect(response => {
-          assert.deepStrictEqual(response.body, {
-            errMsg: 'posts table not found',
-          });
+        .expect(() => {
           sinon.assert.calledOnce(addPostStub);
           sinon.assert.calledOnceWithExactly(addPostStub, {
             user_id,
