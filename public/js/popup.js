@@ -3,7 +3,7 @@ const createNewPostElement = function () {
   newPostElement.innerHTML = `
     <div class="create-new-post">
   <div class="flex">
-    <div class="profile-pic"><span>SS</span></div>
+    <div class="profile-pic"><span>NK</span></div>
     <div class="content">
       <textarea
         id="newPopupPostMessage"

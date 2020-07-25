@@ -13,7 +13,9 @@ mixin post(post)
     .actions.flex
       .action
         - let className="far fa-heart icon likeBtn";
+        - let countClass = "likeBtn"
         if post.isLiked
          - className="fas fa-heart icon likeColor"
+         - countClass = "likeColor"
         i(class=className onclick=`toggleLikeUnlike(${post.id})`) 
-        span(class="count likeColor")= post.likedUsers.length?post.likedUsers.length:''
+        span(class=`count ${countClass}`)= post.likedUsers.length?post.likedUsers.length:''

@@ -316,14 +316,16 @@ button:hover {
 }
 
 .likeColor,
-.likeBtn:hover {
-  color: rgb(224, 36, 94);
+.action:hover i,
+.action:hover > span {
+  color: rgb(224, 36, 94) !important;
 }
 
 .count {
   font-size: 1.2rem;
   margin-left: 5px;
   font-weight: 300;
+  color: #8898a66f;
 }
 
 .action {
