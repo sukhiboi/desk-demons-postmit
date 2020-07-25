@@ -102,6 +102,10 @@ button:hover {
   height: 100%;
 }
 
+.create-new-post .content textarea::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .profile-pic {
   border-radius: 50%;
   height: 3.4rem;
@@ -116,8 +120,7 @@ button:hover {
   left: 50%;
   transform: translate(-50%, -50%);
   outline: none;
-  font-weight: 700;
-  color: #fff;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .disable-btn {
@@ -128,6 +131,19 @@ button:hover {
 
 .primary-btn {
   align-self: flex-start;
+  padding: 12px 2rem;
+  font-size: 1rem;
+  border-radius: 10rem;
+  border: none;
+  outline: none;
+  background-color: #1da1f2;
+  font-weight: 700 !important;
+  color: #fff;
+  text-align: center;
+}
+
+.popup-post-btn {
+  margin-top: 2rem;
   padding: 12px 2rem;
   font-size: 1rem;
   border-radius: 10rem;
@@ -183,7 +199,7 @@ button:hover {
 
 .post-content {
   color: rgba(255, 255, 255, 0.8);
-  padding: 10px 4px;
+  padding: 1rem 4px 6px;
   font-size: 1.1rem;
   border: none;
   line-height: 24px;
@@ -250,6 +266,7 @@ button:hover {
   display: flex;
   justify-content: center;
   flex-direction: column;
+  align-items: center;
 }
 
 .page {
@@ -324,22 +341,32 @@ button:hover {
   padding-top: 1rem;
 }
 
-#character-count {
+.message-character-count {
   font-weight: 700;
   color: rgba(255, 255, 255, 0.8);
-  padding-right: 8px;
-}
-
-.char-count-message {
-  font-weight: 300 !important;
-  padding-right: 1rem;
-  color: rgba(255, 255, 255, 0.8);
+  padding: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 10rem;
+  font-size: 1em !important;
+  margin-right: 1rem;
 }
 
 .char-count-error {
   color: rgb(224, 36, 94) !important;
+  border: 2px solid rgb(224, 36, 94) !important;
 }
 
 .disable {
-  display:none;
+  display: none;
+}
+
+@media (max-width: 456px) {
+  .menu {
+    display: none;
+  }
+  .main-panel {
+    padding: 1rem;
+    width: 100%;
+    margin: 0;
+  }
 }

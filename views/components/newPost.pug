@@ -5,6 +5,5 @@
       .content
         textarea#newPostMessage(placeholder="What's happening?" rows=3)
     div.flex.action-bar
-      span#character-count 180
-      span.char-count-message characters left
-      button.primary-btn#post-btn(onclick='addNewPost()') Post
+      span.message-character-count#character-count 180
+      button.primary-btn#post-btn(onclick='addNewPost(\'newPostMessage\')') Post

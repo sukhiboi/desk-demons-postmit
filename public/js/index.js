@@ -20,8 +20,8 @@ const toggleLikeUnlike = function (postId) {
   );
 };
 
-const addNewPost = function () {
-  const message = document.getElementById('newPostMessage').value;
+const addNewPost = function (textareaId) {
+  const message = document.getElementById(textareaId).value;
   sendPOSTRequest('/add-new-post', { message }, () => location.reload());
 };
 
@@ -34,23 +34,41 @@ const display = function (id) {
   event.target.classList.add('activeTab');
 };
 
-const main = function () {
+const handlePostSubmission = function (textarea, postBtn, count) {
+  const maxCharacterLength = 180;
+  const warningCharacterLength = 170;
+  const zero = 0;
+  postBtn.classList.add('disable-btn');
+  textarea.addEventListener('input', function () {
+    const characterLength = textarea.value.length;
+    postBtn.classList.remove('disable-btn');
+    count.classList.remove('char-count-error');
+    if (characterLength === zero || characterLength > maxCharacterLength) {
+      postBtn.classList.add('disable-btn');
+    }
+    if (characterLength >= warningCharacterLength) {
+      count.classList.add('char-count-error');
+    }
+    count.innerText = maxCharacterLength - characterLength;
+  });
+};
+
+const initializeHomePostInput = function () {
   const message = document.getElementById('newPostMessage');
   const postBtn = document.getElementById('post-btn');
   const charCountElement = document.getElementById('character-count');
-  postBtn.classList.add('disable-btn');
-  message.addEventListener('input', function () {
-    const characterLength = message.value.length;
-    postBtn.classList.remove('disable-btn');
-    charCountElement.classList.remove('char-count-error');
-    if (characterLength === 0 || characterLength > 180) {
-      postBtn.classList.add('disable-btn');
-    }
-    if (characterLength >= 170) {
-      charCountElement.classList.add('char-count-error');
-    }
-    charCountElement.innerText = 180 - characterLength;
-  });
+  handlePostSubmission(message, postBtn, charCountElement);
+};
+
+const initializePopupPostInput = function () {
+  const message = document.getElementById('newPopupPostMessage');
+  const postBtn = document.getElementById('post-popup-btn');
+  const charCountElement = document.getElementById('popup-character-count');
+  handlePostSubmission(message, postBtn, charCountElement);
+};
+
+const main = function () {
+  initializeHomePostInput();
 };
 
 window.onload = main;
