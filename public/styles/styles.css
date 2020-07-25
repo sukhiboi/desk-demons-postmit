@@ -337,3 +337,7 @@ button:hover {
 .char-count-error {
   color: rgb(224, 36, 94) !important;
 }
+
+.disable {
+  display:none;
+}

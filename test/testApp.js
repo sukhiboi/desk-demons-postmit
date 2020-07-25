@@ -212,6 +212,7 @@ describe('#App', () => {
         initials: 'JS',
         name: 'john samuel',
         username: 'john',
+        likedPosts: [],
         posts: [
           {
             id: postId,
@@ -247,6 +248,7 @@ describe('#App', () => {
         name: 'john samuel',
         username: 'john',
         posts: [],
+        likedPosts: [],
       });
       sinon.assert.calledWithExactly(getUserDetailsStub, user_id);
       sinon.assert.calledWithExactly(getPostsByUserIdStub, user_id);
@@ -263,6 +265,7 @@ describe('#App', () => {
       assert.deepStrictEqual(await app.getUserProfile(user_id), {
         errMsg: 'Invalid userId',
         posts: [],
+        likedPosts: [],
       });
       sinon.assert.notCalled(getPostsByUserIdStub);
       sinon.assert.calledWithExactly(getUserDetailsStub, user_id);

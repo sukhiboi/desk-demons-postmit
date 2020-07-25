@@ -41,9 +41,13 @@ html(lang='en')
                     span Followers
             .user-activity
                 .activity-bar
-                    .activity-title Posts
+                    .activity-title.activeTab(onclick="display('posts')" id="posts-tab") Posts
+                    .activity-title(onclick="display('likedPosts')" id="likes-tab") Likes
             .feed
-                .posts
+                .posts(id="posts")
                     include components/post.pug
                     each item in posts 
+                        +post(item)
+                .posts.disable(id="likedPosts")
+                    each item in likedPosts 
                         +post(item)
