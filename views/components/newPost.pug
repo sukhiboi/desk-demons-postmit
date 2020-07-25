@@ -3,5 +3,8 @@
       .profile-pic
         span SS
       .content
-        textarea#newPostMessage(placeholder="What's happening?")
-    button.primary-btn#post-btn(onclick='addNewPost()') Post
+        textarea#newPostMessage(placeholder="What's happening?" rows=3 cols=44)
+    div.flex.action-bar
+      span#character-count 180
+      span.char-count-message characters left
+      button.primary-btn#post-btn(onclick='addNewPost()') Post

@@ -28,13 +28,19 @@ const addNewPost = function () {
 const main = function () {
   const message = document.getElementById('newPostMessage');
   const postBtn = document.getElementById('post-btn');
+  const charCountElement = document.getElementById('character-count');
   postBtn.classList.add('disable-btn');
   message.addEventListener('input', function () {
     const characterLength = message.value.length;
     postBtn.classList.remove('disable-btn');
+    charCountElement.classList.remove('char-count-error');
     if (characterLength === 0 || characterLength > 180) {
       postBtn.classList.add('disable-btn');
     }
+    if (characterLength >= 170) {
+      charCountElement.classList.add('char-count-error');
+    }
+    charCountElement.innerText = 180 - characterLength;
   });
 };
 
