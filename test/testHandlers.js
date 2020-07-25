@@ -1,6 +1,5 @@
 const request = require('supertest');
 const sinon = require('sinon');
-const { assert } = require('chai');
 const expressApp = require('../lib/expressApp');
 const App = require('../lib/app');
 const OK_STATUS_CODE = 200;
