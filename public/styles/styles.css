@@ -119,6 +119,12 @@ button:hover {
   color: #fff;
 }
 
+.disable-btn {
+  pointer-events: none;
+  background-color: rgba(29, 161, 242, 0.4) !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
 .primary-btn {
   align-self: flex-start;
   margin-top: 2rem;

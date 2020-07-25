@@ -17,3 +17,18 @@ const addNewPost = function () {
   const message = document.getElementById('newPostMessage').value;
   sendPOSTRequest('/add-new-post', { message });
 };
+
+const main = function () {
+  const message = document.getElementById('newPostMessage');
+  const postBtn = document.getElementById('post-btn');
+  postBtn.classList.add('disable-btn');
+  message.addEventListener('input', function () {
+    const characterLength = message.value.length;
+    postBtn.classList.remove('disable-btn');
+    if (characterLength === 0 || characterLength > 180) {
+      postBtn.classList.add('disable-btn');
+    }
+  });
+};
+
+window.onload = main;
