@@ -1,139 +1,211 @@
 const sinon = require('sinon');
 const { assert } = require('chai');
-const { App } = require('../lib/app');
+const App = require('../lib/app');
 
-describe('App', () => {
-  describe('getPosts', () => {
-    const userId = 1;
-    it('should give all the posts with user details', async () => {
-      const userDetails = {
-        name: 'john samuel',
-        username: 'john',
-      };
-      const posts = [{ id: 1, user_id: 1, posted_at: new Date() }];
-      const getPostsStub = sinon.stub().resolves(posts);
-      const getUserDetails = sinon.stub().resolves(userDetails);
-      const isLikedByUser = sinon.stub().resolves(true);
+describe('#App', () => {
+  const user_id = 1,
+    postId = 1;
+
+  const userDetails = {
+    name: 'john samuel',
+    username: 'john',
+    user_id,
+  };
+  const createDummyPosts = function () {
+    return [{ id: postId, user_id, posted_at: new Date(), message: 'hi' }];
+  };
+
+  const expectedTableError = new Error('Error: post table not found');
+  const expectedUserDetailsError = new Error('Error: Invalid userId');
+
+  describe('getPostDetails()', () => {
+    const [dummyPost] = createDummyPosts();
+
+    it('should resolve to postDetails of user with user_id', async () => {
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const isLikedByUserStub = sinon.stub().resolves(true);
       const dbClient = {
-        getPosts: getPostsStub,
-        getUserDetails,
-        isLikedByUser,
+        getUserDetails: getUserDetailsStub,
+        isLikedByUser: isLikedByUserStub,
       };
       const app = new App(dbClient);
-      const expected = [
+      assert.deepStrictEqual(await app.getPostDetails(user_id, dummyPost), {
+        id: 1,
+        initials: 'JS',
+        isLiked: true,
+        message: 'hi',
+        name: 'john samuel',
+        posted_at: 'a few seconds ago',
+        user_id: 1,
+        username: 'john',
+      });
+      sinon.assert.calledOnceWithExactly(getUserDetailsStub, user_id);
+      sinon.assert.calledOnceWithExactly(isLikedByUserStub, user_id, postId);
+    });
+
+    it('should resolve to empty array if getUsersDetails fails', async () => {
+      const getUserDetailsStub = sinon.stub().rejects(expectedUserDetailsError);
+      const isLikedByUserStub = sinon.stub().rejects(expectedTableError);
+      const dbClient = {
+        getUserDetails: getUserDetailsStub,
+        isLikedByUser: isLikedByUserStub,
+      };
+      const app = new App(dbClient);
+      try {
+        await app.getPostDetails(user_id, dummyPost);
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedUserDetailsError);
+      }
+      sinon.assert.calledOnceWithExactly(getUserDetailsStub, user_id);
+      sinon.assert.notCalled(isLikedByUserStub);
+    });
+
+    it('should resolve to empty array if isLikedByUser fails', async () => {
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const isLikedByUserStub = sinon.stub().rejects(expectedTableError);
+      const dbClient = {
+        getUserDetails: getUserDetailsStub,
+        isLikedByUser: isLikedByUserStub,
+      };
+      const app = new App(dbClient);
+      try {
+        await app.getPostDetails(user_id, dummyPost);
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+      }
+      sinon.assert.calledOnceWithExactly(getUserDetailsStub, user_id);
+      sinon.assert.calledOnceWithExactly(isLikedByUserStub, user_id, postId);
+    });
+  });
+
+  describe('getAllPosts()', () => {
+    it('should resolve all posts with user details', async () => {
+      const getAllPostsStub = sinon.stub().resolves(createDummyPosts());
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const isLikedByUserStub = sinon.stub().resolves(true);
+      const dbClient = {
+        getAllPosts: getAllPostsStub,
+        getUserDetails: getUserDetailsStub,
+        isLikedByUser: isLikedByUserStub,
+      };
+      const app = new App(dbClient);
+      const expectedPosts = [
         {
-          id: 1,
-          user_id: 1,
+          id: postId,
+          user_id,
           initials: 'JS',
           name: 'john samuel',
           username: 'john',
           posted_at: 'a few seconds ago',
           isLiked: true,
+          message: 'hi',
         },
       ];
-      assert.deepStrictEqual(await app.getPosts(userId), expected);
-      sinon.assert.calledOnce(getPostsStub);
-      sinon.assert.calledOnce(getUserDetails);
-      sinon.assert.calledWithExactly(getUserDetails, userId);
-      sinon.assert.calledWithExactly(isLikedByUser, 1, userId);
+      assert.deepStrictEqual(await app.getAllPosts(user_id), expectedPosts);
+      sinon.assert.calledOnceWithExactly(getUserDetailsStub, user_id);
+      sinon.assert.calledOnceWithExactly(isLikedByUserStub, postId, user_id);
     });
 
-    it('should give an empty array when the dbClient rejects getPosts', async () => {
-      const getPostsStub = sinon.stub().rejects('no table found');
-      const getUserDetails = sinon.stub().resolves({});
+    it('should resolve to empty array if getAllPosts fails', async () => {
+      const getAllPostsStub = sinon.stub().rejects(expectedTableError);
+      const getUserDetailsStub = sinon.stub().rejects(expectedUserDetailsError);
+      const isLikedByUserStub = sinon.stub().rejects(expectedTableError);
       const dbClient = {
-        getPosts: getPostsStub,
-        getUserDetails,
+        getAllPosts: getAllPostsStub,
+        getUserDetails: getUserDetailsStub,
+        isLikedByUser: isLikedByUserStub,
       };
       const app = new App(dbClient);
-      assert.deepStrictEqual(await app.getPosts(userId), []);
-      sinon.assert.calledOnce(getPostsStub);
-      sinon.assert.notCalled(getUserDetails);
+      assert.deepStrictEqual(await app.getAllPosts(user_id), []);
+      sinon.assert.calledOnce(getAllPostsStub);
+      sinon.assert.notCalled(getUserDetailsStub);
+      sinon.assert.notCalled(isLikedByUserStub);
     });
 
-    it('should give an empty array when the dbClient rejects getUsers', async () => {
-      const invalidUserId = 11;
-      const getPostsStub = sinon.stub().resolves([{ user_id: invalidUserId }]);
-      const getUserDetails = sinon.stub().rejects('no table found');
+    it('should resolve to empty array if getUsersDetails fails', async () => {
+      const getAllPostsStub = sinon.stub().resolves([{ user_id: user_id }]);
+      const getUserDetailsStub = sinon.stub().rejects(expectedUserDetailsError);
+      const isLikedByUserStub = sinon.stub().rejects(expectedTableError);
       const dbClient = {
-        getPosts: getPostsStub,
-        getUserDetails,
+        getAllPosts: getAllPostsStub,
+        getUserDetails: getUserDetailsStub,
+        isLikedByUser: isLikedByUserStub,
       };
       const app = new App(dbClient);
-      assert.deepStrictEqual(await app.getPosts(userId), []);
-      sinon.assert.calledOnce(getPostsStub);
-      sinon.assert.calledOnce(getUserDetails);
-      sinon.assert.calledWithExactly(getUserDetails, invalidUserId);
+      assert.deepStrictEqual(await app.getAllPosts(user_id), []);
+      sinon.assert.calledOnce(getAllPostsStub);
+      sinon.assert.calledOnceWithExactly(getUserDetailsStub, user_id);
+      sinon.assert.notCalled(isLikedByUserStub);
     });
 
-    it('should give an empty array when the dbClient rejects isLikedByUser', async () => {
-      const getPostsStub = sinon.stub().resolves([{ user_id: 1 }]);
-      const getUserDetails = sinon.stub().resolves({});
-      const isLikedByUser = sinon.stub().rejects('no table found');
+    it('should resolve to empty array if isLikedByUser fails', async () => {
+      const getAllPostsStub = sinon.stub().resolves(createDummyPosts());
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const isLikedByUserStub = sinon.stub().rejects(expectedTableError);
       const dbClient = {
-        getPosts: getPostsStub,
-        getUserDetails,
-        isLikedByUser,
+        getAllPosts: getAllPostsStub,
+        getUserDetails: getUserDetailsStub,
+        isLikedByUser: isLikedByUserStub,
       };
       const app = new App(dbClient);
-      assert.deepStrictEqual(await app.getPosts(userId), []);
-      sinon.assert.calledOnce(getPostsStub);
-      sinon.assert.calledOnce(getUserDetails);
-      sinon.assert.calledWithExactly(getUserDetails, 1);
+      assert.deepStrictEqual(await app.getAllPosts(user_id), []);
+      sinon.assert.calledOnce(getAllPostsStub);
+      sinon.assert.calledOnceWithExactly(getUserDetailsStub, user_id);
+      sinon.assert.calledOnce(isLikedByUserStub);
     });
 
     it('should give initials from username when name is not existing', async () => {
-      const userDetails = { username: 'john' };
-      const posts = [{ id: 1, user_id: 1, posted_at: '2020-05-24' }];
-      const getPostsStub = sinon.stub().resolves(posts);
-      const getUserDetails = sinon.stub().resolves(userDetails);
-      const isLikedByUser = sinon.stub().resolves(true);
+      const userDetails = { username: 'john', user_id };
+      const getAllPostsStub = sinon.stub().resolves(createDummyPosts());
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const isLikedByUserStub = sinon.stub().resolves(true);
       const dbClient = {
-        getPosts: getPostsStub,
-        getUserDetails,
-        isLikedByUser,
+        getAllPosts: getAllPostsStub,
+        getUserDetails: getUserDetailsStub,
+        isLikedByUser: isLikedByUserStub,
       };
       const app = new App(dbClient);
       const expected = [
         {
-          id: 1,
-          user_id: 1,
+          id: postId,
+          user_id: user_id,
           initials: 'J',
           username: 'john',
-          posted_at: 'May 24, 2020',
+          posted_at: 'a few seconds ago',
           isLiked: true,
+          message: 'hi',
         },
       ];
-      assert.deepStrictEqual(await app.getPosts(userId), expected);
-      sinon.assert.calledOnce(getPostsStub);
-      sinon.assert.calledOnce(getUserDetails);
-      sinon.assert.calledWithExactly(getUserDetails, userId);
+      assert.deepStrictEqual(await app.getAllPosts(user_id), expected);
+      sinon.assert.calledOnce(getAllPostsStub);
+      sinon.assert.calledOnce(getUserDetailsStub);
+      sinon.assert.calledWithExactly(getUserDetailsStub, user_id);
     });
   });
 
-  describe('getUserProfile', () => {
-    const user_id = 1;
-
-    it('should give profile of user by userId', async () => {
-      const userDetails = { user_id, name: 'john', username: 'john' };
-      const getUserDetails = sinon.stub().resolves(userDetails);
-      const getPostsByUserId = sinon
-        .stub()
-        .resolves([{ message: 'hi', posted_at: '2020-02-21 12:45:16' }]);
-      const isLikedByUser = sinon.stub().resolves(true);
-      const dbClient = { getUserDetails, getPostsByUserId, isLikedByUser };
+  describe('getUserProfile()', () => {
+    it('should resolve to user profile of a user with valid id', async () => {
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getPostsByUserIdStub = sinon.stub().resolves(createDummyPosts());
+      const isLikedByUserStub = sinon.stub().resolves(true);
+      const dbClient = {
+        getUserDetails: getUserDetailsStub,
+        getPostsByUserId: getPostsByUserIdStub,
+        isLikedByUser: isLikedByUserStub,
+      };
       const app = new App(dbClient);
       const expected = {
         user_id,
-        initials: 'J',
-        name: 'john',
+        initials: 'JS',
+        name: 'john samuel',
         username: 'john',
         posts: [
           {
+            id: postId,
             message: 'hi',
-            posted_at: 'Feb 21, 2020',
-            initials: 'J',
-            name: 'john',
+            posted_at: 'a few seconds ago',
+            initials: 'JS',
+            name: 'john samuel',
             username: 'john',
             isLiked: true,
             user_id: 1,
@@ -141,119 +213,138 @@ describe('App', () => {
         ],
       };
       assert.deepStrictEqual(await app.getUserProfile(user_id), expected);
-      sinon.assert.calledTwice(getUserDetails);
-      sinon.assert.calledOnce(getPostsByUserId);
-      sinon.assert.calledWithExactly(getUserDetails, user_id);
-      sinon.assert.calledWithExactly(getPostsByUserId, user_id);
+      sinon.assert.calledTwice(getUserDetailsStub);
+      sinon.assert.calledWithExactly(getUserDetailsStub, user_id);
+      sinon.assert.calledWithExactly(getPostsByUserIdStub, user_id);
+      sinon.assert.calledOnceWithExactly(isLikedByUserStub, postId, user_id);
     });
 
     it('should handle the rejection of getPostsByUserId', async () => {
-      const userDetails = { user_id: 1, name: 'john', username: 'john' };
-      const getUserDetails = sinon.stub().resolves(userDetails);
-      const getPostsByUserId = sinon.stub().rejects('posts table not found');
-      const dbClient = { getUserDetails, getPostsByUserId };
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getPostsByUserIdStub = sinon.stub().rejects(expectedTableError);
+      const dbClient = {
+        getUserDetails: getUserDetailsStub,
+        getPostsByUserId: getPostsByUserIdStub,
+      };
       const app = new App(dbClient);
       assert.deepStrictEqual(await app.getUserProfile(user_id), {
         user_id,
-        initials: 'J',
-        name: 'john',
+        initials: 'JS',
+        name: 'john samuel',
         username: 'john',
         posts: [],
       });
-      sinon.assert.calledOnce(getUserDetails);
-      sinon.assert.calledOnce(getPostsByUserId);
-      sinon.assert.calledWithExactly(getUserDetails, user_id);
-      sinon.assert.calledWithExactly(getPostsByUserId, user_id);
+      sinon.assert.calledWithExactly(getUserDetailsStub, user_id);
+      sinon.assert.calledWithExactly(getPostsByUserIdStub, user_id);
     });
 
     it('should handle the rejection of getUserDetails', async () => {
-      const getUserDetails = sinon.stub().rejects('userId not found');
-      const getPostsByUserId = sinon.stub().resolves([]);
-      const dbClient = { getUserDetails, getPostsByUserId };
+      const getUserDetailsStub = sinon.stub().rejects(expectedUserDetailsError);
+      const getPostsByUserIdStub = sinon.stub().resolves([]);
+      const dbClient = {
+        getUserDetails: getUserDetailsStub,
+        getPostsByUserId: getPostsByUserIdStub,
+      };
       const app = new App(dbClient);
       assert.deepStrictEqual(await app.getUserProfile(user_id), {
         errMsg: 'Invalid userId',
         posts: [],
       });
-      sinon.assert.calledOnce(getUserDetails);
-      sinon.assert.notCalled(getPostsByUserId);
-      sinon.assert.calledWithExactly(getUserDetails, user_id);
-      sinon.assert.notCalled(getPostsByUserId);
+      sinon.assert.notCalled(getPostsByUserIdStub);
+      sinon.assert.calledWithExactly(getUserDetailsStub, user_id);
     });
   });
 
-  describe('addNewPost', () => {
-    it('should add new post to database', async () => {
-      const user_id = 1;
-      const postDetails = {
-        user_id,
-        message: 'hi everyone',
-      };
-      const postId = 3;
-      const addPostStub = sinon
-        .stub()
-        .resolves([{ ...postDetails, id: postId }]);
-      const getUserDetailsStub = sinon
-        .stub()
-        .resolves({ user_id, name: 'sukhi' });
+  describe('addNewPost()', () => {
+    it('should resolve to details of the new post', async () => {
+      const addPostStub = sinon.stub().resolves(createDummyPosts());
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().resolves(true);
       const app = new App({
         addPost: addPostStub,
         getUserDetails: getUserDetailsStub,
         isLikedByUser: isLikedByUserStub,
       });
-      assert.deepStrictEqual(await app.addNewPost(postDetails), {
-        ...postDetails,
-        id: postId,
-        isLiked: true,
+      assert.deepStrictEqual(await app.addNewPost({ id: postId }), {
+        name: 'john samuel',
+        username: 'john',
+        user_id: 1,
+        initials: 'JS',
+        id: 1,
         posted_at: 'a few seconds ago',
-        initials: 'S',
-        name: 'sukhi',
+        message: 'hi',
+        isLiked: true,
       });
-      sinon.assert.calledWithExactly(addPostStub, postDetails);
+      sinon.assert.calledOnceWithExactly(addPostStub, { id: postId });
       sinon.assert.calledOnceWithExactly(getUserDetailsStub, user_id);
       sinon.assert.calledOnceWithExactly(isLikedByUserStub, user_id, postId);
     });
 
-    it('should return a errMsg when an error occur while adding a post', async () => {
-      const user_id = 1;
-      const postDetails = {
-        user_id,
-        message: 'hi everyone',
-      };
-      const addPostStub = sinon
-        .stub()
-        .rejects(new Error('posts table not found'));
-
-      const getUserDetailsStub = sinon
-        .stub()
-        .resolves({ user_id, name: 'sukhi' });
+    it('should resolves the errMsg if addPost fails', async () => {
+      const addPostStub = sinon.stub().rejects(expectedTableError);
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().resolves(true);
       const app = new App({
         addPost: addPostStub,
         getUserDetails: getUserDetailsStub,
         isLikedByUser: isLikedByUserStub,
       });
-      assert.deepStrictEqual(await app.addNewPost(postDetails), {
-        errMsg: 'posts table not found',
+      assert.deepStrictEqual(await app.addNewPost({ id: postId }), {
+        errMsg: 'Error: post table not found',
       });
-      sinon.assert.calledWithExactly(addPostStub, postDetails);
+      sinon.assert.calledOnceWithExactly(addPostStub, { id: postId });
       sinon.assert.notCalled(getUserDetailsStub);
       sinon.assert.notCalled(isLikedByUserStub);
     });
-  });
 
-  context('likePost', () => {
-    it('Should should like the given post when it is not liked', async () => {
-      const likePost = sinon.stub().resolves(true);
-      const app = new App({ likePost });
-      assert.isUndefined(await app.likePost(1, 1));
+    it('should resolves the errMsg if getUserDetails fails', async () => {
+      const addPostStub = sinon.stub().resolves(createDummyPosts());
+      const getUserDetailsStub = sinon.stub().rejects(expectedUserDetailsError);
+      const isLikedByUserStub = sinon.stub().resolves(true);
+      const app = new App({
+        addPost: addPostStub,
+        getUserDetails: getUserDetailsStub,
+        isLikedByUser: isLikedByUserStub,
+      });
+      assert.deepStrictEqual(await app.addNewPost({ id: postId }), {
+        errMsg: 'Error: Invalid userId',
+      });
+      sinon.assert.calledOnceWithExactly(addPostStub, { id: postId });
+      sinon.assert.calledOnceWithExactly(getUserDetailsStub, user_id);
+      sinon.assert.notCalled(isLikedByUserStub);
     });
 
-    it('Should should like the given post when it is not liked', async () => {
-      const unlikePost = sinon.stub().resolves(true);
+    it('should resolves the errMsg if isLikedByUser fails', async () => {
+      const addPostStub = sinon.stub().resolves(createDummyPosts());
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const isLikedByUserStub = sinon.stub().rejects(expectedTableError);
+      const app = new App({
+        addPost: addPostStub,
+        getUserDetails: getUserDetailsStub,
+        isLikedByUser: isLikedByUserStub,
+      });
+      assert.deepStrictEqual(await app.addNewPost({ id: postId }), {
+        errMsg: 'Error: post table not found',
+      });
+      sinon.assert.calledOnceWithExactly(addPostStub, { id: postId });
+      sinon.assert.calledOnceWithExactly(getUserDetailsStub, user_id);
+      sinon.assert.calledOnceWithExactly(isLikedByUserStub, user_id, postId);
+    });
+  });
+
+  describe('likePost', () => {
+    it('should like the given post when it is not liked', async () => {
+      const likePost = sinon.stub().resolves();
+      const app = new App({ likePost });
+      assert.isUndefined(await app.likePost(postId, user_id));
+    });
+  });
+
+  describe('unlikePost', async () => {
+    it('should unlike the given post when it is liked', async () => {
+      const unlikePost = sinon.stub().resolves();
       const app = new App({ unlikePost });
-      assert.isUndefined(await app.unlikePost(1, 1));
+      assert.isUndefined(await app.unlikePost(postId, user_id));
     });
   });
 });

@@ -1,48 +1,44 @@
 const sinon = require('sinon');
 const { assert } = require('chai');
-const { DBClient } = require('../lib/DBClient');
+const DBClient = require('../lib/DBClient');
 
-describe('DBClient', () => {
-  describe('getPosts', () => {
-    it('should give all the records from the posts table', async () => {
+describe('#DBClient', () => {
+  const expectedTableError = new Error('Error: post table not found');
+  const expectedUserDetailsError = new Error('Error: Invalid userId');
+
+  describe('getPosts()', () => {
+    it('should resolve to all the records from the posts table', async () => {
       const expected = [{ id: 1 }];
-      const all = sinon.stub().yields(null, expected);
-      const dbClient = new DBClient({ all });
-      try {
-        const actual = await dbClient.getPosts();
-        assert.deepStrictEqual(actual, expected);
-      } catch (err) {
-        assert.isNull(err);
-      }
+      const allStub = sinon.stub().yields(null, expected);
+      const dbClient = new DBClient({ all: allStub });
+      const actual = await dbClient.getAllPosts();
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledOnce(allStub);
     });
 
-    it('should not give aby records when posts table is empty', async () => {
-      const expected = [];
-      const all = sinon.stub().yields(null, expected);
-      const dbClient = new DBClient({ all });
-      try {
-        const actual = await dbClient.getPosts();
-        assert.deepStrictEqual(actual, expected);
-      } catch (err) {
-        assert.isNull(err);
-      }
+    it('should resolve to empty array when posts table is empty', async () => {
+      const allStub = sinon.stub().yields(null, []);
+      const dbClient = new DBClient({ all: allStub });
+      const actual = await dbClient.getAllPosts();
+      assert.deepStrictEqual(actual, []);
+      sinon.assert.calledOnce(allStub);
     });
 
-    it('should give error when the posts table is not existing', async () => {
-      const expected = new Error('table posts not exists');
-      const all = sinon.stub().yields(expected, null);
-      const dbClient = new DBClient({ all });
+    it('should reject with err when posts table does not exists', async () => {
+      const allStub = sinon.stub().yields(expectedTableError, null);
+      const dbClient = new DBClient({ all: allStub });
       try {
-        const posts = await dbClient.getPosts();
+        const posts = await dbClient.getAllPosts();
         assert.isNull(posts);
       } catch (err) {
-        assert.deepStrictEqual(err, expected);
+        assert.deepStrictEqual(err, expectedTableError);
       }
+      sinon.assert.calledOnce(allStub);
     });
   });
 
-  describe('getUserDetails', () => {
-    it('should resolve the user details of a valid userId', async () => {
+  describe('getUserDetails()', () => {
+    it('should resolve to user details of a valid userId', async () => {
       const expectedUserDetail = {
         id: 1,
         username: 'sukhiboi',
@@ -57,21 +53,21 @@ describe('DBClient', () => {
     });
 
     it('should reject giving user details for invalid userId', async () => {
-      const expectedError = new Error('userId not found');
-      const getStub = sinon.stub().yields(expectedError, null);
+      const getStub = sinon.stub().yields(expectedUserDetailsError, null);
       const client = new DBClient({ get: getStub });
       const userId = 1;
       try {
-        await client.getUserDetails(userId);
+        const userDetails = await client.getUserDetails(userId);
+        assert.isNull(userDetails);
       } catch (err) {
-        assert.equal(err, expectedError);
+        assert.equal(err, expectedUserDetailsError);
         sinon.assert.calledOnce(getStub);
       }
     });
   });
 
-  describe('getPostsByUserId', () => {
-    it('should resolve the posts of a valid userId', async () => {
+  describe('getPostsByUserId()', () => {
+    it('should resolve to posts of a valid userId', async () => {
       const expectedPosts = [
         { id: 1, userId: 2, message: 'hi', posted_at: '2020-02-21 12:45:16' },
       ];
@@ -84,34 +80,33 @@ describe('DBClient', () => {
     });
 
     it('should reject giving posts for invalid userId', async () => {
-      const expectedError = new Error('userId not found');
-      const allStub = sinon.stub().yields(expectedError, null);
+      const allStub = sinon.stub().yields(expectedUserDetailsError, null);
       const client = new DBClient({ all: allStub });
       const userId = 2;
       try {
-        await client.getPostsByUserId(userId);
+        const posts = await client.getPostsByUserId(userId);
+        assert.isNull(posts);
       } catch (err) {
-        assert.equal(err, expectedError);
+        assert.equal(err, expectedUserDetailsError);
         sinon.assert.calledOnce(allStub);
       }
     });
   });
 
-  describe('addPost', () => {
-    it('should should resolve to OK when post added to the database', async () => {
-      const latestPosts = { message: 'hi' };
+  describe('addPost()', () => {
+    it('should resolve to details of the post added', async () => {
+      const postDetails = { user_id: 1, message: 'hi' };
       const runStub = sinon.stub().yields(null);
-      const allStub = sinon.stub().yields(null, [latestPosts]);
-      const client = new DBClient({ run: runStub, all: allStub });
-      const postDetails = { user_id: 2, message: 'hello' };
-      const result = await client.addPost(postDetails);
-      assert.deepStrictEqual(result, [latestPosts]);
+      const getStub = sinon.stub().yields(null, [postDetails]);
+      const client = new DBClient({ run: runStub, get: getStub });
+      const latestPostDetails = await client.addPost(postDetails);
+      assert.deepStrictEqual(latestPostDetails, [postDetails]);
       sinon.assert.calledOnce(runStub);
-      sinon.assert.calledOnce(allStub);
+      sinon.assert.calledOnce(getStub);
     });
 
-    it('should should reject with err when posts table doesn\'t exists', async () => {
-      const tableError = new Error('posts table not found');
+    it('should reject when unable to add a new post', async () => {
+      const tableError = new Error('Error: posts table not found');
       const runStub = sinon.stub().yields(tableError);
       const allStub = sinon.stub().yields(tableError, null);
       const client = new DBClient({ run: runStub, all: allStub });
@@ -119,18 +114,44 @@ describe('DBClient', () => {
       try {
         await client.addPost(postDetails);
       } catch (err) {
+        assert.deepEqual(err, tableError);
         sinon.assert.calledOnce(runStub);
         sinon.assert.notCalled(allStub);
-        assert.deepEqual(err, tableError);
       }
     });
   });
 
-  describe('likePost', () => {
-    it('should like given post', async () => {
+  describe('likePost()', () => {
+    const user_id = 1,
+      postId = 1;
+
+    it('should resolve to undefined after liking a post', async () => {
       const runStub = sinon.stub().yields(null);
       const client = new DBClient({ run: runStub });
-      assert.isUndefined(await client.likePost(1, 1));
+      assert.isUndefined(await client.likePost(user_id, postId));
+      sinon.assert.calledOnce(runStub);
+    });
+
+    it('should reject with err when posts table does not exists', async () => {
+      const runStub = sinon.stub().yields(expectedTableError);
+      const client = new DBClient({ run: runStub });
+      try {
+        await client.likePost(user_id, postId);
+      } catch (err) {
+        assert.equal(err, expectedTableError);
+      }
+      sinon.assert.calledOnce(runStub);
+    });
+  });
+
+  describe('unlikePost()', () => {
+    const user_id = 1,
+      postId = 1;
+
+    it('should resolve to undefined after unlinking a post', async () => {
+      const runStub = sinon.stub().yields(null);
+      const client = new DBClient({ run: runStub });
+      assert.isUndefined(await client.unlikePost(postId, user_id));
       sinon.assert.calledOnce(runStub);
     });
 
@@ -139,53 +160,72 @@ describe('DBClient', () => {
       const runStub = sinon.stub().yields(expected);
       const client = new DBClient({ run: runStub });
       try {
-        assert.isUndefined(await client.likePost(1, 1));
-        sinon.assert.calledOnce(runStub);
+        await client.unlikePost(postId, user_id);
       } catch (err) {
-        assert.deepStrictEqual(err, expected);
+        assert.equal(err, expected);
       }
-    });
-  });
-
-  describe('unlikePost', () => {
-    it('should unlike given post', async () => {
-      const runStub = sinon.stub().yields(null);
-      const client = new DBClient({ run: runStub });
-      assert.isUndefined(await client.unlikePost(1, 1));
       sinon.assert.calledOnce(runStub);
     });
-
-    it('should give error when the likes table is not existing', async () => {
-      const expected = new Error('no table found');
-      const runStub = sinon.stub().yields(expected);
-      const client = new DBClient({ run: runStub });
-      try {
-        assert.isUndefined(await client.unlikePost(1, 1));
-        sinon.assert.calledOnce(runStub);
-      } catch (err) {
-        assert.deepStrictEqual(err, expected);
-      }
-    });
   });
 
-  describe('isLikedByUSer', () => {
-    it('should give true when the given post is liked by the user', async () => {
-      const getStub = sinon.stub().yields(null, 'liked by user');
+  describe('isLikedByUser()', () => {
+    const user_id = 1,
+      postId = 1;
+
+    it('should resolve to true when post is liked by user', async () => {
+      const getStub = sinon.stub().yields(null, [{ isLiked: true }]);
       const client = new DBClient({ get: getStub });
-      assert.isTrue(await client.isLikedByUser(1, 1));
+      assert.isTrue(await client.isLikedByUser(user_id, postId));
       sinon.assert.calledOnce(getStub);
     });
 
-    it('should give error when the likes table is not existing', async () => {
-      const expected = new Error('no table found');
-      const getStub = sinon.stub().yields(expected);
+    it('should resolve to false when post is not liked by user', async () => {
+      const getStub = sinon.stub().yields(null);
+      const client = new DBClient({ get: getStub });
+      assert.isFalse(await client.isLikedByUser(user_id, postId));
+      sinon.assert.calledOnce(getStub);
+    });
+
+    it('should reject with err when posts table does not exists', async () => {
+      const getStub = sinon.stub().yields(expectedTableError);
       const client = new DBClient({ get: getStub });
       try {
-        assert.isTrue(await client.isLikedByUser(1, 1));
-        sinon.assert.calledOnce(getStub);
+        await client.isLikedByUser(user_id, postId);
       } catch (err) {
-        assert.deepStrictEqual(err, expected);
+        assert.equal(err, expectedTableError);
       }
+      sinon.assert.calledOnce(getStub);
+    });
+  });
+
+  describe('getLatestPostOfUser()', () => {
+    it('should resolve to latest post of the given userId', async () => {
+      const expected = [{ id: 1, message: 'hi' }];
+      const getStub = sinon.stub().yields(null, expected);
+      const dbClient = new DBClient({ get: getStub });
+      const actual = await dbClient.getLatestPostOfUser();
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledOnce(getStub);
+    });
+
+    it('should resolve to empty array when user have no posts', async () => {
+      const expected = [];
+      const getStub = sinon.stub().yields(null, expected);
+      const dbClient = new DBClient({ get: getStub });
+      const actual = await dbClient.getLatestPostOfUser();
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledOnce(getStub);
+    });
+
+    it('should reject with err when posts table does not exists', async () => {
+      const getStub = sinon.stub().yields(expectedTableError);
+      const dbClient = new DBClient({ get: getStub });
+      try {
+        await dbClient.getLatestPostOfUser();
+      } catch (err) {
+        assert.equal(err, expectedTableError);
+      }
+      sinon.assert.calledOnce(getStub);
     });
   });
 });
