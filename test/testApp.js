@@ -362,23 +362,27 @@ describe('#App', () => {
     });
   });
 
-  describe('search',async()=>{
-    it('should give list of matching users',async()=>{
-     const getMatchingUsersStub = sinon.stub().resolves([{username:'john'}]);
-     const app = new App({getMatchingUsers:getMatchingUsersStub});
-     assert.deepStrictEqual(await app.search('j'),[{username:'john',initials:'J'}]);
-     sinon.assert.calledOnceWithExactly(getMatchingUsersStub,'j');
+  describe('search', async () => {
+    it('should give list of matching users', async () => {
+      const getMatchingUsersStub = sinon
+        .stub()
+        .resolves([{ username: 'john' }]);
+      const app = new App({ getMatchingUsers: getMatchingUsersStub });
+      assert.deepStrictEqual(await app.search('j'), [
+        { username: 'john', initials: 'J' },
+      ]);
+      sinon.assert.calledOnceWithExactly(getMatchingUsersStub, 'j');
     });
 
-    it('should give an empty list when users table not found',async()=>{
+    it('should give an empty list when users table not found', async () => {
       const getMatchingUsersStub = sinon.stub().rejects(expectedTableError);
-      const app = new App({getMatchingUsers:getMatchingUsersStub});
+      const app = new App({ getMatchingUsers: getMatchingUsersStub });
       try {
-       await app.search('j');
+        await app.search('j');
       } catch (error) {
-        assert.deepStrictEqual(error,[]);
-        sinon.assert.calledOnceWithExactly(getMatchingUsersStub,'j');
+        assert.deepStrictEqual(error, []);
+        sinon.assert.calledOnceWithExactly(getMatchingUsersStub, 'j');
       }
-     });
+    });
   });
 });
