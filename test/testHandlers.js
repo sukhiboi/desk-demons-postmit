@@ -17,6 +17,18 @@ describe('#Handlers', () => {
     return [{ id: postId, user_id, posted_at: new Date(), message: 'hi' }];
   };
 
+  describe('GET /', () => {
+    it('should serve the login page', done => {
+      const app = new App({});
+      expressApp.locals.app = app;
+      request(expressApp)
+        .get('/')
+        .set('Cookie', ['user_id=1'])
+        .expect(OK_STATUS_CODE)
+        .expect(/POSTMIT/, done);
+    });
+  });
+
   describe('GET /home', () => {
     it('Should serve the Home Page with Posts', done => {
       const getAllPostsStub = sinon.stub().resolves(createDummyPosts());

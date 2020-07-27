@@ -396,29 +396,35 @@ describe('#App', () => {
     };
     it('should resolve to userId when user details saved', async () => {
       const saveUserStub = sinon.stub().resolves(true);
-      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id });
+      const getUserIdByGithubUsernameStub = sinon.stub().resolves({ user_id });
       const app = new App({
         saveUser: saveUserStub,
-        getUserIdByUsername: getUserIdByUsernameStub,
+        getUserIdByGithubUsername: getUserIdByGithubUsernameStub,
       });
       const result = await app.saveUser(userDetails);
       assert.deepStrictEqual(result, { user_id });
       sinon.assert.calledOnce(saveUserStub);
-      sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, 'hello');
+      sinon.assert.calledOnceWithExactly(
+        getUserIdByGithubUsernameStub,
+        'hello'
+      );
     });
 
     it('should give error message when getUserIdByUsername fails', async () => {
       const expectedError = new Error('users table not found');
       const saveUserStub = sinon.stub().resolves(true);
-      const getUserIdByUsernameStub = sinon.stub().rejects(expectedError);
+      const getUserIdByGithubUsernameStub = sinon.stub().rejects(expectedError);
       const app = new App({
         saveUser: saveUserStub,
-        getUserIdByUsername: getUserIdByUsernameStub,
+        getUserIdByGithubUsername: getUserIdByGithubUsernameStub,
       });
       const result = await app.saveUser(userDetails);
       assert.deepStrictEqual(result, { errMsg: expectedError.message });
       sinon.assert.calledOnce(saveUserStub);
-      sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, 'hello');
+      sinon.assert.calledOnceWithExactly(
+        getUserIdByGithubUsernameStub,
+        'hello'
+      );
     });
 
     it('should resolve to error message when an error occurred', async () => {
@@ -440,30 +446,33 @@ describe('#App', () => {
     const username = 'someone';
 
     it('should return true if that user exists', async () => {
-      const getUserIdByUsernameStub = sinon.stub().resolves(user_id);
+      const getUserIdByGithubUsernameStub = sinon.stub().resolves(user_id);
       const app = new App({
-        getUserIdByUsername: getUserIdByUsernameStub,
+        getUserIdByGithubUsername: getUserIdByGithubUsernameStub,
       });
       assert.isTrue(await app.isValidUser(username));
-      sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, username);
+      sinon.assert.calledOnceWithExactly(
+        getUserIdByGithubUsernameStub,
+        username
+      );
     });
 
     it("should return false if that user doesn't exists", async () => {
-      const getUserIdByUsernameStub = sinon.stub().resolves();
+      const getUserIdByGithubUsernameStub = sinon.stub().resolves();
       const app = new App({
-        getUserIdByUsername: getUserIdByUsernameStub,
+        getUserIdByGithubUsername: getUserIdByGithubUsernameStub,
       });
       assert.isFalse(await app.isValidUser(username));
-      sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, username);
+      sinon.assert.calledOnceWithExactly(getUserIdByGithubUsernameStub, username);
     });
 
     it('should return false if any error occurred', async () => {
-      const getUserIdByUsernameStub = sinon.stub().rejects(expectedTableError);
+      const getUserIdByGithubUsernameStub = sinon.stub().rejects(expectedTableError);
       const app = new App({
-        getUserIdByUsername: getUserIdByUsernameStub,
+        getUserIdByGithubUsername: getUserIdByGithubUsernameStub,
       });
       assert.isFalse(await app.isValidUser(username));
-      sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, username);
+      sinon.assert.calledOnceWithExactly(getUserIdByGithubUsernameStub, username);
     });
   });
 });
