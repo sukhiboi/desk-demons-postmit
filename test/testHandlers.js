@@ -73,17 +73,10 @@ describe('#Handlers', () => {
 
   describe('POST /add-new-post', () => {
     const dummyPost = { message: 'hi' };
-    it('should response back with details of newly added post', done => {
-      const [resolvedPost] = createDummyPosts();
-      const addPostStub = sinon.stub().resolves(resolvedPost);
-      const getUserDetailsStub = sinon.stub().resolves(userDetails);
-      const isLikedByUserStub = sinon.stub().resolves(true);
-      const getAllLikedUsersStub = sinon.stub().resolves([]);
+    it('should response back with status true of newly added post', done => {
+      const addPostStub = sinon.stub().resolves(true);
       expressApp.locals.app = new App({
         addPost: addPostStub,
-        getUserDetails: getUserDetailsStub,
-        isLikedByUser: isLikedByUserStub,
-        getAllLikedUsers: getAllLikedUsersStub,
       });
       request(expressApp)
         .post('/add-new-post')
@@ -94,20 +87,12 @@ describe('#Handlers', () => {
             user_id,
             message: 'hi',
           });
-          sinon.assert.calledOnceWithExactly(getUserDetailsStub, user_id);
-          sinon.assert.calledOnceWithExactly(
-            isLikedByUserStub,
-            user_id,
-            postId
-          );
         })
-        .expect(/hi/, done);
+        .expect({ status: true }, done);
     });
 
-    it('should response back with error message if an error occurred', done => {
-      const addPostStub = sinon
-        .stub()
-        .rejects(new Error('posts table not found'));
+    it('should response back with status false if an error occurred', done => {
+      const addPostStub = sinon.stub().resolves(false);
       expressApp.locals.app = new App({ addPost: addPostStub });
       request(expressApp)
         .post('/add-new-post')
@@ -120,7 +105,7 @@ describe('#Handlers', () => {
             ...dummyPost,
           });
         })
-        .expect(/posts table not found/, done);
+        .expect({ status: false }, done);
     });
   });
 
