@@ -383,7 +383,7 @@ button:hover {
   position: absolute;
   top: 45%;
   left: 45%;
-  color: rgb(224, 36, 94);
+  color: #8898a6;
   opacity: 0;
   cursor: pointer;
 }
