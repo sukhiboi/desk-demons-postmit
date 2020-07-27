@@ -361,4 +361,24 @@ describe('#App', () => {
       sinon.assert.calledOnceWithExactly(unlikePost, postId, user_id);
     });
   });
+
+  describe('search',async()=>{
+    it('should give list of matching users',async()=>{
+     const getMatchingUsersStub = sinon.stub().resolves([{username:'john'}]);
+     const app = new App({getMatchingUsers:getMatchingUsersStub});
+     assert.deepStrictEqual(await app.search('j'),[{username:'john',initials:'J'}]);
+     sinon.assert.calledOnceWithExactly(getMatchingUsersStub,'j');
+    });
+
+    it('should give an empty list when users table not found',async()=>{
+      const getMatchingUsersStub = sinon.stub().rejects(expectedTableError);
+      const app = new App({getMatchingUsers:getMatchingUsersStub});
+      try {
+       await app.search('j');
+      } catch (error) {
+        assert.deepStrictEqual(error,[]);
+        sinon.assert.calledOnceWithExactly(getMatchingUsersStub,'j');
+      }
+     });
+  });
 });
