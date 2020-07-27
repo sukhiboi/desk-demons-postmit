@@ -463,16 +463,86 @@ describe('#App', () => {
         getUserIdByGithubUsername: getUserIdByGithubUsernameStub,
       });
       assert.isFalse(await app.isValidUser(username));
-      sinon.assert.calledOnceWithExactly(getUserIdByGithubUsernameStub, username);
+      sinon.assert.calledOnceWithExactly(
+        getUserIdByGithubUsernameStub,
+        username
+      );
     });
 
     it('should return false if any error occurred', async () => {
-      const getUserIdByGithubUsernameStub = sinon.stub().rejects(expectedTableError);
+      const getUserIdByGithubUsernameStub = sinon
+        .stub()
+        .rejects(expectedTableError);
       const app = new App({
         getUserIdByGithubUsername: getUserIdByGithubUsernameStub,
       });
       assert.isFalse(await app.isValidUser(username));
-      sinon.assert.calledOnceWithExactly(getUserIdByGithubUsernameStub, username);
+      sinon.assert.calledOnceWithExactly(
+        getUserIdByGithubUsernameStub,
+        username
+      );
+    });
+  });
+  describe('getSearchedUserProfile()', () => {
+    it('should resolve to user profile of a user with valid id', async () => {
+      const getUserIdByUsernameStub = sinon.stub().resolves(user_id);
+      const getAllPostsStub = sinon.stub().resolves(createDummyPosts());
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getPostsByUserIdStub = sinon.stub().resolves(createDummyPosts());
+      const isLikedByUserStub = sinon.stub().resolves(false);
+      const getAllLikedUsersStub = sinon.stub().resolves([]);
+      const dbClient = {
+        getUserIdByUsername: getUserIdByUsernameStub,
+        getAllPosts: getAllPostsStub,
+        getUserDetails: getUserDetailsStub,
+        getPostsByUserId: getPostsByUserIdStub,
+        isLikedByUser: isLikedByUserStub,
+        getAllLikedUsers: getAllLikedUsersStub,
+      };
+      const app = new App(dbClient);
+      const expected = {
+        user_id,
+        initials: 'JS',
+        name: 'john samuel',
+        username: 'john',
+        likedPosts: [],
+        posts: [
+          {
+            id: postId,
+            message: 'hi',
+            posted_at: 'a few seconds ago',
+            initials: 'JS',
+            name: 'john samuel',
+            username: 'john',
+            isLiked: false,
+            user_id: 1,
+            likedUsers: [],
+          },
+        ],
+      };
+      const actual = await app.getSearchedUserProfile(user_id, 'john');
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledWithExactly(getUserIdByUsernameStub, 'john');
+      sinon.assert.calledWithExactly(getPostsByUserIdStub, user_id);
+      sinon.assert.calledWithExactly(isLikedByUserStub, postId, user_id);
+    });
+
+    it('should handle the rejection of getSearchedUserProfile', async () => {
+      const getSearchedUserProfileStub = sinon
+        .stub()
+        .rejects(expectedUserDetailsError);
+      const getPostsByUserIdStub = sinon.stub().resolves([]);
+      const dbClient = {
+        getSearchedUserProfile: getSearchedUserProfileStub,
+        getPostsByUserId: getPostsByUserIdStub,
+      };
+      const app = new App(dbClient);
+      assert.deepStrictEqual(await app.getSearchedUserProfile(user_id), {
+        errMsg: 'Invalid userId',
+        posts: [],
+        likedPosts: [],
+      });
+      sinon.assert.notCalled(getSearchedUserProfileStub);
     });
   });
 });
