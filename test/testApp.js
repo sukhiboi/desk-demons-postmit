@@ -17,7 +17,7 @@ describe('#App', () => {
 
   const [dummyPost] = createDummyPosts();
 
-  const expectedTableError = new Error('Error: post table not found');
+  const expectedTableError = new Error('Error: table not found');
   const expectedUserDetailsError = new Error('Error: Invalid userId');
 
   describe('getPostDetails()', () => {
@@ -396,7 +396,7 @@ describe('#App', () => {
     };
     it('should resolve to userId when user details saved', async () => {
       const saveUserStub = sinon.stub().resolves(true);
-      const getUserIdByUsernameStub = sinon.stub().resolves(user_id);
+      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id });
       const app = new App({
         saveUser: saveUserStub,
         getUserIdByUsername: getUserIdByUsernameStub,
@@ -433,6 +433,37 @@ describe('#App', () => {
         assert.deepStrictEqual(err, { errMsg: expectedError.message });
         sinon.assert.calledOnce(saveUserStub);
       }
+    });
+  });
+
+  describe('isValidUser()', () => {
+    const username = 'someone';
+
+    it('should return true if that user exists', async () => {
+      const getUserIdByUsernameStub = sinon.stub().resolves(user_id);
+      const app = new App({
+        getUserIdByUsername: getUserIdByUsernameStub,
+      });
+      assert.isTrue(await app.isValidUser(username));
+      sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, username);
+    });
+
+    it("should return false if that user doesn't exists", async () => {
+      const getUserIdByUsernameStub = sinon.stub().resolves();
+      const app = new App({
+        getUserIdByUsername: getUserIdByUsernameStub,
+      });
+      assert.isFalse(await app.isValidUser(username));
+      sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, username);
+    });
+
+    it('should return false if any error occurred', async () => {
+      const getUserIdByUsernameStub = sinon.stub().rejects(expectedTableError);
+      const app = new App({
+        getUserIdByUsername: getUserIdByUsernameStub,
+      });
+      assert.isFalse(await app.isValidUser(username));
+      sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, username);
     });
   });
 });

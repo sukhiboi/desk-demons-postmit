@@ -17,7 +17,7 @@ describe('#Handlers', () => {
     return [{ id: postId, user_id, posted_at: new Date(), message: 'hi' }];
   };
 
-  describe('GET /', () => {
+  describe('GET /home', () => {
     it('Should serve the Home Page with Posts', done => {
       const getAllPostsStub = sinon.stub().resolves(createDummyPosts());
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
@@ -31,7 +31,8 @@ describe('#Handlers', () => {
       });
       expressApp.locals.app = app;
       request(expressApp)
-        .get('/')
+        .get('/home')
+        .set('Cookie', ['user_id=1'])
         .expect(OK_STATUS_CODE)
         .expect(() => {
           sinon.assert.calledOnce(getAllPostsStub);
@@ -60,6 +61,7 @@ describe('#Handlers', () => {
       });
       request(expressApp)
         .get('/profile')
+        .set('Cookie', ['user_id=1'])
         .expect(OK_STATUS_CODE)
         .expect(() => {
           sinon.assert.calledTwice(getUserDetailsStub);
@@ -81,6 +83,7 @@ describe('#Handlers', () => {
       request(expressApp)
         .post('/add-new-post')
         .send({ message: 'hi' })
+        .set('Cookie', ['user_id=1'])
         .expect(OK_STATUS_CODE)
         .expect(() => {
           sinon.assert.calledOnceWithExactly(addPostStub, {
@@ -96,6 +99,7 @@ describe('#Handlers', () => {
       expressApp.locals.app = new App({ addPost: addPostStub });
       request(expressApp)
         .post('/add-new-post')
+        .set('Cookie', ['user_id=1'])
         .send(dummyPost)
         .expect(OK_STATUS_CODE)
         .expect(() => {
@@ -119,6 +123,7 @@ describe('#Handlers', () => {
       });
       request(expressApp)
         .post('/like')
+        .set('Cookie', ['user_id=1'])
         .send({ postId })
         .expect(OK_STATUS_CODE)
         .expect(() => {
@@ -142,6 +147,7 @@ describe('#Handlers', () => {
       });
       request(expressApp)
         .post('/like')
+        .set('Cookie', ['user_id=1'])
         .send({ postId })
         .expect(OK_STATUS_CODE)
         .expect(() => {
@@ -168,6 +174,7 @@ describe('#Handlers', () => {
       request(expressApp)
         .post('/unlike')
         .send({ postId })
+        .set('Cookie', ['user_id=1'])
         .expect(OK_STATUS_CODE)
         .expect(() => {
           sinon.assert.calledOnce(isLikedByUserStub);
@@ -190,6 +197,7 @@ describe('#Handlers', () => {
       });
       request(expressApp)
         .post('/unlike')
+        .set('Cookie', ['user_id=1'])
         .send({ postId })
         .expect(OK_STATUS_CODE)
         .expect(() => {
@@ -207,12 +215,15 @@ describe('#Handlers', () => {
 
   describe('POST /search', () => {
     it('should give all the matching users for the search input', done => {
-      const getMatchingUsersStub = sinon.stub().resolves([{ username: 'john' }]);
+      const getMatchingUsersStub = sinon
+        .stub()
+        .resolves([{ username: 'john' }]);
       expressApp.locals.app = new App({
         getMatchingUsers: getMatchingUsersStub,
       });
       request(expressApp)
         .post('/search')
+        .set('Cookie', ['user_id=1'])
         .send({ searchInput: 'j' })
         .expect(OK_STATUS_CODE)
         .expect(() => {

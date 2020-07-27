@@ -50,8 +50,4 @@ CREATE TABLE IF NOT EXISTS hashtags (
 	post_id NUMBER NOT NULL,
 	hashtag VARCHAR(10) NOT NULL
 );
-.mode csv
-.import "|tail -n +2 ./data/usersData.csv" users
-.import "|tail -n +2 ./data/postsData.csv" posts
-.import "|tail -n +2 ./data/likesData.csv" likes
 END_SQL
