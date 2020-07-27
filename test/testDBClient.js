@@ -243,13 +243,16 @@ describe('#DBClient', () => {
       sinon.assert.calledOnce(runStub);
     });
 
-    it("should resolve to false when user details doesn't saved", async () => {
+    it("should reject error when user details doesn't saved", async () => {
       const errorToBeThrown = new Error('users table not found');
       const runStub = sinon.stub().yields(errorToBeThrown);
       const client = new DBClient({ run: runStub });
-      const result = await client.saveUser(userDetails);
-      assert.isFalse(result);
-      sinon.assert.calledOnce(runStub);
+      try {
+        await client.saveUser(userDetails);
+      } catch (err) {
+        assert.strictEqual(err, errorToBeThrown);
+        sinon.assert.calledOnce(runStub);
+      }
     });
   });
 

@@ -385,4 +385,54 @@ describe('#App', () => {
       }
     });
   });
+
+  describe('saveUser()', () => {
+    const userDetails = {
+      githubUsername: 'hello',
+      username: 'me',
+      dob: '2001-02-18',
+      bio: 'something',
+      name: 'someone',
+    };
+    it('should resolve to userId when user details saved', async () => {
+      const saveUserStub = sinon.stub().resolves(true);
+      const getUserIdByUsernameStub = sinon.stub().resolves(user_id);
+      const app = new App({
+        saveUser: saveUserStub,
+        getUserIdByUsername: getUserIdByUsernameStub,
+      });
+      const result = await app.saveUser(userDetails);
+      assert.deepStrictEqual(result, { user_id });
+      sinon.assert.calledOnce(saveUserStub);
+      sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, 'hello');
+    });
+
+    it('should give error message when getUserIdByUsername fails', async () => {
+      const expectedError = new Error('users table not found');
+      const saveUserStub = sinon.stub().resolves(true);
+      const getUserIdByUsernameStub = sinon.stub().rejects(expectedError);
+      const app = new App({
+        saveUser: saveUserStub,
+        getUserIdByUsername: getUserIdByUsernameStub,
+      });
+      const result = await app.saveUser(userDetails);
+      assert.deepStrictEqual(result, { errMsg: expectedError.message });
+      sinon.assert.calledOnce(saveUserStub);
+      sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, 'hello');
+    });
+
+    it('should resolve to error message when an error occurred', async () => {
+      const expectedError = new Error('users table not found');
+      const saveUserStub = sinon.stub().rejects(expectedError);
+      const app = new App({
+        saveUser: saveUserStub,
+      });
+      try {
+        await app.saveUser(userDetails);
+      } catch (err) {
+        assert.deepStrictEqual(err, { errMsg: expectedError.message });
+        sinon.assert.calledOnce(saveUserStub);
+      }
+    });
+  });
 });
