@@ -226,4 +226,30 @@ describe('#DBClient', () => {
       }
     });
   });
+
+  describe('saveUser()', () => {
+    const userDetails = {
+      githubUsername: 'hello',
+      username: 'me',
+      dob: '2001-02-18',
+      bio: 'something',
+      name: 'someone',
+    };
+    it('should save the user to database', async () => {
+      const runStub = sinon.stub().yields(null);
+      const client = new DBClient({ run: runStub });
+      const result = await client.saveUser(userDetails);
+      assert.isTrue(result);
+      sinon.assert.calledOnce(runStub);
+    });
+
+    it('should save the user to database', async () => {
+      const errorToBeThrown = new Error('users table not found');
+      const runStub = sinon.stub().yields(errorToBeThrown);
+      const client = new DBClient({ run: runStub });
+      const result = await client.saveUser(userDetails);
+      assert.isFalse(result);
+      sinon.assert.calledOnce(runStub);
+    });
+  });
 });
