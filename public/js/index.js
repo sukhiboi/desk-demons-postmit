@@ -92,7 +92,7 @@ const showSearchResult = function (result) {
   let html = '';
   result.forEach(result => {
     html += `
-    <div class="searchedUser" onclick="sendRequestForProfile('${result.username}')">
+<div class="searchedUser" onclick="sendRequestForProfile('${result.username}')">
       <div class="flex">
           <div class="profile-pic"><span>${result.initials}</span></div>
           <div class="user-details">

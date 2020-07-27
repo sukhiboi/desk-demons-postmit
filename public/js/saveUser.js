@@ -9,7 +9,7 @@ const saveUser = function (username) {
     if (Number(response.user_id)) {
       window.location.href = '/home';
     } else {
-      console.log(response.errMsg);
+      location.reload();
     }
   });
 };
