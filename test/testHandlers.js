@@ -244,4 +244,55 @@ describe('#Handlers', () => {
         .expect([{ username: 'john', initials: 'J' }], done);
     });
   });
+
+  describe('POST /save-user', () => {
+    it('should save a user in database', done => {
+      const saveUserStub = sinon.stub().resolves();
+      const getUserIdByGithubUsernameStub = sinon.stub().resolves({ user_id });
+      expressApp.locals.app = new App({
+        saveUser: saveUserStub,
+        getUserIdByGithubUsername: getUserIdByGithubUsernameStub,
+      });
+      const userDetails = {
+        githubUsername: 'hello',
+        username: 'me',
+        dob: '2001-02-18',
+        bio: 'something',
+        name: 'someone',
+      };
+      request(expressApp)
+        .post('/save-user')
+        .send(userDetails)
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnceWithExactly(saveUserStub, userDetails);
+        })
+        .expect({ user_id }, done);
+    });
+
+    it('should response back with errMessage if saveUser fails', done => {
+      const expectedError = new Error('table not found');
+      const saveUserStub = sinon.stub().rejects(expectedError);
+      const getUserIdByGithubUsernameStub = sinon.stub().resolves({ user_id });
+      expressApp.locals.app = new App({
+        saveUser: saveUserStub,
+        getUserIdByGithubUsername: getUserIdByGithubUsernameStub,
+      });
+      const userDetails = {
+        githubUsername: 'hello',
+        username: 'me',
+        dob: '2001-02-18',
+        bio: 'something',
+        name: 'someone',
+      };
+      request(expressApp)
+        .post('/save-user')
+        .send(userDetails)
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnceWithExactly(saveUserStub, userDetails);
+        })
+        .expect({ errMsg: expectedError.message }, done);
+    });
+  });
 });
