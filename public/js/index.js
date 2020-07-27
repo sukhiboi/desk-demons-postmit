@@ -10,13 +10,17 @@ const toggleLikeButton = function (target, className) {
 const toggleLikeUnlike = function (postId) {
   const target = event.target;
   if (target.className.includes('far')) {
-    sendPOSTRequest('/like', { postId }, () =>
-      toggleLikeButton(target, ['fas', 'likeColor'])
+    sendPOSTRequest(
+      '/like',
+      { postId },
+      ({ status }) => status && toggleLikeButton(target, ['fas', 'likeColor'])
     );
     return;
   }
-  sendPOSTRequest('/unlike', { postId }, () =>
-    toggleLikeButton(target, ['far', 'LikeBtn'])
+  sendPOSTRequest(
+    '/unlike',
+    { postId },
+    ({ status }) => status && toggleLikeButton(target, ['far', 'LikeBtn'])
   );
 };
 

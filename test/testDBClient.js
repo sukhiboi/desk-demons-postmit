@@ -125,21 +125,17 @@ describe('#DBClient', () => {
     const user_id = 1,
       postId = 1;
 
-    it('should resolve to undefined after liking a post', async () => {
+    it('should resolve to true after liking a post', async () => {
       const runStub = sinon.stub().yields(null);
       const client = new DBClient({ run: runStub });
-      assert.isUndefined(await client.likePost(user_id, postId));
+      assert.isTrue(await client.likePost(user_id, postId));
       sinon.assert.calledOnce(runStub);
     });
 
-    it('should reject with err when posts table does not exists', async () => {
+    it('should resolve false when there is any error', async () => {
       const runStub = sinon.stub().yields(expectedTableError);
       const client = new DBClient({ run: runStub });
-      try {
-        await client.likePost(user_id, postId);
-      } catch (err) {
-        assert.equal(err, expectedTableError);
-      }
+      assert.isFalse(await client.likePost(user_id, postId));
       sinon.assert.calledOnce(runStub);
     });
   });
@@ -148,22 +144,17 @@ describe('#DBClient', () => {
     const user_id = 1,
       postId = 1;
 
-    it('should resolve to undefined after unlinking a post', async () => {
+    it('should resolve to true after unlinking a post', async () => {
       const runStub = sinon.stub().yields(null);
       const client = new DBClient({ run: runStub });
-      assert.isUndefined(await client.unlikePost(postId, user_id));
+      assert.isTrue(await client.unlikePost(postId, user_id));
       sinon.assert.calledOnce(runStub);
     });
 
-    it('should give error when the likes table is not existing', async () => {
-      const expected = new Error('no table found');
-      const runStub = sinon.stub().yields(expected);
+    it('should resolve false when there is any error', async () => {
+      const runStub = sinon.stub().yields(expectedTableError);
       const client = new DBClient({ run: runStub });
-      try {
-        await client.unlikePost(postId, user_id);
-      } catch (err) {
-        assert.equal(err, expected);
-      }
+      assert.isFalse(await client.unlikePost(postId, user_id));
       sinon.assert.calledOnce(runStub);
     });
   });

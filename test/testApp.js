@@ -360,17 +360,65 @@ describe('#App', () => {
 
   describe('likePost', () => {
     it('should like the given post when it is not liked', async () => {
-      const likePost = sinon.stub().resolves();
-      const app = new App({ likePost });
-      assert.isUndefined(await app.likePost(postId, user_id));
+      const isLikedByUser = sinon.stub().resolves(false);
+      const likePost = sinon.stub().resolves(true);
+      const app = new App({ likePost, isLikedByUser });
+      assert.isTrue(await app.likePost(postId, user_id));
+      sinon.assert.calledOnce(isLikedByUser);
+      sinon.assert.calledOnce(likePost);
+      sinon.assert.calledOnceWithExactly(isLikedByUser, user_id, postId);
+      sinon.assert.calledOnceWithExactly(likePost, postId, user_id);
+    });
+    it('should not like the given post when it is liked', async () => {
+      const isLikedByUser = sinon.stub().resolves(true);
+      const likePost = sinon.stub().resolves(false);
+      const app = new App({ likePost, isLikedByUser });
+      assert.isFalse(await app.likePost(postId, user_id));
+      sinon.assert.calledOnce(isLikedByUser);
+      sinon.assert.notCalled(likePost);
+      sinon.assert.calledOnceWithExactly(isLikedByUser, user_id, postId);
+    });
+    it('should not like the given post when there is an error', async () => {
+      const isLikedByUser = sinon.stub().resolves(false);
+      const likePost = sinon.stub().resolves(false);
+      const app = new App({ likePost, isLikedByUser });
+      assert.isFalse(await app.likePost(postId, user_id));
+      sinon.assert.calledOnce(isLikedByUser);
+      sinon.assert.calledOnce(likePost);
+      sinon.assert.calledOnceWithExactly(isLikedByUser, user_id, postId);
+      sinon.assert.calledOnceWithExactly(likePost, postId, user_id);
     });
   });
 
   describe('unlikePost', async () => {
     it('should unlike the given post when it is liked', async () => {
-      const unlikePost = sinon.stub().resolves();
-      const app = new App({ unlikePost });
-      assert.isUndefined(await app.unlikePost(postId, user_id));
+      const isLikedByUser = sinon.stub().resolves(true);
+      const unlikePost = sinon.stub().resolves(true);
+      const app = new App({ unlikePost, isLikedByUser });
+      assert.isTrue(await app.unlikePost(postId, user_id));
+      sinon.assert.calledOnce(isLikedByUser);
+      sinon.assert.calledOnce(unlikePost);
+      sinon.assert.calledOnceWithExactly(isLikedByUser, user_id, postId);
+      sinon.assert.calledOnceWithExactly(unlikePost, postId, user_id);
+    });
+    it('should not unlike the given post when it is not liked', async () => {
+      const isLikedByUser = sinon.stub().resolves(false);
+      const unlikePost = sinon.stub().resolves(false);
+      const app = new App({ unlikePost, isLikedByUser });
+      assert.isFalse(await app.unlikePost(postId, user_id));
+      sinon.assert.calledOnce(isLikedByUser);
+      sinon.assert.notCalled(unlikePost);
+      sinon.assert.calledOnceWithExactly(isLikedByUser, user_id, postId);
+    });
+    it('should not unlike the given post when there is an error', async () => {
+      const isLikedByUser = sinon.stub().resolves(true);
+      const unlikePost = sinon.stub().resolves(false);
+      const app = new App({ unlikePost, isLikedByUser });
+      assert.isFalse(await app.unlikePost(postId, user_id));
+      sinon.assert.calledOnce(isLikedByUser);
+      sinon.assert.calledOnce(unlikePost);
+      sinon.assert.calledOnceWithExactly(isLikedByUser, user_id, postId);
+      sinon.assert.calledOnceWithExactly(unlikePost, postId, user_id);
     });
   });
 });

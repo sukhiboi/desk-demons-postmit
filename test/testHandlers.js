@@ -126,33 +126,97 @@ describe('#Handlers', () => {
 
   describe('POST /like', () => {
     it('should like the given post when it is not liked', done => {
+      const isLikedByUserStub = sinon.stub().resolves(false);
       const likePostStub = sinon.stub().resolves(true);
-      expressApp.locals.app = new App({ likePost: likePostStub });
+      expressApp.locals.app = new App({
+        likePost: likePostStub,
+        isLikedByUser: isLikedByUserStub,
+      });
       request(expressApp)
         .post('/like')
         .send({ postId })
         .expect(OK_STATUS_CODE)
         .expect(() => {
+          sinon.assert.calledOnce(isLikedByUserStub);
           sinon.assert.calledOnce(likePostStub);
+          sinon.assert.calledOnceWithExactly(
+            isLikedByUserStub,
+            user_id,
+            postId
+          );
           sinon.assert.calledOnceWithExactly(likePostStub, postId, user_id);
         })
-        .expect({}, done);
+        .expect({ status: true }, done);
+    });
+    it('should not like the given post when it is liked', done => {
+      const isLikedByUserStub = sinon.stub().resolves(true);
+      const likePostStub = sinon.stub().resolves(false);
+      expressApp.locals.app = new App({
+        likePost: likePostStub,
+        isLikedByUser: isLikedByUserStub,
+      });
+      request(expressApp)
+        .post('/like')
+        .send({ postId })
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnce(isLikedByUserStub);
+          sinon.assert.notCalled(likePostStub);
+          sinon.assert.calledOnceWithExactly(
+            isLikedByUserStub,
+            user_id,
+            postId
+          );
+        })
+        .expect({ status: false }, done);
     });
   });
 
   describe('POST /unlike', () => {
     it('should unlike the given post when it is liked', done => {
+      const isLikedByUserStub = sinon.stub().resolves(true);
       const unlikePostStub = sinon.stub().resolves(true);
-      expressApp.locals.app = new App({ unlikePost: unlikePostStub });
+      expressApp.locals.app = new App({
+        unlikePost: unlikePostStub,
+        isLikedByUser: isLikedByUserStub,
+      });
       request(expressApp)
         .post('/unlike')
         .send({ postId })
         .expect(OK_STATUS_CODE)
         .expect(() => {
+          sinon.assert.calledOnce(isLikedByUserStub);
           sinon.assert.calledOnce(unlikePostStub);
+          sinon.assert.calledOnceWithExactly(
+            isLikedByUserStub,
+            user_id,
+            postId
+          );
           sinon.assert.calledOnceWithExactly(unlikePostStub, postId, user_id);
         })
-        .expect({}, done);
+        .expect({ status: true }, done);
+    });
+    it('should not unlike the given post when it is not liked', done => {
+      const isLikedByUserStub = sinon.stub().resolves(false);
+      const unlikePostStub = sinon.stub().resolves(false);
+      expressApp.locals.app = new App({
+        unlikePost: unlikePostStub,
+        isLikedByUser: isLikedByUserStub,
+      });
+      request(expressApp)
+        .post('/unlike')
+        .send({ postId })
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnce(isLikedByUserStub);
+          sinon.assert.notCalled(unlikePostStub);
+          sinon.assert.calledOnceWithExactly(
+            isLikedByUserStub,
+            user_id,
+            postId
+          );
+        })
+        .expect({ status: false }, done);
     });
   });
 });
