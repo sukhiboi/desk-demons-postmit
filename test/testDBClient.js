@@ -241,4 +241,26 @@ describe('#DBClient', () => {
       sinon.assert.calledOnce(allStub);
     }
   });
+
+  describe('getMatchingUsers()', () => {
+    it('should give list of matching users with the search input', async () => {
+      const expectedUsersList = [{ name: 'john', username: 'john' }];
+      const allStub = sinon.stub().yields(null, expectedUsersList);
+      const dbClient = new DBClient({ all: allStub });
+      const actual = await dbClient.getMatchingUsers('j');
+      assert.deepStrictEqual(actual, expectedUsersList);
+      sinon.assert.calledOnce(allStub);
+    });
+
+    it('should give error when user table not found', async () => {
+      const allStub = sinon.stub().yields(expectedTableError, null);
+      const dbClient = new DBClient({ all: allStub });
+      try {
+        assert.isNull(await dbClient.getMatchingUsers('j'));
+      } catch (error) {
+        assert.strictEqual(error, expectedTableError);
+        sinon.assert.calledOnce(allStub);
+      }
+    });
+  });
 });
