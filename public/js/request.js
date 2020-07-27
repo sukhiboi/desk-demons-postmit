@@ -1,6 +1,8 @@
 const sendGETRequest = function (url, callback) {
   fetch(url, { method: 'GET' })
-    .then((response) => response.json())
+    .then(response => {
+      response.json();
+    })
     .then(callback);
 };
 
@@ -11,6 +13,6 @@ const sendPOSTRequest = function (url, postData, callback) {
     body: JSON.stringify(postData),
   };
   fetch(url, requestOptions)
-    .then((response) => response.json())
+    .then(response => response.json())
     .then(callback);
 };

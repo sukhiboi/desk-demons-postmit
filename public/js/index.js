@@ -83,12 +83,16 @@ const displayHeart = function (postId) {
   );
 };
 
+const sendRequestForProfile = function (username) {
+  window.location = `/user/${username}`;
+};
+
 const showSearchResult = function (result) {
   const searchOutputDiv = document.querySelector('.search-output');
   let html = '';
   result.forEach(result => {
     html += `
-    <div class="searchedUser" onclick=sendRequestForProfile(${result.name})>
+    <div class="searchedUser" onclick="sendRequestForProfile('${result.username}')">
       <div class="flex">
           <div class="profile-pic"><span>${result.initials}</span></div>
           <div class="user-details">

@@ -256,12 +256,12 @@ describe('#DBClient', () => {
     });
   });
 
-  describe('getUserIdByUsername()', () => {
+  describe('getUserIdByGithubUsername()', () => {
     it('should resolve to userId from username', async () => {
       const githubUsername = 'someone';
       const getStub = sinon.stub().yields(null, user_id);
       const client = new DBClient({ get: getStub });
-      const result = await client.getUserIdByUsername(githubUsername);
+      const result = await client.getUserIdByGithubUsername(githubUsername);
       assert.strictEqual(result, user_id);
       sinon.assert.calledOnce(getStub);
     });
@@ -270,7 +270,7 @@ describe('#DBClient', () => {
       const githubUsername = 'someone';
       const getStub = sinon.stub().yields(null);
       const client = new DBClient({ get: getStub });
-      const result = await client.getUserIdByUsername(githubUsername);
+      const result = await client.getUserIdByGithubUsername(githubUsername);
       assert.isUndefined(result);
       sinon.assert.calledOnce(getStub);
     });
@@ -281,7 +281,7 @@ describe('#DBClient', () => {
       const getStub = sinon.stub().yields(expectedError);
       const client = new DBClient({ get: getStub });
       try {
-        await client.getUserIdByUsername(githubUsername);
+        await client.getUserIdByGithubUsername(githubUsername);
       } catch (err) {
         assert.strictEqual(err, expectedError);
         sinon.assert.calledOnce(getStub);

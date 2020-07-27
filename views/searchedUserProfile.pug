@@ -17,7 +17,7 @@ html(lang='en')
                 .app-name POSTMIT
                 .pages
                     a.page(href='/') Home
-                    a.page.active-page(href=`#`) Profile
+                    a.page(href=`/profile`) Profile
                     button.popup-post-btn(onclick='showNewPostElement()') Post
         .main-panel
             .header
@@ -56,7 +56,7 @@ html(lang='en')
         .search-panel
             .search-bar.flex
               .search-icon
-                img(src='./assets/search.svg' alt='Search')
+                img(src='/assets/search.svg' alt='Search')
               .search-input(onkeyup='search()')
                input(type='text' placeholder='Search')
             .search-output
