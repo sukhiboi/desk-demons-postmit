@@ -204,4 +204,21 @@ describe('#Handlers', () => {
         .expect({ status: false }, done);
     });
   });
+
+  describe('POST /search', () => {
+    it('should give all the matching users for the search input', done => {
+      const getMatchingUsersStub = sinon.stub().resolves([{ username: 'john' }]);
+      expressApp.locals.app = new App({
+        getMatchingUsers: getMatchingUsersStub,
+      });
+      request(expressApp)
+        .post('/search')
+        .send({ searchInput: 'j' })
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnceWithExactly(getMatchingUsersStub, 'j');
+        })
+        .expect([{ username: 'john', initials: 'J' }], done);
+    });
+  });
 });
