@@ -83,6 +83,32 @@ const displayHeart = function (postId) {
   );
 };
 
+const showSearchResult = function (result) {
+  const searchOutputDiv = document.querySelector('.search-output');
+  let html = '';
+  result.forEach(result => {
+    html += `<div class="searchedUser" onclick=sendRequestForProfile(${result.name})>
+      <div class="flex">
+          <div class="profile-pic"><span>${result.initials}</span></div>
+          <div class="user-details">
+              <div class="name"><span>${result.name}</span></div>
+              <div class="username"><span>@${result.username}</span></div>
+          </div>
+      </div>
+    </div>`;
+  });
+  searchOutputDiv.innerHTML = html;
+};
+
+const search = function () {
+  const searchInput = event.target.value;
+  if (searchInput === '') {
+    document.querySelector('.search-output').innerHTML = '';
+    return;
+  }
+  sendPOSTRequest('/search', { searchInput }, showSearchResult);
+};
+
 const main = function () {
   initializeHomePostInput();
 };
