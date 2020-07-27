@@ -1,7 +1,6 @@
 const sinon = require('sinon');
 const { assert } = require('chai');
 const DBClient = require('../lib/DBClient');
-const { get } = require('../lib/expressApp');
 
 describe('#DBClient', () => {
   const expectedTableError = new Error('Error: table not found');
