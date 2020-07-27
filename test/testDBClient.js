@@ -288,4 +288,26 @@ describe('#DBClient', () => {
       }
     });
   });
+
+  describe('getUserIdByUsername()', () => {
+    it('should give userId from username', async () => {
+      const getStub = sinon.stub().yields(null, {user_id});
+      const client = new DBClient({ get: getStub });
+      const result = await client.getUserIdByUsername('john');
+      assert.strictEqual(result, user_id);
+      sinon.assert.calledOnce(getStub);
+    });
+
+    it('should reject when an error occurred', async () => {
+      const expectedError = new Error('users table not found');
+      const getStub = sinon.stub().yields(expectedError);
+      const client = new DBClient({ get: getStub });
+      try {
+        await client.getUserIdByUsername('john');
+      } catch (err) {
+        assert.strictEqual(err, expectedError);
+        sinon.assert.calledOnce(getStub);
+      }
+    });
+  });
 });
