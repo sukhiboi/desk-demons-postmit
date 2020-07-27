@@ -1,6 +1,7 @@
 const sinon = require('sinon');
 const { assert } = require('chai');
 const DBClient = require('../lib/DBClient');
+const { get } = require('../lib/expressApp');
 
 describe('#DBClient', () => {
   const expectedTableError = new Error('Error: table not found');
@@ -235,7 +236,7 @@ describe('#DBClient', () => {
       bio: 'something',
       name: 'someone',
     };
-    it('should save the user to database', async () => {
+    it('should resolve to true when user details saved', async () => {
       const runStub = sinon.stub().yields(null);
       const client = new DBClient({ run: runStub });
       const result = await client.saveUser(userDetails);
@@ -243,13 +244,46 @@ describe('#DBClient', () => {
       sinon.assert.calledOnce(runStub);
     });
 
-    it('should save the user to database', async () => {
+    it("should resolve to false when user details doesn't saved", async () => {
       const errorToBeThrown = new Error('users table not found');
       const runStub = sinon.stub().yields(errorToBeThrown);
       const client = new DBClient({ run: runStub });
       const result = await client.saveUser(userDetails);
       assert.isFalse(result);
       sinon.assert.calledOnce(runStub);
+    });
+  });
+
+  describe('getUserIdByUsername()', () => {
+    it('should resolve to userId from username', async () => {
+      const githubUsername = 'someone';
+      const getStub = sinon.stub().yields(null, user_id);
+      const client = new DBClient({ get: getStub });
+      const result = await client.getUserIdByUsername(githubUsername);
+      assert.strictEqual(result, user_id);
+      sinon.assert.calledOnce(getStub);
+    });
+
+    it('should resolve to undefined when userId not found', async () => {
+      const githubUsername = 'someone';
+      const getStub = sinon.stub().yields(null);
+      const client = new DBClient({ get: getStub });
+      const result = await client.getUserIdByUsername(githubUsername);
+      assert.isUndefined(result);
+      sinon.assert.calledOnce(getStub);
+    });
+
+    it('should reject when an error occurred', async () => {
+      const expectedError = new Error('users table not found');
+      const githubUsername = 'someone';
+      const getStub = sinon.stub().yields(expectedError);
+      const client = new DBClient({ get: getStub });
+      try {
+        await client.getUserIdByUsername(githubUsername);
+      } catch (err) {
+        assert.strictEqual(err, expectedError);
+        sinon.assert.calledOnce(getStub);
+      }
     });
   });
 });
