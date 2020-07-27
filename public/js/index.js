@@ -1,14 +1,14 @@
 const toggleLikeButton = function (target, className) {
+  setTimeout(() => location.reload(), 200);
   const classToRemove = className.includes('fas')
     ? ['far', 'LikeBtn']
     : ['fas', 'likeColor'];
   target.classList.remove(...classToRemove);
   target.classList.add(...className);
-  location.reload();
 };
 
 const toggleLikeUnlike = function (postId) {
-  const target = event.target;
+  const target = document.querySelector(`#like_${postId}`);
   if (target.className.includes('far')) {
     sendPOSTRequest(
       '/like',
@@ -69,6 +69,18 @@ const initializePopupPostInput = function () {
   const postBtn = document.getElementById('post-popup-btn');
   const charCountElement = document.getElementById('popup-character-count');
   handlePostSubmission(message, postBtn, charCountElement);
+};
+
+const displayHeart = function (postId) {
+  const heart = document.querySelector(`#heart_${postId}`);
+  heart.classList.add('heart');
+  setTimeout(() => heart.classList.remove('heart'), 600);
+  const target = document.querySelector(`#like_${postId}`);
+  sendPOSTRequest(
+    '/like',
+    { postId },
+    ({ status }) => status && toggleLikeButton(target, ['fas', 'likeColor'])
+  );
 };
 
 const main = function () {

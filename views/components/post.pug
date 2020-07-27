@@ -1,21 +1,23 @@
 mixin post(post)
-  .post
-    .flex
-      .profile-pic
-        span= post.initials
-      .user-details
-        .name
-          span= post.name 
-          span(class="timestamp")= ` ・ ${post.posted_at}`
-        .username
-          span= `@${post.username}`
-    .post-content= post.message
-    .actions.flex
-      .action
-        - let className="far fa-heart icon likeBtn";
-        - let countClass = "likeBtn"
-        if post.isLiked
-         - className="fas fa-heart icon likeColor"
-         - countClass = "likeColor"
-        i(class=className onclick=`toggleLikeUnlike(${post.id})`) 
-        span(class=`count ${countClass}`)= post.likedUsers.length?post.likedUsers.length:''
+  .card
+    .post(ondblclick=`displayHeart(${post.id})` id=`post_${post.id}`)
+      .flex
+        .profile-pic
+          span= post.initials
+        .user-details
+          .name
+            span= post.name 
+            span(class="timestamp")= ` ・ ${post.posted_at}`
+          .username
+            span= `@${post.username}`
+      .post-content= post.message
+      .actions.flex
+        .action
+          - let className="far fa-heart icon likeBtn";
+          - let countClass = "likeBtn"
+          if post.isLiked
+           - className="fas fa-heart icon likeColor"
+           - countClass = "likeColor"
+          i(class=className onclick=`toggleLikeUnlike(${post.id})` id=`like_${post.id}`) 
+          span(class=`count ${countClass}`)= post.likedUsers.length?post.likedUsers.length:''
+    i(class='fas fa-heart fa-3x instagramLike' id=`heart_${post.id}` ondblclick=`displayHeart(${post.id})`) 
