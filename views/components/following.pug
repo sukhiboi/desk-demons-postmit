@@ -1,0 +1,17 @@
+mixin following(following)
+  .searchedUser(onclick=`sendRequestForProfile('${following.username}')`)
+    .flex
+      .profile-pic
+        span= following.initials
+      .user-details
+        .name
+          span= following.name
+        .username
+          span= `@${following.username}`
+      span.toggle-switch.switch(onclick=`toggleFollowUnfollow('${username}')`)
+         if isFollower
+             input#chkTest(type='checkbox' name='chkTest' checked)
+         else
+             input#chkTest(type='checkbox' name='chkTest')
+         label(for='chkTest')
+             span.toggle-track

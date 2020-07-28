@@ -37,7 +37,7 @@ html(lang='en')
             .extra-details
                 div
                     span.count= following.length
-                    span Following
+                    span(onclick=`showFollowingList('${username}')`) Following
                 div
                     span.count= followers.length
                     span Followers

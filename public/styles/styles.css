@@ -452,3 +452,12 @@ button:hover {
 .toggle-switch {
   margin-left: 16rem;
 }
+
+.switch{
+  margin-left: 25rem;
+  margin-top: 0.4rem;
+}
+
+.follow-feed{
+  margin-top: 1rem;
+}
