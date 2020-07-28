@@ -1,5 +1,3 @@
-// const { response } = require('express');
-
 const toggleLikeButton = function (target, className) {
   setTimeout(() => location.reload(), 200);
   const classToRemove = className.includes('fas')
@@ -27,8 +25,6 @@ const toggleLikeUnlike = function (postId) {
 };
 
 const addNewPost = function (textareaId) {
-  console.log('here');
-
   const message = document.getElementById(textareaId).value;
   sendPOSTRequest('/add-new-post', { message }, () => location.reload());
 };
@@ -126,9 +122,9 @@ const toggleFollowUnfollow = function (username) {
   sendPOSTRequest('/unfollow', { username }, () => location.reload());
 };
 
-const showFollowingList = function(username){
+const showFollowingList = function (username) {
   window.location = `/user/${username}/following`;
-}
+};
 
 const main = function () {
   initializeHomePostInput();
