@@ -401,4 +401,27 @@ describe('#Handlers', () => {
         .expect(/sukhiboi/, done);
     });
   });
+
+  describe('POST /isUsernameAvailable', () => {
+    it('should respond with true if the username is available', done => {
+      const getUserIdByUsernameStub = sinon.stub().resolves();
+      const app = new App({ getUserIdByUsername: getUserIdByUsernameStub });
+      expressApp.locals.app = app;
+      request(expressApp)
+        .post('/isUsernameAvailable')
+        .send({ username: 'john' })
+        .expect(OK_STATUS_CODE)
+        .expect({ status: true }, done);
+    });
+    it('should respond with false if the username is not available', done => {
+      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id });
+      const app = new App({ getUserIdByUsername: getUserIdByUsernameStub });
+      expressApp.locals.app = app;
+      request(expressApp)
+        .post('/isUsernameAvailable')
+        .send({ username: 'john' })
+        .expect(OK_STATUS_CODE)
+        .expect({ status: false }, done);
+    });
+  });
 });
