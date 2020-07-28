@@ -2,7 +2,10 @@ const request = require('supertest');
 const sinon = require('sinon');
 const expressApp = require('../lib/expressApp');
 const App = require('../lib/app');
+const Auth = require('../lib/auth');
+
 const OK_STATUS_CODE = 200;
+const FOUND_STATUS_CODE = 302;
 
 describe('#Handlers', () => {
   const user_id = 1,
@@ -296,7 +299,7 @@ describe('#Handlers', () => {
     });
   });
 
-  describe('GET /profile/:username', () => {
+  describe('GET /user/:username', () => {
     it('should serve the Profile Page of searched user', done => {
       const userDetails = { username: 'jani', name: 'jani', user_id: 2 };
       const getUserIdByUsernameStub = sinon.stub().resolves(2);
@@ -324,32 +327,77 @@ describe('#Handlers', () => {
         })
         .expect(/jani/, done);
     });
+
+    it('should serve the Profile Page of logged user when the searched user is logged user', done => {
+      const getUserIdByUsernameStub = sinon.stub().resolves(user_id);
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const isLikedByUserStub = sinon.stub().resolves(true);
+      const getAllLikedUsersStub = sinon.stub().resolves([]);
+      const getPostsByUserIdStub = sinon.stub().resolves(createDummyPosts());
+      expressApp.locals.app = new App({
+        getUserIdByUsername: getUserIdByUsernameStub,
+        getUserDetails: getUserDetailsStub,
+        getPostsByUserId: getPostsByUserIdStub,
+        isLikedByUser: isLikedByUserStub,
+        getAllLikedUsers: getAllLikedUsersStub,
+      });
+      request(expressApp)
+        .get('/user/john')
+        .set('Cookie', ['user_id=1'])
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnce(getUserIdByUsernameStub);
+          sinon.assert.calledTwice(getUserDetailsStub);
+          sinon.assert.calledOnce(getPostsByUserIdStub);
+          sinon.assert.calledWith(getUserDetailsStub, user_id);
+          sinon.assert.calledOnceWithExactly(getPostsByUserIdStub, user_id);
+        })
+        .expect(/john/, done);
+    });
   });
 
-  it('should serve the Profile Page of logged user when the searched user is logged user', done => {
-    const getUserIdByUsernameStub = sinon.stub().resolves(user_id);
-    const getUserDetailsStub = sinon.stub().resolves(userDetails);
-    const isLikedByUserStub = sinon.stub().resolves(true);
-    const getAllLikedUsersStub = sinon.stub().resolves([]);
-    const getPostsByUserIdStub = sinon.stub().resolves(createDummyPosts());
-    expressApp.locals.app = new App({
-      getUserIdByUsername: getUserIdByUsernameStub,
-      getUserDetails: getUserDetailsStub,
-      getPostsByUserId: getPostsByUserIdStub,
-      isLikedByUser: isLikedByUserStub,
-      getAllLikedUsers: getAllLikedUsersStub,
+  describe('GET /auth', () => {
+    it('should redirect me to the authorize url', done => {
+      const app = new App({});
+      const auth = sinon.createStubInstance(Auth);
+      auth.getAuthorizeUrl = sinon.stub().returns('/redirect');
+      expressApp.locals.app = app;
+      expressApp.locals.auth = auth;
+      request(expressApp)
+        .get('/auth')
+        .expect(FOUND_STATUS_CODE)
+        .expect(/Found. Redirecting to \/redirect/, done);
     });
-    request(expressApp)
-      .get('/user/john')
-      .set('Cookie', ['user_id=1'])
-      .expect(OK_STATUS_CODE)
-      .expect(() => {
-        sinon.assert.calledOnce(getUserIdByUsernameStub);
-        sinon.assert.calledTwice(getUserDetailsStub);
-        sinon.assert.calledOnce(getPostsByUserIdStub);
-        sinon.assert.calledWith(getUserDetailsStub, user_id);
-        sinon.assert.calledOnceWithExactly(getPostsByUserIdStub, user_id);
-      })
-      .expect(/john/, done);
+  });
+
+  describe('GET /callback', () => {
+    it('should redirect to /home if user_id cookie is present', done => {
+      const getUserIdByGithubUsernameStub = sinon.stub().resolves({ user_id });
+      const app = new App({
+        getUserIdByGithubUsername: getUserIdByGithubUsernameStub,
+      });
+      const auth = sinon.createStubInstance(Auth);
+      auth.fetchUserDetails = sinon.stub().resolves({ login: 'sukhiboi' });
+      expressApp.locals.app = app;
+      expressApp.locals.auth = auth;
+      request(expressApp)
+        .get('/callback?code="12345')
+        .expect(FOUND_STATUS_CODE)
+        .expect(/Found. Redirecting to \/home/, done);
+    });
+    it('should render moreDetails page if iam a new user', done => {
+      const getUserIdByGithubUsernameStub = sinon.stub().resolves();
+      const app = new App({
+        getUserIdByGithubUsername: getUserIdByGithubUsernameStub,
+      });
+      const auth = sinon.createStubInstance(Auth);
+      auth.fetchUserDetails = sinon.stub().resolves({ login: 'sukhiboi' });
+      expressApp.locals.app = app;
+      expressApp.locals.auth = auth;
+      request(expressApp)
+        .get('/callback?code="12345')
+        .expect(OK_STATUS_CODE)
+        .expect(/sukhiboi/, done);
+    });
   });
 });
