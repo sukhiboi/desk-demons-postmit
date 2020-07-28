@@ -8,12 +8,16 @@ head
   script(src="/js/saveUser.js")
   title More Details
 .app-name.simple-message POSTMIT
-.description Update you profile
+.description Update your profile Details
 .form
-  p#errorMessage.disable-visibility ''
-  input#username.input-bar(type='text' placeholder='Username' onkeyup="checkUsernameAvailability(this.value)")
+  p#errorMessage.disable-visibility ' '
+  label(for="username") Username
+  input#username.input-bar(type='text' placeholder='Username')
+  label(for="name") Name
   input#name.input-bar(type='text' placeholder='Full Name')
+  label(for="dob") Date Of Birth
   input#dob.input-bar(type='date' placeholder='Date of Birth')
+  label(for="bio") Bio
   textarea#bio.input-bar.bio(placeholder='Tell us something about yourself' cols='30' rows='6')
   .simple-action
-    .primary-btn.disable-btn#continue(onclick=`saveUser('${username}')`) Continue
+    .primary-btn#continue(onclick=`saveUser('${username}')`) Continue

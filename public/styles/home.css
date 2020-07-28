@@ -130,3 +130,6 @@ input[type='date' i] {
 .invalid-detail {
   color: #e0245e;
 }
+.highlight {
+  border: 1px solid #e0245e;
+}
