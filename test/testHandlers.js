@@ -297,8 +297,9 @@ describe('#Handlers', () => {
   });
 
   describe('GET /profile/:username', () => {
-    it('should serve the Profile Page with posts of that user', done => {
-      const getUserIdByUsernameStub = sinon.stub().resolves(user_id);
+    it('should serve the Profile Page of searched user', done => {
+      const userDetails = { username: 'jani', name: 'jani', user_id: 2 };
+      const getUserIdByUsernameStub = sinon.stub().resolves(2);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().resolves(true);
       const getAllLikedUsersStub = sinon.stub().resolves([]);
@@ -311,16 +312,44 @@ describe('#Handlers', () => {
         getAllLikedUsers: getAllLikedUsersStub,
       });
       request(expressApp)
-        .get('/user/john')
+        .get('/user/jani')
+        .set('Cookie', ['user_id=1'])
         .expect(OK_STATUS_CODE)
         .expect(() => {
           sinon.assert.calledOnce(getUserIdByUsernameStub);
           sinon.assert.calledTwice(getUserDetailsStub);
           sinon.assert.calledOnce(getPostsByUserIdStub);
-          sinon.assert.calledWith(getUserDetailsStub, user_id);
-          sinon.assert.calledOnceWithExactly(getPostsByUserIdStub, user_id);
+          sinon.assert.calledWith(getUserDetailsStub, 2);
+          sinon.assert.calledOnceWithExactly(getPostsByUserIdStub, 2);
         })
-        .expect(/john/, done);
+        .expect(/jani/, done);
     });
+  });
+
+  it('should serve the Profile Page of logged user when the searched user is logged user', done => {
+    const getUserIdByUsernameStub = sinon.stub().resolves(user_id);
+    const getUserDetailsStub = sinon.stub().resolves(userDetails);
+    const isLikedByUserStub = sinon.stub().resolves(true);
+    const getAllLikedUsersStub = sinon.stub().resolves([]);
+    const getPostsByUserIdStub = sinon.stub().resolves(createDummyPosts());
+    expressApp.locals.app = new App({
+      getUserIdByUsername: getUserIdByUsernameStub,
+      getUserDetails: getUserDetailsStub,
+      getPostsByUserId: getPostsByUserIdStub,
+      isLikedByUser: isLikedByUserStub,
+      getAllLikedUsers: getAllLikedUsersStub,
+    });
+    request(expressApp)
+      .get('/user/john')
+      .set('Cookie', ['user_id=1'])
+      .expect(OK_STATUS_CODE)
+      .expect(() => {
+        sinon.assert.calledOnce(getUserIdByUsernameStub);
+        sinon.assert.calledTwice(getUserDetailsStub);
+        sinon.assert.calledOnce(getPostsByUserIdStub);
+        sinon.assert.calledWith(getUserDetailsStub, user_id);
+        sinon.assert.calledOnceWithExactly(getPostsByUserIdStub, user_id);
+      })
+      .expect(/john/, done);
   });
 });
