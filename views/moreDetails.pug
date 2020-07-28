@@ -2,6 +2,7 @@ doctype html
 head
   meta(charset='UTF-8')
   meta(name='viewport' content='width=device-width, initial-scale=1.0')
+  link(rel='stylesheet' href='/styles/styles.css')
   link(rel='stylesheet' href='/styles/home.css')
   script(src="/js/request.js")
   script(src="/js/saveUser.js")
@@ -9,9 +10,10 @@ head
 .app-name.simple-message POSTMIT
 .description Update you profile
 .form
-  input#username.input-bar(type='text' placeholder='Username')
+  p#errorMessage.disable-visibility ''
+  input#username.input-bar(type='text' placeholder='Username' onkeyup="checkUsernameAvailability(this.value)")
   input#name.input-bar(type='text' placeholder='Full Name')
   input#dob.input-bar(type='date' placeholder='Date of Birth')
   textarea#bio.input-bar.bio(placeholder='Tell us something about yourself' cols='30' rows='6')
-.action.simple-action
-  .continue(onclick=`saveUser('${username}')`) Continue
+  .simple-action
+    .primary-btn.disable-btn#continue(onclick=`saveUser('${username}')`) Continue

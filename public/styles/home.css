@@ -106,7 +106,6 @@ input[type='date' i] {
   font-family: 'Roboto', sans-serif !important;
 }
 
-
 .bio {
   border-radius: 1rem;
   font-family: 'Roboto', sans-serif !important;
@@ -119,4 +118,15 @@ input[type='date' i] {
 
 .simple-action {
   margin: 0;
+}
+
+.disable-visibility {
+  visibility: hidden;
+}
+
+.valid-detail {
+  color: #1bd91b;
+}
+.invalid-detail {
+  color: #e0245e;
 }
