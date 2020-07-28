@@ -41,6 +41,10 @@ html(lang='en')
                 div
                     span.count 6
                     span Followers
+                span.toggle-switch
+                    input#chkTest(type='checkbox' name='chkTest')
+                    label(for='chkTest')
+                        span.toggle-track
             .user-activity
                 .activity-bar
                     .activity-title.activeTab(onclick="display('posts')" id="posts-tab") Posts

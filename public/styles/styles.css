@@ -422,3 +422,33 @@ button:hover {
   padding: 0.5rem 0 0 0.5rem;
   margin-bottom: 0.5rem;
 }
+/* ----------------------------------------------------------- */
+.toggle-switch input[type='checkbox'] {
+  display: none;
+}
+
+.toggle-switch label .toggle-track {
+  display: block;
+  cursor: pointer;
+  width: 3.5rem;
+  padding: 12px 2rem;
+  font-size: 1rem;
+  border-radius: 10rem;
+  background-color: #1da1f2;
+  font-weight: 700 !important;
+  color: #fff;
+  text-align: center;
+}
+
+.toggle-switch .toggle-track:before {
+  content: 'Follow';
+  display: inline-block;
+}
+
+.toggle-switch input[type='checkbox']:checked + label .toggle-track:before {
+  content: 'Unfollow';
+}
+
+.toggle-switch {
+  margin-left: 16rem;
+}
