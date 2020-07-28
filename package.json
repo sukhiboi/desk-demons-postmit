@@ -6,7 +6,7 @@
   "scripts": {
     "setup-db": "./bin/setup-db.sh",
     "start": "node server.js 8000",
-    "test": "nyc mocha",
+    "test": "export NODE_ENV='test' && nyc mocha",
     "lint": "eslint --ignore-pattern 'node_modules/' . --ext .js",
     "setup": "./bin/setup.sh"
   },
