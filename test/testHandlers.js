@@ -301,8 +301,9 @@ describe('#Handlers', () => {
 
   describe('GET /user/:username', () => {
     it('should serve the Profile Page of searched user', done => {
-      const userDetails = { username: 'jani', name: 'jani', user_id: 2 };
-      const getUserIdByUsernameStub = sinon.stub().resolves(2);
+      const user_id = 2;
+      const userDetails = { username: 'jani', name: 'jani', user_id };
+      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id });
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().resolves(true);
       const getAllLikedUsersStub = sinon.stub().resolves([]);
@@ -329,7 +330,7 @@ describe('#Handlers', () => {
     });
 
     it('should serve the Profile Page of logged user when the searched user is logged user', done => {
-      const getUserIdByUsernameStub = sinon.stub().resolves(user_id);
+      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id });
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().resolves(true);
       const getAllLikedUsersStub = sinon.stub().resolves([]);

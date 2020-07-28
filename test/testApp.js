@@ -485,9 +485,10 @@ describe('#App', () => {
       );
     });
   });
+
   describe('getSearchedUserProfile()', () => {
     it('should resolve to user profile of a user with valid id', async () => {
-      const getUserIdByUsernameStub = sinon.stub().resolves(user_id);
+      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id });
       const getAllPostsStub = sinon.stub().resolves(createDummyPosts());
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getPostsByUserIdStub = sinon.stub().resolves(createDummyPosts());
@@ -528,7 +529,15 @@ describe('#App', () => {
       sinon.assert.calledWithExactly(getPostsByUserIdStub, user_id);
       sinon.assert.calledWithExactly(isLikedByUserStub, postId, user_id);
     });
-
+    it('should resolve to no posts when username is not valid', async () => {
+      const getUserIdByUsernameStub = sinon.stub().resolves();
+      const dbClient = { getUserIdByUsername: getUserIdByUsernameStub };
+      const app = new App(dbClient);
+      const expected = { errMsg: 'no user found', posts: [], likedPosts: [] };
+      const actual = await app.getSearchedUserProfile(user_id, 'john');
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledWithExactly(getUserIdByUsernameStub, 'john');
+    });
     it('should handle the rejection of getSearchedUserProfile', async () => {
       const getSearchedUserProfileStub = sinon
         .stub()
@@ -545,6 +554,30 @@ describe('#App', () => {
         likedPosts: [],
       });
       sinon.assert.notCalled(getSearchedUserProfileStub);
+    });
+  });
+
+  describe('isUsernameAvailable()', () => {
+    it('should return true if the given username is available', async () => {
+      const getUserIdByUsernameStub = sinon.stub().resolves();
+      const app = new App({ getUserIdByUsername: getUserIdByUsernameStub });
+      const username = 'sukhiboi';
+      assert.isTrue(await app.isUsernameAvailable(username));
+      sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, username);
+    });
+    it('should return false if the given username is not available', async () => {
+      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id });
+      const app = new App({ getUserIdByUsername: getUserIdByUsernameStub });
+      const username = 'sukhiboi';
+      assert.isFalse(await app.isUsernameAvailable(username));
+      sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, username);
+    });
+    it('should return false if getUserIdByUsername rejects', async () => {
+      const getUserIdByUsernameStub = sinon.stub().rejects(expectedTableError);
+      const app = new App({ getUserIdByUsername: getUserIdByUsernameStub });
+      const username = 'sukhiboi';
+      assert.isFalse(await app.isUsernameAvailable(username));
+      sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, username);
     });
   });
 });

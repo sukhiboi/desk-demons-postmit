@@ -243,7 +243,7 @@ describe('#DBClient', () => {
       sinon.assert.calledOnce(runStub);
     });
 
-    it("should reject error when user details doesn't saved", async () => {
+    it('should reject error when user details doesn\'t saved', async () => {
       const errorToBeThrown = new Error('users table not found');
       const runStub = sinon.stub().yields(errorToBeThrown);
       const client = new DBClient({ run: runStub });
@@ -291,10 +291,10 @@ describe('#DBClient', () => {
 
   describe('getUserIdByUsername()', () => {
     it('should give userId from username', async () => {
-      const getStub = sinon.stub().yields(null, {user_id});
+      const getStub = sinon.stub().yields(null, { user_id });
       const client = new DBClient({ get: getStub });
       const result = await client.getUserIdByUsername('john');
-      assert.strictEqual(result, user_id);
+      assert.deepStrictEqual(result, { user_id });
       sinon.assert.calledOnce(getStub);
     });
 
