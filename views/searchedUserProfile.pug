@@ -36,13 +36,16 @@ html(lang='en')
                     span Joined on #{joined_date}
             .extra-details
                 div
-                    span.count 14
+                    span.count= following.length
                     span Following
                 div
-                    span.count 6
+                    span.count= followers.length
                     span Followers
-                span.toggle-switch
-                    input#chkTest(type='checkbox' name='chkTest')
+                span.toggle-switch(onclick=`toggleFollowUnfollow('${username}')`)
+                    if isFollower
+                        input#chkTest(type='checkbox' name='chkTest' checked)
+                    else
+                        input#chkTest(type='checkbox' name='chkTest')
                     label(for='chkTest')
                         span.toggle-track
             .user-activity

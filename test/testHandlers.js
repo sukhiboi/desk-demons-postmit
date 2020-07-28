@@ -34,12 +34,14 @@ describe('#Handlers', () => {
 
   describe('GET /home', () => {
     it('Should serve the Home Page with Posts', done => {
-      const getAllPostsStub = sinon.stub().resolves(createDummyPosts());
+      const getFollowingsStub = sinon.stub().resolves([]);
+      const getPostsByUserIdStub = sinon.stub().resolves(createDummyPosts());
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().resolves(true);
       const getAllLikedUsersStub = sinon.stub().resolves([]);
       const app = new App({
-        getAllPosts: getAllPostsStub,
+        getFollowings: getFollowingsStub,
+        getPostsByUserId: getPostsByUserIdStub,
         getUserDetails: getUserDetailsStub,
         isLikedByUser: isLikedByUserStub,
         getAllLikedUsers: getAllLikedUsersStub,
@@ -50,7 +52,7 @@ describe('#Handlers', () => {
         .set('Cookie', ['user_id=1'])
         .expect(OK_STATUS_CODE)
         .expect(() => {
-          sinon.assert.calledOnce(getAllPostsStub);
+          sinon.assert.calledOnce(getFollowingsStub);
           sinon.assert.calledTwice(getUserDetailsStub);
           sinon.assert.calledOnceWithExactly(
             isLikedByUserStub,
@@ -68,11 +70,15 @@ describe('#Handlers', () => {
       const isLikedByUserStub = sinon.stub().resolves(true);
       const getAllLikedUsersStub = sinon.stub().resolves([]);
       const getPostsByUserIdStub = sinon.stub().resolves(createDummyPosts());
+      const getFollowingsStub = sinon.stub().resolves([]);
+      const getFollowersStub = sinon.stub().resolves([]);
       expressApp.locals.app = new App({
         getUserDetails: getUserDetailsStub,
         getPostsByUserId: getPostsByUserIdStub,
         isLikedByUser: isLikedByUserStub,
         getAllLikedUsers: getAllLikedUsersStub,
+        getFollowings: getFollowingsStub,
+        getFollowers: getFollowersStub,
       });
       request(expressApp)
         .get('/profile')
@@ -308,12 +314,18 @@ describe('#Handlers', () => {
       const isLikedByUserStub = sinon.stub().resolves(true);
       const getAllLikedUsersStub = sinon.stub().resolves([]);
       const getPostsByUserIdStub = sinon.stub().resolves(createDummyPosts());
+      const getFollowingsStub = sinon.stub().resolves([]);
+      const getFollowersStub = sinon.stub().resolves([]);
+      const isFollowerStub = sinon.stub().resolves(true);
       expressApp.locals.app = new App({
         getUserIdByUsername: getUserIdByUsernameStub,
         getUserDetails: getUserDetailsStub,
         getPostsByUserId: getPostsByUserIdStub,
         isLikedByUser: isLikedByUserStub,
         getAllLikedUsers: getAllLikedUsersStub,
+        getFollowings: getFollowingsStub,
+        getFollowers: getFollowersStub,
+        isFollower: isFollowerStub,
       });
       request(expressApp)
         .get('/user/jani')
@@ -335,12 +347,18 @@ describe('#Handlers', () => {
       const isLikedByUserStub = sinon.stub().resolves(true);
       const getAllLikedUsersStub = sinon.stub().resolves([]);
       const getPostsByUserIdStub = sinon.stub().resolves(createDummyPosts());
+      const getFollowingsStub = sinon.stub().resolves([]);
+      const getFollowersStub = sinon.stub().resolves([]);
+      const isFollowerStub = sinon.stub().resolves(true);
       expressApp.locals.app = new App({
         getUserIdByUsername: getUserIdByUsernameStub,
         getUserDetails: getUserDetailsStub,
         getPostsByUserId: getPostsByUserIdStub,
         isLikedByUser: isLikedByUserStub,
         getAllLikedUsers: getAllLikedUsersStub,
+        getFollowings: getFollowingsStub,
+        getFollowers: getFollowersStub,
+        isFollower: isFollowerStub,
       });
       request(expressApp)
         .get('/user/john')
