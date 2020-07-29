@@ -7,7 +7,7 @@ const Auth = require('../lib/auth');
 const OK_STATUS_CODE = 200;
 const FOUND_STATUS_CODE = 302;
 
-describe('#Handlers', () => {
+describe.only('#Handlers', () => {
   const user_id = 1,
     postId = 1;
 
@@ -440,6 +440,114 @@ describe('#Handlers', () => {
         .send({ username: 'john' })
         .expect(OK_STATUS_CODE)
         .expect({ status: false }, done);
+    });
+  });
+
+  describe('POST /follow', () => {
+    it('should respond with true when the follower added successfully', done => {
+      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id: 1 });
+      const addFollowerStub = sinon.stub().resolves(true);
+      const app = new App({
+        getUserIdByUsername: getUserIdByUsernameStub,
+        addFollower: addFollowerStub,
+      });
+      expressApp.locals.app = app;
+      request(expressApp)
+        .post('/follow')
+        .set('Cookie', ['user_id=1'])
+        .send({ username: 'john' })
+        .expect(OK_STATUS_CODE)
+        .expect({ status: true }, done);
+    });
+    it('should respond with false when follower added unsuccessful', done => {
+      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id });
+      const addFollowerStub = sinon.stub().resolves(false);
+      const app = new App({
+        getUserIdByUsername: getUserIdByUsernameStub,
+        addFollower: addFollowerStub,
+      });
+      expressApp.locals.app = app;
+      request(expressApp)
+        .post('/follow')
+        .set('Cookie', ['user_id=1'])
+        .send({ username: 'john' })
+        .expect(OK_STATUS_CODE)
+        .expect({ status: false }, done);
+    });
+  });
+
+  describe('POST /unfollow', () => {
+    it('should respond with true when the follower added successfully', done => {
+      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id: 1 });
+      const removeFollowerStub = sinon.stub().resolves(true);
+      const app = new App({
+        getUserIdByUsername: getUserIdByUsernameStub,
+        removeFollower: removeFollowerStub,
+      });
+      expressApp.locals.app = app;
+      request(expressApp)
+        .post('/unfollow')
+        .set('Cookie', ['user_id=1'])
+        .send({ username: 'john' })
+        .expect(OK_STATUS_CODE)
+        .expect({ status: true }, done);
+    });
+    it('should respond with false when follower added unsuccessful', done => {
+      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id });
+      const removeFollowerStub = sinon.stub().resolves(false);
+      const app = new App({
+        getUserIdByUsername: getUserIdByUsernameStub,
+        removeFollower: removeFollowerStub,
+      });
+      expressApp.locals.app = app;
+      request(expressApp)
+        .post('/unfollow')
+        .set('Cookie', ['user_id=1'])
+        .send({ username: 'john' })
+        .expect(OK_STATUS_CODE)
+        .expect({ status: false }, done);
+    });
+  });
+
+  describe('GET /user/:username/following', () => {
+    it('should serve followings of given user', done => {
+      const dbClient = {
+        getUserDetails: sinon.stub().resolves(userDetails),
+        getFollowings: sinon.stub().resolves([]),
+        getUserIdByUsername: sinon.stub().resolves({ user_id }),
+      };
+      expressApp.locals.app = new App(dbClient);
+      request(expressApp)
+        .get('/user/:john/following')
+        .set('Cookie', ['user_id=1'])
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnce(dbClient.getUserDetails);
+          sinon.assert.calledOnce(dbClient.getFollowings);
+          sinon.assert.calledOnce(dbClient.getUserIdByUsername);
+        })
+        .expect(/john/, done);
+    });
+  });
+
+  describe('GET /user/:username/followers', () => {
+    it('should serve followings of given user', done => {
+      const dbClient = {
+        getUserDetails: sinon.stub().resolves(userDetails),
+        getFollowers: sinon.stub().resolves([]),
+        getUserIdByUsername: sinon.stub().resolves({ user_id }),
+      };
+      expressApp.locals.app = new App(dbClient);
+      request(expressApp)
+        .get('/user/:john/followers')
+        .set('Cookie', ['user_id=1'])
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnce(dbClient.getUserDetails);
+          sinon.assert.calledOnce(dbClient.getFollowers);
+          sinon.assert.calledOnce(dbClient.getUserIdByUsername);
+        })
+        .expect(/john/, done);
     });
   });
 });
