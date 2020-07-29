@@ -26,19 +26,20 @@ body {
 .description {
   font-weight: 300;
   color: rgba(255, 255, 255, 0.6);
-  font-size: 4vh;
-  line-height: 6vh;
+  font-size: 2.8vh;
+  line-height: 5vh;
+  padding: 0 2rem;
 }
 
 .action {
   display: flex;
   justify-content: center;
-  background-color: rgba(255, 255, 255, 0.8);
   border-radius: 8px;
   width: fit-content;
   align-self: center;
   padding: 0 1rem;
-  margin-top: 4rem;
+  text-decoration: none;
+  margin: 4rem auto 0;
 }
 
 .action:hover {
@@ -76,19 +77,34 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 4rem 0 1rem;
+}
+
+.field {
+  border-radius: 1rem;
+  border: 2px solid #15202c;
+  background-color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: left;
+  margin-bottom: 1rem;
+  padding: 10px 0;
+}
+
+.field label {
+  padding-left: 1rem;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .input-bar {
   width: 20vw;
-  margin: 10px 0;
-  padding: 1rem 2rem;
-  border-radius: 10rem;
+  margin: 10px 1rem 0;
   outline: none;
-  border: none;
-  background-color: rgba(255, 255, 255, 0.2);
   color: #fff;
   font-size: 1.2rem;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  background-color: transparent;
 }
 
 .input-bar::placeholder {
@@ -107,17 +123,12 @@ input[type='date' i] {
 }
 
 .bio {
-  border-radius: 1rem;
   font-family: 'Roboto', sans-serif !important;
   resize: none;
 }
 
 .simple-message {
   padding: 0;
-}
-
-.simple-action {
-  margin: 0;
 }
 
 .disable-visibility {
@@ -131,5 +142,5 @@ input[type='date' i] {
   color: #e0245e;
 }
 .highlight {
-  border: 1px solid #e0245e;
+  border-bottom: 2px solid #e0245e;
 }

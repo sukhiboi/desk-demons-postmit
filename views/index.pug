@@ -2,6 +2,7 @@ doctype html
 head
   meta(charset='UTF-8')
   meta(name='viewport' content='width=device-width, initial-scale=1.0')
+  link(rel='stylesheet' href='/styles/styles.css')
   link(rel='stylesheet' href='/styles/home.css')
   title Postmit
 .app-name POSTMIT
@@ -9,7 +10,5 @@ head
   | Postmit is a Microblogging site, which makes it easier to communicate with
   | audiences quickly rather than writing pages of text, it allows for quick
   | and conversational connections with other people.
-a.action(href="/auth")
-  .authenticator-icon
-    img(src='/assets/github-logo.svg' alt='Github Login')
-  .authenticator-name Login with Github
+  a.action(href="/auth")
+    .primary-btn Get Started

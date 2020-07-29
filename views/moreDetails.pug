@@ -11,13 +11,17 @@ head
 .description Update your profile Details
 .form
   p#errorMessage.disable-visibility ' '
-  label(for="username") Username
-  input#username.input-bar(type='text' placeholder='Username')
-  label(for="name") Name
-  input#name.input-bar(type='text' placeholder='Full Name')
-  label(for="dob") Date Of Birth
-  input#dob.input-bar(type='date' placeholder='Date of Birth')
-  label(for="bio") Bio
-  textarea#bio.input-bar.bio(placeholder='Tell us something about yourself' cols='30' rows='6')
+  .field
+    label(for="username") Username
+    input#username.input-bar(type='text')
+  .field
+    label(for="name") Name
+    input#name.input-bar(type='text')
+  .field
+    label(for="dob") Date Of Birth
+    input#dob.input-bar(type='date' placeholder='Date of Birth')
+  .field
+    label(for="bio") Bio
+    textarea#bio.input-bar.bio(cols='30' rows='4')
   .simple-action
     .primary-btn#continue(onclick=`saveUser('${username}')`) Continue
