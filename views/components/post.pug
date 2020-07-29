@@ -1,6 +1,9 @@
 mixin post(post)
   .card
     .post(ondblclick=`displayHeart(${post.id})` id=`post_${post.id}`)
+      .delete
+        if post.isDeletable
+          i(class="fas fa-trash" onclick=`showDeletePopUp(${post.id})`)
       .flex
         .profile-pic
           span= post.initials
@@ -10,9 +13,6 @@ mixin post(post)
             span(class="timestamp")= ` ・ ${post.posted_at}`
           .username
             span= `@${post.username}`
-        .delete
-          if post.isDeletable
-            i(class="fas fa-trash")
       .post-content= post.message
       .actions.flex
         .action

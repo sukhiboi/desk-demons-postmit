@@ -130,6 +130,40 @@ const showFollowersList = function (username) {
   window.location = `/user/${username}/followers`;
 };
 
+const deletePost = function (postId) {
+  sendPOSTRequest('/deletePost', { postId }, () => location.reload());
+};
+
+const removeFilter = function () {
+  const filter = document.getElementById('filter');
+  filter.remove();
+};
+
+const createDeletePopUp = function (postId) {
+  const popup = document.createElement('div');
+  popup.innerHTML = `
+  <div class="delete-popup">
+  <div class="delete-popup-heading">Delete Post?</div>
+  <div class="delete-popup-message">This can’t be undone and it will be 
+  removed from your profile, the timeline of any accounts that follow you.</div>
+  <div class="flex action-btn">
+    <button onclick="removeFilter()">Cancel</button>
+    <button class="delete-btn" onclick="deletePost(${postId})">Delete</button>
+  </div>
+</div>
+  `;
+  return popup;
+};
+
+const showDeletePopUp = function (postId) {
+  const filter = document.createElement('div');
+  filter.classList.add('filter');
+  filter.id = 'filter';
+  const newPostElement = createDeletePopUp(postId);
+  filter.appendChild(newPostElement);
+  document.body.appendChild(filter);
+};
+
 const main = function () {
   initializeHomePostInput();
 };

@@ -170,6 +170,7 @@ button:hover {
   flex-direction: column;
   box-sizing: border-box;
   cursor: pointer;
+  position: relative;
 }
 
 .user-details {
@@ -467,5 +468,9 @@ button:hover {
 }
 
 .delete {
+  position: absolute;
   align-self: flex-end;
+}
+.delete i {
+  color: rgb(224, 36, 94);
 }
