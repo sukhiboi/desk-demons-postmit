@@ -35,10 +35,10 @@ html(lang='en')
                 div
                     span Joined on #{joined_date}
             .extra-details
-                div
+                div(style="cursor:pointer")
                     span.count= following.length
-                    span Following
-                div
+                    span(onclick=`showFollowingList('${username}')`) Following
+                div(style="cursor:pointer")
                     span.count= followers.length
                     span Followers
                 span.toggle-switch(onclick=`toggleFollowUnfollow('${username}')`)
