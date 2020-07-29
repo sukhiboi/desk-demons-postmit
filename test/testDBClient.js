@@ -437,7 +437,7 @@ describe('#DBClient', () => {
       const result = await dbClient.deletePost(post_id);
       assert.strictEqual(result, post_id);
     });
-    it('should delete the given post and return post id', async () => {
+    it('should reject when any error occurred', async () => {
       const execStub = sinon.stub().yields(expectedTableError);
       const dbClient = new DBClient({ exec: execStub });
       try {

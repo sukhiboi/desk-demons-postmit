@@ -3,14 +3,15 @@ const { assert } = require('chai');
 const App = require('../lib/app');
 
 describe('#App', () => {
-  const user_id = 1,
-    postId = 1;
+  const user_id = 1;
+  const postId = 1;
 
   const userDetails = {
     name: 'john samuel',
     username: 'john',
     user_id,
   };
+
   const createDummyPosts = function () {
     return [{ id: postId, user_id, posted_at: new Date(), message: 'hi' }];
   };
@@ -468,7 +469,7 @@ describe('#App', () => {
       );
     });
 
-    it("should not return id if that user doesn't exists", async () => {
+    it('should not return id if that user doesn\'t exists', async () => {
       const getUserIdByGithubUsernameStub = sinon.stub().resolves();
       const app = new App({
         getUserIdByGithubUsername: getUserIdByGithubUsernameStub,
@@ -588,6 +589,21 @@ describe('#App', () => {
       assert.isFalse(await app.unfollow('john', 2));
       sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, 'john');
       sinon.assert.calledOnce(removeFollowerStub);
+    });
+  });
+  
+  describe('deletePost()', () => {
+    it('should delete the given post and return true', async () => {
+      const deletePostStub = sinon.stub().resolves(postId);
+      const app = new App({ deletePost: deletePostStub });
+      assert.isTrue(await app.deletePost(postId));
+      sinon.assert.calledOnceWithExactly(deletePostStub, postId);
+    });
+    it('should delete the given post and return false', async () => {
+      const deletePostStub = sinon.stub().rejects(expectedTableError);
+      const app = new App({ deletePost: deletePostStub });
+      assert.isFalse(await app.deletePost(postId));
+      sinon.assert.calledOnceWithExactly(deletePostStub, postId);
     });
   });
 });
