@@ -1,7 +1,6 @@
 const sinon = require('sinon');
 const { assert } = require('chai');
 const App = require('../lib/app');
-const { fakeServer } = require('sinon');
 
 describe('#App', () => {
   const user_id = 1;
