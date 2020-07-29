@@ -1,6 +1,7 @@
 const sinon = require('sinon');
 const { assert } = require('chai');
 const App = require('../lib/app');
+const { fakeServer } = require('sinon');
 
 describe('#App', () => {
   const user_id = 1;
@@ -473,7 +474,7 @@ describe('#App', () => {
       );
     });
 
-    it('should not return id if that user doesn\'t exists', async () => {
+    it("should not return id if that user doesn't exists", async () => {
       const getUserIdByGithubUsernameStub = sinon.stub().resolves();
       const app = new App({
         getUserIdByGithubUsername: getUserIdByGithubUsernameStub,
@@ -608,6 +609,32 @@ describe('#App', () => {
       const app = new App({ deletePost: deletePostStub });
       assert.isFalse(await app.deletePost(postId));
       sinon.assert.calledOnceWithExactly(deletePostStub, postId);
+    });
+  });
+
+  describe('updatePostByUserId()', () => {
+    it('should update the post when the post is given users', async () => {
+      const dbClient = {
+        isLikedByUser: sinon.stub().resolves(true),
+      };
+      const app = new App(dbClient);
+      const expected = [{ isLiked: true, isDeletable: true, user_id: 1 }];
+      const actual = await app.updatePostByUserId(user_id, [
+        { isLiked: false, user_id: 1 },
+      ]);
+      assert.deepStrictEqual(actual, expected);
+    });
+  });
+
+  describe('getSearchedUserProfile()', () => {
+    it('should give error message when the user is not existing', async () => {
+      const dbClient = { getUserIdByUsername: sinon.stub().resolves() };
+      const expected = { errMsg: 'no user found', posts: [], likedPosts: [] };
+      const app = new App(dbClient);
+      assert.deepStrictEqual(
+        await app.getSearchedUserProfile(1, 'john'),
+        expected
+      );
     });
   });
 });

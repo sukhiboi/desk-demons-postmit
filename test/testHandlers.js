@@ -34,8 +34,9 @@ describe('#Handlers', () => {
 
   describe('GET /home', () => {
     it('Should serve the Home Page with Posts', done => {
-      const getFollowingsStub = sinon.stub().resolves([]);
-      const getPostsByUserIdStub = sinon.stub().resolves(createDummyPosts());
+      const followings = [{ follower_id: 2 }];
+      const getFollowingsStub = sinon.stub().resolves(followings);
+      const getPostsByUserIdStub = sinon.stub().resolves([]);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().resolves(true);
       const getAllLikedUsersStub = sinon.stub().resolves([]);
@@ -53,14 +54,9 @@ describe('#Handlers', () => {
         .expect(OK_STATUS_CODE)
         .expect(() => {
           sinon.assert.calledOnce(getFollowingsStub);
-          sinon.assert.calledTwice(getUserDetailsStub);
-          sinon.assert.calledOnceWithExactly(
-            isLikedByUserStub,
-            user_id,
-            postId
-          );
+          sinon.assert.calledOnce(getUserDetailsStub);
         })
-        .expect(/john/, done);
+        .expect(/J/, done);
     });
     it('Should redirect to / when user is not logged in', done => {
       expressApp.locals.app = new App({});
@@ -529,9 +525,10 @@ describe('#Handlers', () => {
 
   describe('GET /user/:username/following', () => {
     it('should serve followings of given user', done => {
+      const followings = [{ name: 'samuel', username: 'samuel', user_id: 2 }];
       const dbClient = {
         getUserDetails: sinon.stub().resolves(userDetails),
-        getFollowings: sinon.stub().resolves([]),
+        getFollowings: sinon.stub().resolves(followings),
         getUserIdByUsername: sinon.stub().resolves({ user_id }),
       };
       expressApp.locals.app = new App(dbClient);
@@ -540,7 +537,7 @@ describe('#Handlers', () => {
         .set('Cookie', ['user_id=1'])
         .expect(OK_STATUS_CODE)
         .expect(() => {
-          sinon.assert.calledOnce(dbClient.getUserDetails);
+          sinon.assert.calledTwice(dbClient.getUserDetails);
           sinon.assert.calledOnce(dbClient.getFollowings);
           sinon.assert.calledOnce(dbClient.getUserIdByUsername);
         })
@@ -550,10 +547,12 @@ describe('#Handlers', () => {
 
   describe('GET /user/:username/followers', () => {
     it('should serve followings of given user', done => {
+      const followers = [{ user_id: 2, name: 'samuel', username: 'samuel' }];
       const dbClient = {
         getUserDetails: sinon.stub().resolves(userDetails),
-        getFollowers: sinon.stub().resolves([]),
+        getFollowers: sinon.stub().resolves(followers),
         getUserIdByUsername: sinon.stub().resolves({ user_id }),
+        isFollower: sinon.stub().resolves(true),
       };
       expressApp.locals.app = new App(dbClient);
       request(expressApp)
@@ -561,7 +560,7 @@ describe('#Handlers', () => {
         .set('Cookie', ['user_id=1'])
         .expect(OK_STATUS_CODE)
         .expect(() => {
-          sinon.assert.calledOnce(dbClient.getUserDetails);
+          sinon.assert.calledTwice(dbClient.getUserDetails);
           sinon.assert.calledOnce(dbClient.getFollowers);
           sinon.assert.calledOnce(dbClient.getUserIdByUsername);
         })
