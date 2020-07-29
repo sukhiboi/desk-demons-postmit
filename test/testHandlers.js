@@ -62,6 +62,13 @@ describe('#Handlers', () => {
         })
         .expect(/john/, done);
     });
+    it('Should redirect to / when user is not logged in', done => {
+      expressApp.locals.app = new App({});
+      request(expressApp)
+        .get('/home')
+        .expect(FOUND_STATUS_CODE)
+        .expect(/Found. Redirecting to \//, done);
+    });
   });
 
   describe('GET /profile', () => {
@@ -404,6 +411,17 @@ describe('#Handlers', () => {
         .expect(FOUND_STATUS_CODE)
         .expect(/Found. Redirecting to \/home/, done);
     });
+    it('should redirect to / any login error occurred', done => {
+      const app = new App({});
+      const auth = sinon.createStubInstance(Auth);
+      auth.fetchUserDetails = sinon.stub().resolves({ login: 'sukhiboi' });
+      expressApp.locals.app = app;
+      expressApp.locals.auth = auth;
+      request(expressApp)
+        .get('/callback?error="access denied')
+        .expect(FOUND_STATUS_CODE)
+        .expect(/Found. Redirecting to \//, done);
+    });
     it('should render moreDetails page if iam a new user', done => {
       const getUserIdByGithubUsernameStub = sinon.stub().resolves();
       const app = new App({
@@ -548,6 +566,31 @@ describe('#Handlers', () => {
           sinon.assert.calledOnce(dbClient.getUserIdByUsername);
         })
         .expect(/john/, done);
+    });
+  });
+
+  describe('POST /deletePost', () => {
+    it('should respond status true when deletion happened successfully', done => {
+      const deletePostStub = sinon.stub().resolves(postId);
+      const app = new App({ deletePost: deletePostStub });
+      expressApp.locals.app = app;
+      request(expressApp)
+        .post('/deletePost')
+        .send({ postId })
+        .set('Cookie', ['user_id=1'])
+        .expect(OK_STATUS_CODE)
+        .expect({ status: true }, done);
+    });
+    it('should respond status false when deletion is not happened', done => {
+      const deletePostStub = sinon.stub().rejects(new Error('table not found'));
+      const app = new App({ deletePost: deletePostStub });
+      expressApp.locals.app = app;
+      request(expressApp)
+        .post('/deletePost')
+        .send({ postId })
+        .set('Cookie', ['user_id=1'])
+        .expect(OK_STATUS_CODE)
+        .expect({ status: false }, done);
     });
   });
 });
