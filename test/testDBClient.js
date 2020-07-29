@@ -325,14 +325,13 @@ describe('#DBClient', () => {
       const runStub = sinon.stub().yields(errorToBeThrown);
       const client = new DBClient({ run: runStub });
       try {
-        await client.addFollower(1,2);
+        await client.addFollower(1, 2);
       } catch (err) {
         assert.strictEqual(err, errorToBeThrown);
         sinon.assert.calledOnce(runStub);
       }
     });
   });
-
 
   describe('removeFollower()', () => {
     it('should remove the follower from the table', async () => {
@@ -348,7 +347,7 @@ describe('#DBClient', () => {
       const runStub = sinon.stub().yields(errorToBeThrown);
       const client = new DBClient({ run: runStub });
       try {
-        await client.removeFollower(1,2);
+        await client.removeFollower(1, 2);
       } catch (err) {
         assert.strictEqual(err, errorToBeThrown);
         sinon.assert.calledOnce(runStub);
@@ -358,7 +357,7 @@ describe('#DBClient', () => {
 
   describe('isFollower()', () => {
     it('should give true when the given user is following', async () => {
-      const getStub = sinon.stub().yields(null,{user_id:1,follower_id:2});
+      const getStub = sinon.stub().yields(null, { user_id: 1, follower_id: 2 });
       const client = new DBClient({ get: getStub });
       const result = await client.isFollower(1, 2);
       assert.isTrue(result);
@@ -366,7 +365,7 @@ describe('#DBClient', () => {
     });
 
     it('should give false when the given user is not following', async () => {
-      const getStub = sinon.stub().yields(null,null);
+      const getStub = sinon.stub().yields(null, null);
       const client = new DBClient({ get: getStub });
       const result = await client.isFollower(1, 2);
       assert.isFalse(result);
@@ -378,7 +377,7 @@ describe('#DBClient', () => {
       const getStub = sinon.stub().yields(errorToBeThrown);
       const client = new DBClient({ get: getStub });
       try {
-        await client.isFollower(1,2);
+        await client.isFollower(1, 2);
       } catch (err) {
         assert.strictEqual(err, errorToBeThrown);
         sinon.assert.calledOnce(getStub);
@@ -388,7 +387,7 @@ describe('#DBClient', () => {
 
   describe('getFollowers()', () => {
     it('should give list of followers who following the given user', async () => {
-      const expected = [{ user_id : 2 }];
+      const expected = [{ user_id: 2 }];
       const allStub = sinon.stub().yields(null, expected);
       const dbClient = new DBClient({ all: allStub });
       const actual = await dbClient.getFollowers(user_id);
@@ -410,7 +409,7 @@ describe('#DBClient', () => {
 
   describe('getFollowings()', () => {
     it('should give list of followers who following the given user', async () => {
-      const expected = [{ follower_id : 2 }];
+      const expected = [{ follower_id: 2 }];
       const allStub = sinon.stub().yields(null, expected);
       const dbClient = new DBClient({ all: allStub });
       const actual = await dbClient.getFollowings(user_id);
