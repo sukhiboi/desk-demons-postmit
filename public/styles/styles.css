@@ -465,3 +465,7 @@ button:hover {
 .follow-name {
   padding-left: 3px;
 }
+
+.delete {
+  align-self: flex-end;
+}

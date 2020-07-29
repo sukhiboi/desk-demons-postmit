@@ -10,6 +10,9 @@ mixin post(post)
             span(class="timestamp")= ` ・ ${post.posted_at}`
           .username
             span= `@${post.username}`
+        .delete
+          if post.isDeletable
+            i(class="fas fa-trash")
       .post-content= post.message
       .actions.flex
         .action
