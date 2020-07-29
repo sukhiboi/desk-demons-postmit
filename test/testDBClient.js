@@ -6,6 +6,7 @@ describe('#DBClient', () => {
   const expectedTableError = new Error('Error: table not found');
   const expectedUserDetailsError = new Error('Error: Invalid userId');
   const user_id = 1;
+  const post_id = 1;
 
   describe('getPosts()', () => {
     it('should resolve to all the records from the posts table', async () => {
@@ -425,6 +426,24 @@ describe('#DBClient', () => {
       } catch (err) {
         assert.deepStrictEqual(err, expectedTableError);
         sinon.assert.calledOnce(allStub);
+      }
+    });
+  });
+
+  describe('deletePost()', () => {
+    it('should delete the given post and return post id', async () => {
+      const execStub = sinon.stub().yields(null);
+      const dbClient = new DBClient({ exec: execStub });
+      const result = await dbClient.deletePost(post_id);
+      assert.strictEqual(result, post_id);
+    });
+    it('should delete the given post and return post id', async () => {
+      const execStub = sinon.stub().yields(expectedTableError);
+      const dbClient = new DBClient({ exec: execStub });
+      try {
+        await dbClient.deletePost(post_id);
+      } catch (err) {
+        assert.strictEqual(err, expectedTableError);
       }
     });
   });
