@@ -10,6 +10,9 @@ mixin following(following)
           .username
             span= `@${following.username}`
       span.toggle-switch.switch(onclick=`toggleFollowUnfollow('${following.username}')`)
-        input#chkTest(type='checkbox' name='chkTest' checked)
+        if following.isFollowingMe
+          input#chkTest(type='checkbox' name='chkTest' checked)
+        else
+          input#chkTest(type='checkbox' name='chkTest')
         label(for='chkTest')
-             span.toggle-track
+          span.toggle-track

@@ -21,7 +21,15 @@ html(lang='en')
                     button.popup-post-btn(onclick='showNewPostElement()') Post
         .main-panel
             .header
-                span Following
+                - let list
+                - let header
+                if followersList
+                 - list = followersList
+                 - header = "Followers"
+                else
+                 - list = followingList
+                 - header = "Following"
+                span= header
             .profile
             .big-profile
                 .profile-box
@@ -31,9 +39,9 @@ html(lang='en')
                     .name.username= profile.username
             .user-activity     
             .follow-feed
-                .posts(id="following")
+                .posts
                     include components/following.pug
-                    each item in followingList
+                    each item in list
                         +following(item)
         .search-panel
             .search-bar.flex

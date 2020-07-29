@@ -40,7 +40,7 @@ html(lang='en')
                     span(onclick=`showFollowingList('${username}')`) Following
                 div(style="cursor:pointer")
                     span.count= followers.length
-                    span Followers
+                    span(onclick=`showFollowersList('${username}')`) Followers
                 span.toggle-switch(onclick=`toggleFollowUnfollow('${username}')`)
                     if isFollower
                         input#chkTest(type='checkbox' name='chkTest' checked)

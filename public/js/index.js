@@ -126,6 +126,10 @@ const showFollowingList = function (username) {
   window.location = `/user/${username}/following`;
 };
 
+const showFollowersList = function (username) {
+  window.location = `/user/${username}/followers`;
+};
+
 const main = function () {
   initializeHomePostInput();
 };

@@ -40,7 +40,7 @@ html(lang='en')
                     span(onclick=`showFollowingList('${username}')`) Following
                 div(style="cursor:pointer")
                     span.count= followers.length
-                    span Followers
+                    span(onclick=`showFollowersList('${username}')`) Followers
             .user-activity
                 .activity-bar
                     .activity-title.activeTab(onclick="display('posts')" id="posts-tab") Posts
