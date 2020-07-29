@@ -42,6 +42,7 @@ describe('#App', () => {
         name: 'john samuel',
         posted_at: 'a few seconds ago',
         user_id: 1,
+        isDeletable: true,
         username: 'john',
         likedUsers: [],
       });
@@ -108,6 +109,7 @@ describe('#App', () => {
             name: 'john samuel',
             username: 'john',
             posted_at: 'a few seconds ago',
+            isDeletable: true,
             isLiked: true,
             message: 'hi',
             likedUsers: [],
@@ -196,6 +198,7 @@ describe('#App', () => {
             isLiked: true,
             message: 'hi',
             likedUsers: [],
+            isDeletable: true,
           },
         ],
         initials: 'J',
@@ -239,6 +242,7 @@ describe('#App', () => {
             posted_at: 'a few seconds ago',
             initials: 'JS',
             name: 'john samuel',
+            isDeletable: true,
             username: 'john',
             isLiked: false,
             user_id: 1,
@@ -591,7 +595,7 @@ describe('#App', () => {
       sinon.assert.calledOnce(removeFollowerStub);
     });
   });
-  
+
   describe('deletePost()', () => {
     it('should delete the given post and return true', async () => {
       const deletePostStub = sinon.stub().resolves(postId);
