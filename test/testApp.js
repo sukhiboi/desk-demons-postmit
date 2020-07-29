@@ -540,4 +540,29 @@ describe('#App', () => {
       sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, username);
     });
   });
+
+  describe('follow()', () => {
+    it('should give true when follower is added to the table ', async () => {
+      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id: 1 });
+      const addFollowerStub = sinon.stub().resolves(true);
+      const app = new App({
+        getUserIdByUsername: getUserIdByUsernameStub,
+        addFollower: addFollowerStub,
+      });
+      assert.isTrue(await app.follow('john',2));
+      sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, 'john');
+      sinon.assert.calledOnce(addFollowerStub);
+    });
+    it('should give false when follower is not added to the table ', async () => {
+      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id: 1 });
+      const addFollowerStub = sinon.stub().resolves(false);
+      const app = new App({
+        getUserIdByUsername: getUserIdByUsernameStub,
+        addFollower: addFollowerStub,
+      });
+      assert.isFalse(await app.follow('john',2));
+      sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, 'john');
+      sinon.assert.calledOnce(addFollowerStub);
+    });
+  });
 });
