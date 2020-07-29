@@ -1,9 +1,9 @@
 mixin following(following)
-  .searchedUser(onclick=`sendRequestForProfile('${following.username}')`)
+  .searchedUser
     .flex
       .profile-pic
         span= following.initials
-      .user-details
+      .user-details.follow-name(onclick=`sendRequestForProfile('${following.username}')`)
         .name
           span= following.name
         .username

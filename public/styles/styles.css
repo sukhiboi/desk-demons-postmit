@@ -453,11 +453,15 @@ button:hover {
   margin-left: 16rem;
 }
 
-.switch{
+.switch {
   margin-left: 25rem;
   margin-top: 0.4rem;
 }
 
-.follow-feed{
+.follow-feed {
   margin-top: 1rem;
+}
+
+.follow-name {
+  padding-left: 3px;
 }
