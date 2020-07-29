@@ -549,7 +549,7 @@ describe('#App', () => {
         getUserIdByUsername: getUserIdByUsernameStub,
         addFollower: addFollowerStub,
       });
-      assert.isTrue(await app.follow('john',2));
+      assert.isTrue(await app.follow('john', 2));
       sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, 'john');
       sinon.assert.calledOnce(addFollowerStub);
     });
@@ -560,9 +560,34 @@ describe('#App', () => {
         getUserIdByUsername: getUserIdByUsernameStub,
         addFollower: addFollowerStub,
       });
-      assert.isFalse(await app.follow('john',2));
+      assert.isFalse(await app.follow('john', 2));
       sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, 'john');
       sinon.assert.calledOnce(addFollowerStub);
+    });
+  });
+
+  describe('unfollow()', () => {
+    it('should give true when follower is added to the table ', async () => {
+      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id: 1 });
+      const removeFollowerStub = sinon.stub().resolves(true);
+      const app = new App({
+        getUserIdByUsername: getUserIdByUsernameStub,
+        removeFollower: removeFollowerStub,
+      });
+      assert.isTrue(await app.unfollow('john', 2));
+      sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, 'john');
+      sinon.assert.calledOnce(removeFollowerStub);
+    });
+    it('should give false when follower is not added to the table ', async () => {
+      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id: 1 });
+      const removeFollowerStub = sinon.stub().resolves(false);
+      const app = new App({
+        getUserIdByUsername: getUserIdByUsernameStub,
+        removeFollower: removeFollowerStub,
+      });
+      assert.isFalse(await app.unfollow('john', 2));
+      sinon.assert.calledOnceWithExactly(getUserIdByUsernameStub, 'john');
+      sinon.assert.calledOnce(removeFollowerStub);
     });
   });
 });
