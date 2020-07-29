@@ -243,7 +243,7 @@ describe('#DBClient', () => {
       sinon.assert.calledOnce(runStub);
     });
 
-    it('should reject error when user details doesn\'t saved', async () => {
+    it("should reject error when user details doesn't saved", async () => {
       const errorToBeThrown = new Error('users table not found');
       const runStub = sinon.stub().yields(errorToBeThrown);
       const client = new DBClient({ run: runStub });
@@ -307,6 +307,125 @@ describe('#DBClient', () => {
       } catch (err) {
         assert.strictEqual(err, expectedError);
         sinon.assert.calledOnce(getStub);
+      }
+    });
+  });
+
+  describe('addFollower()', () => {
+    it('should add the follower into the table', async () => {
+      const runStub = sinon.stub().yields(null);
+      const client = new DBClient({ run: runStub });
+      const result = await client.addFollower(1, 2);
+      assert.isTrue(result);
+      sinon.assert.calledOnce(runStub);
+    });
+
+    it("should reject error when follower table doesn't exists", async () => {
+      const errorToBeThrown = new Error('users table not found');
+      const runStub = sinon.stub().yields(errorToBeThrown);
+      const client = new DBClient({ run: runStub });
+      try {
+        await client.addFollower(1,2);
+      } catch (err) {
+        assert.strictEqual(err, errorToBeThrown);
+        sinon.assert.calledOnce(runStub);
+      }
+    });
+  });
+
+
+  describe('removeFollower()', () => {
+    it('should remove the follower from the table', async () => {
+      const runStub = sinon.stub().yields(null);
+      const client = new DBClient({ run: runStub });
+      const result = await client.removeFollower(1, 2);
+      assert.isTrue(result);
+      sinon.assert.calledOnce(runStub);
+    });
+
+    it("should reject error when follower table doesn't exists", async () => {
+      const errorToBeThrown = new Error('users table not found');
+      const runStub = sinon.stub().yields(errorToBeThrown);
+      const client = new DBClient({ run: runStub });
+      try {
+        await client.removeFollower(1,2);
+      } catch (err) {
+        assert.strictEqual(err, errorToBeThrown);
+        sinon.assert.calledOnce(runStub);
+      }
+    });
+  });
+
+  describe('isFollower()', () => {
+    it('should give true when the given user is following', async () => {
+      const getStub = sinon.stub().yields(null,{user_id:1,follower_id:2});
+      const client = new DBClient({ get: getStub });
+      const result = await client.isFollower(1, 2);
+      assert.isTrue(result);
+      sinon.assert.calledOnce(getStub);
+    });
+
+    it('should give false when the given user is not following', async () => {
+      const getStub = sinon.stub().yields(null,null);
+      const client = new DBClient({ get: getStub });
+      const result = await client.isFollower(1, 2);
+      assert.isFalse(result);
+      sinon.assert.calledOnce(getStub);
+    });
+
+    it("should reject error when follower table doesn't exists", async () => {
+      const errorToBeThrown = new Error('users table not found');
+      const getStub = sinon.stub().yields(errorToBeThrown);
+      const client = new DBClient({ get: getStub });
+      try {
+        await client.isFollower(1,2);
+      } catch (err) {
+        assert.strictEqual(err, errorToBeThrown);
+        sinon.assert.calledOnce(getStub);
+      }
+    });
+  });
+
+  describe('getFollowers()', () => {
+    it('should give list of followers who following the given user', async () => {
+      const expected = [{ user_id : 2 }];
+      const allStub = sinon.stub().yields(null, expected);
+      const dbClient = new DBClient({ all: allStub });
+      const actual = await dbClient.getFollowers(user_id);
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledOnce(allStub);
+    });
+
+    it('should give error when table not found', async () => {
+      const allStub = sinon.stub().yields(expectedTableError, null);
+      const dbClient = new DBClient({ all: allStub });
+      try {
+        assert.isNull(await dbClient.getFollowers(user_id));
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(allStub);
+      }
+    });
+  });
+
+  describe('getFollowings()', () => {
+    it('should give list of followers who following the given user', async () => {
+      const expected = [{ follower_id : 2 }];
+      const allStub = sinon.stub().yields(null, expected);
+      const dbClient = new DBClient({ all: allStub });
+      const actual = await dbClient.getFollowings(user_id);
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledOnce(allStub);
+    });
+
+    it('should give error when table not found', async () => {
+      const allStub = sinon.stub().yields(expectedTableError, null);
+      const dbClient = new DBClient({ all: allStub });
+      try {
+        assert.isNull(await dbClient.getFollowings(user_id));
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(allStub);
       }
     });
   });
