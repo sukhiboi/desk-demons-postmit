@@ -1,16 +1,16 @@
 mixin post(post)
   .card
-    .post(ondblclick=`displayHeart(${post.id})` id=`post_${post.id}`)
+    .post(ondblclick=`displayHeart(${post.postId})` id=`post_${post.postId}`)
       .delete
         if post.isDeletable
-          i(class="fas fa-trash" onclick=`showDeletePopUp(${post.id})`)
+          i(class="fas fa-trash" onclick=`showDeletePopUp(${post.postId})`)
       .flex
         .profile-pic
           span= post.initials
         .user-details
           .name
             span= post.name 
-            span(class="timestamp")= ` ・ ${post.posted_at}`
+            span(class="timestamp")= ` ・ ${post.postedAt}`
           .username
             span= `@${post.username}`
       .post-content= post.message
@@ -21,6 +21,6 @@ mixin post(post)
           if post.isLiked
            - className="fas fa-heart icon likeColor"
            - countClass = "likeColor"
-          i(class=className onclick=`toggleLikeUnlike(${post.id})` id=`like_${post.id}`) 
+          i(class=className onclick=`toggleLikeUnlike(${post.postId})` id=`like_${post.postId}`) 
           span(class=`count ${countClass}`)= post.likedUsers.length?post.likedUsers.length:''
-    i(class='fas fa-heart fa-3x instagramLike' id=`heart_${post.id}` ondblclick=`displayHeart(${post.id})`) 
+    i(class='fas fa-heart fa-3x instagramLike' id=`heart_${post.postId}` ondblclick=`displayHeart(${post.postId})`) 

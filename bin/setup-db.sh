@@ -5,49 +5,59 @@ databasePath=./database/postmitDatabase.db
 
 sqlite3 $databasePath <<'END_SQL'
 CREATE TABLE IF NOT EXISTS users (
-	user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	username VARCHAR(39) UNIQUE NOT NULL,
-	github_username VARCHAR(39) UNIQUE NOT NULL,
-	name VARCHAR(100),
-	bio VARCHAR(200),
+	userId INTEGER PRIMARY KEY,
+	username VARCHAR(15) UNIQUE NOT NULL,
+	githubUsername VARCHAR(39) UNIQUE NOT NULL,
+	name VARCHAR(50),
+	bio VARCHAR(160),
 	dob DATE,
-	joined_date DATE NOT NULL
+	joinedDate DATE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS posts (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	user_id NUMERIC NOT NULL,
+	postId INTEGER PRIMARY KEY,
+	userId INTEGER NOT NULL,
 	message VARCHAR(180) NOT NULL,
-	posted_at TIMESTAMP NOT NULL
+	postedAt TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS responses (
-	post_id NUMBER NOT NULL,
-	response_id NUMBER PRIMARY KEY
+	postId INTEGER NOT NULL,
+	responseId INTEGER PRIMARY KEY
 );
 
 CREATE TABLE IF NOT EXISTS likes (
-	post_id NUMBER NOT NULL,
-	user_id NUMERIC NOT NULL
+	postId INTEGER NOT NULL,
+	userId INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS reposts (
-	post_id NUMBER NOT NULL,
-	user_id NUMERIC NOT NULL
+	postId INTEGER NOT NULL,
+	userId INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS bookmarks (
-	post_id NUMBER NOT NULL,
-	user_id NUMERIC NOT NULL
+	postId INTEGER NOT NULL,
+	userId INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS followers (
-	user_id NUMERIC NOT NULL,
-	follower_id NUMERIC NOT NULL
+	userId INTEGER NOT NULL,
+	followerId INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS hashtags (
-	post_id NUMBER NOT NULL,
-	hashtag VARCHAR(10) NOT NULL
+	postId INTEGER NOT NULL,
+	hashtag VARCHAR(20) NOT NULL
 );
+.mode csv
+.separator '|'
+.import "./data/usersData.csv" users	
+.import "./data/postsData.csv" posts	
+.import "./data/responsesData.csv" responses
+.import "./data/likesData.csv" likes
+.import "./data/repostsData.csv" reposts
+.import "./data/bookmarksData.csv" bookmarks
+.import "./data/followersData.csv" followers
+.import "./data/hashtagsData.csv" hashtags
 END_SQL

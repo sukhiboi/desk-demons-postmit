@@ -91,7 +91,7 @@ const saveUser = async function (username) {
   }, {});
   userDetails['githubUsername'] = username;
   sendPOSTRequest('/save-user', userDetails, response => {
-    if (Number(response.user_id)) {
+    if (Number(response.userId)) {
       window.location.href = '/home';
     } else {
       location.reload();
