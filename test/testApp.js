@@ -2,7 +2,7 @@ const sinon = require('sinon');
 const { assert } = require('chai');
 const App = require('../lib/app');
 
-describe('#App', () => {
+describe.skip('#App', () => {
   const userId = 1;
   const postId = 1;
 
