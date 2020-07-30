@@ -18,7 +18,7 @@ html(lang='en')
                 .app-name POSTMIT
                 .pages
                     a.page(href='/home') Home
-                    a.page(href=`/profile`) Profile
+                    a.page(href=`/user/${loggedUser}`) Profile
                     button.popup-post-btn(onclick='showNewPostElement()') Post
         .main-panel
             .header
@@ -44,7 +44,7 @@ html(lang='en')
                         span.count= followers.length
                         span(onclick=`showFollowersList('${username}')`) Followers
                 div.follow-btn-wrapper
-                    button.follow-btn.primary-btn(onclick=`toggleFollowUnfollow('${username}')`)= isFollower ? 'Unfollow' : 'Follow'
+                    button.follow-btn.primary-btn(onclick=`toggleFollowUnfollow('${username}')`)= isFollowing ? 'Unfollow' : 'Follow'
             .user-activity
                 .activity-bar
                     .activity-title.activeTab(onclick="display('posts')" id="posts-tab") Posts

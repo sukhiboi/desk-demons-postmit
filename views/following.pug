@@ -17,7 +17,7 @@ html(lang='en')
                 .app-name POSTMIT
                 .pages
                     a.page(href='/home') Home
-                    a.page(href=`/profile`) Profile
+                    a.page(href=`/user/${loggedUser}`) Profile
                     button.popup-post-btn(onclick='showNewPostElement()') Post
         .main-panel
             .header
