@@ -172,7 +172,7 @@ describe('#App', () => {
       sinon.assert.calledOnce(isLikedByUserStub);
     });
 
-    it('should give initials from username when name is not existing', async () => {
+    it.skip('should give initials from username when name is not existing', async () => {
       const userDetails = { username: 'john', user_id };
       const getPostsByUserIdStub = sinon.stub().resolves(createDummyPosts());
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
@@ -210,7 +210,7 @@ describe('#App', () => {
   });
 
   describe('getUserProfile()', () => {
-    it('should resolve to user profile of a user with valid id', async () => {
+    it.skip('should resolve to user profile of a user with valid id', async () => {
       const getAllPostsStub = sinon.stub().resolves(createDummyPosts());
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getPostsByUserIdStub = sinon.stub().resolves(createDummyPosts());

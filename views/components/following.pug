@@ -1,7 +1,7 @@
 mixin following(following)
   .searchedUser
     .flex
-      div(onclick=`sendRequestForProfile('${following.username}')` style="display:flex; cursor:pointer;width:30%")
+      div.userDetails(onclick=`sendRequestForProfile('${following.username}')`)
         .profile-pic
           span= following.initials
         .user-details.follow-name
@@ -9,10 +9,5 @@ mixin following(following)
             span= following.name
           .username
             span= `@${following.username}`
-      span.toggle-switch.switch(onclick=`toggleFollowUnfollow('${following.username}')`)
-        if following.isFollowingMe
-          input#chkTest(type='checkbox' name='chkTest' checked)
-        else
-          input#chkTest(type='checkbox' name='chkTest')
-        label(for='chkTest')
-          span.toggle-track
+      div.follow-btn-wrapper
+        button.follow-btn.primary-btn(onclick=`toggleFollowUnfollow('${following.username}',${following.isFollowingMe})`)= following.isFollowingMe ? 'Unfollow' : 'Follow'

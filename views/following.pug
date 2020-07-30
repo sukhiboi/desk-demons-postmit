@@ -21,6 +21,8 @@ html(lang='en')
                     button.popup-post-btn(onclick='showNewPostElement()') Post
         .main-panel
             .header
+                a(href=`/user/${profile.username}`)
+                    i(class="fas fa-arrow-left fa-2x back-arrow")
                 - let list
                 - let header
                 if followersList
@@ -36,7 +38,7 @@ html(lang='en')
                     .initials= profile.initials
                 .details
                     .name= profile.name
-                    .name.username= profile.username
+                    .name.username= `@${profile.username}`
             .user-activity     
             .follow-feed
                 .posts

@@ -67,6 +67,8 @@
 
 .extra-details {
   display: flex;
+  justify-content: space-between;
+  margin-right: 2rem;
 }
 
 .extra-details > div {

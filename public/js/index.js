@@ -114,9 +114,11 @@ const search = function () {
   sendPOSTRequest('/search', { searchInput }, showSearchResult);
 };
 
-const toggleFollowUnfollow = function (username) {
-  if (event.target.checked) {
-    sendPOSTRequest('/follow', { username }, () => location.reload());
+const toggleFollowUnfollow = function (username, isFollowing) {
+  if (!isFollowing) {
+    sendPOSTRequest('/follow', { username }, result => {
+      location.reload();
+    });
     return;
   }
   sendPOSTRequest('/unfollow', { username }, () => location.reload());
