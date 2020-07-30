@@ -7,26 +7,38 @@ const Auth = require('../lib/auth');
 const OK_STATUS_CODE = 200;
 const FOUND_STATUS_CODE = 302;
 
-describe.skip('#Handlers', () => {
-  const user_id = 1,
+describe('#Handlers', () => {
+  const userId = 1,
     postId = 1;
 
   const userDetails = {
     name: 'john samuel',
     username: 'john',
-    user_id,
+    userId: userId,
   };
   const createDummyPosts = function () {
-    return [{ id: postId, user_id, posted_at: new Date(), message: 'hi' }];
+    return [
+      { postId: postId, userId: userId, postedAt: new Date(), message: 'hi' },
+    ];
   };
+
+  const getUserDetailsStub = sinon
+    .stub()
+    .resolves({ userId, name: 'john', username: 'john' });
+  const isLikedByUserStub = sinon.stub().resolves(true);
+  const getAllPostLikersStub = sinon.stub().resolves([]);
+  const getUserPostsStub = sinon.stub().resolves(createDummyPosts());
+  const getFollowingStub = sinon.stub().resolves([]);
+  const getFollowersStub = sinon.stub().resolves([]);
+  const getIdByUsernameStub = sinon.stub().resolves({ userId });
+  const getLikedPostsStub = sinon.stub().resolves([]);
 
   describe('GET /', () => {
     it('should serve the login page', done => {
-      const app = new App({});
+      const app = new App({ getUserDetails: getUserDetailsStub });
       expressApp.locals.app = app;
       request(expressApp)
         .get('/')
-        .set('Cookie', ['user_id=1'])
         .expect(OK_STATUS_CODE)
         .expect(/POSTMIT/, done);
     });
@@ -34,32 +46,25 @@ describe.skip('#Handlers', () => {
 
   describe('GET /home', () => {
     it('Should serve the Home Page with Posts', done => {
-      const followings = [{ follower_id: 2 }];
-      const getFollowingsStub = sinon.stub().resolves(followings);
-      const getPostsByUserIdStub = sinon.stub().resolves([]);
-      const getUserDetailsStub = sinon.stub().resolves(userDetails);
-      const isLikedByUserStub = sinon.stub().resolves(true);
-      const getAllLikedUsersStub = sinon.stub().resolves([]);
       const app = new App({
-        getFollowings: getFollowingsStub,
-        getPostsByUserId: getPostsByUserIdStub,
         getUserDetails: getUserDetailsStub,
-        isLikedByUser: isLikedByUserStub,
-        getAllLikedUsers: getAllLikedUsersStub,
+        getFollowing: getFollowingStub,
+        getUserPosts: getUserPostsStub,
+        getAllPostLikers: getAllPostLikersStub,
       });
       expressApp.locals.app = app;
       request(expressApp)
         .get('/home')
-        .set('Cookie', ['user_id=1'])
+        .set('Cookie', ['userId=1'])
         .expect(OK_STATUS_CODE)
         .expect(() => {
-          sinon.assert.calledOnce(getFollowingsStub);
-          sinon.assert.calledOnce(getUserDetailsStub);
+          sinon.assert.calledOnce(getFollowingStub);
         })
         .expect(/J/, done);
     });
+
     it('Should redirect to / when user is not logged in', done => {
-      expressApp.locals.app = new App({});
+      expressApp.locals.app = new App({ getUserDetails: getUserDetailsStub });
       request(expressApp)
         .get('/home')
         .expect(FOUND_STATUS_CODE)
@@ -67,173 +72,71 @@ describe.skip('#Handlers', () => {
     });
   });
 
-  describe('GET /profile', () => {
+  describe.skip('GET /profile', () => {
     it('should serve the Profile Page with posts of that user', done => {
-      const getUserDetailsStub = sinon.stub().resolves(userDetails);
-      const isLikedByUserStub = sinon.stub().resolves(true);
-      const getAllLikedUsersStub = sinon.stub().resolves([]);
-      const getPostsByUserIdStub = sinon.stub().resolves(createDummyPosts());
-      const getFollowingsStub = sinon.stub().resolves([]);
-      const getFollowersStub = sinon.stub().resolves([]);
       expressApp.locals.app = new App({
         getUserDetails: getUserDetailsStub,
-        getPostsByUserId: getPostsByUserIdStub,
+        getUserPosts: getUserPostsStub,
         isLikedByUser: isLikedByUserStub,
-        getAllLikedUsers: getAllLikedUsersStub,
-        getFollowings: getFollowingsStub,
+        getAllPostLikers: getAllPostLikersStub,
+        getFollowing: getFollowingStub,
         getFollowers: getFollowersStub,
+        getIdByUsername: getIdByUsernameStub,
+        getLikedPosts: getLikedPostsStub,
       });
       request(expressApp)
-        .get('/profile')
-        .set('Cookie', ['user_id=1'])
+        .get('/user/john')
+        .set('Cookie', ['userId=1'])
         .expect(OK_STATUS_CODE)
         .expect(() => {
-          sinon.assert.calledTwice(getUserDetailsStub);
-          sinon.assert.calledOnce(getPostsByUserIdStub);
-          sinon.assert.calledWith(getUserDetailsStub, user_id);
-          sinon.assert.calledOnceWithExactly(getPostsByUserIdStub, user_id);
+          sinon.assert.calledThrice(getUserDetailsStub);
+          sinon.assert.calledOnce(getUserPostsStub);
+          sinon.assert.calledWith(getUserDetailsStub, userId);
+          sinon.assert.calledOnceWithExactly(getUserPostsStub, userId);
         })
         .expect(/john/, done);
     });
   });
 
   describe('POST /add-new-post', () => {
-    const dummyPost = { message: 'hi' };
     it('should response back with status true of newly added post', done => {
-      const addPostStub = sinon.stub().resolves(true);
+      const savePostStub = sinon.stub().resolves();
       expressApp.locals.app = new App({
-        addPost: addPostStub,
+        getUserDetails: getUserDetailsStub,
+        savePost: savePostStub,
       });
       request(expressApp)
         .post('/add-new-post')
         .send({ message: 'hi' })
-        .set('Cookie', ['user_id=1'])
+        .set('Cookie', ['userId=1'])
         .expect(OK_STATUS_CODE)
         .expect(() => {
-          sinon.assert.calledOnceWithExactly(addPostStub, {
-            user_id,
-            message: 'hi',
-          });
+          sinon.assert.calledOnce(savePostStub);
         })
         .expect({ status: true }, done);
     });
-
-    it('should response back with status false if an error occurred', done => {
-      const addPostStub = sinon.stub().resolves(false);
-      expressApp.locals.app = new App({ addPost: addPostStub });
-      request(expressApp)
-        .post('/add-new-post')
-        .set('Cookie', ['user_id=1'])
-        .send(dummyPost)
-        .expect(OK_STATUS_CODE)
-        .expect(() => {
-          sinon.assert.calledOnce(addPostStub);
-          sinon.assert.calledOnceWithExactly(addPostStub, {
-            user_id,
-            ...dummyPost,
-          });
-        })
-        .expect({ status: false }, done);
-    });
   });
 
-  describe('POST /like', () => {
+  describe.skip('POST /like', () => {
     it('should like the given post when it is not liked', done => {
-      const isLikedByUserStub = sinon.stub().resolves(false);
-      const likePostStub = sinon.stub().resolves(true);
+      const likePostStub = sinon.stub().resolves();
+      const unlikePostStub = sinon.stub().resolves();
       expressApp.locals.app = new App({
+        getUserDetails: getUserDetailsStub,
+        unlikePost: unlikePostStub,
         likePost: likePostStub,
-        isLikedByUser: isLikedByUserStub,
+        getAllPostLikers: getAllPostLikersStub,
       });
       request(expressApp)
-        .post('/like')
-        .set('Cookie', ['user_id=1'])
+        .post('/toggleLike')
+        .set('Cookie', ['userId=1'])
         .send({ postId })
         .expect(OK_STATUS_CODE)
         .expect(() => {
-          sinon.assert.calledOnce(isLikedByUserStub);
-          sinon.assert.calledOnce(likePostStub);
-          sinon.assert.calledOnceWithExactly(
-            isLikedByUserStub,
-            user_id,
-            postId
-          );
-          sinon.assert.calledOnceWithExactly(likePostStub, postId, user_id);
+          sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
+          sinon.assert.calledOnceWithExactly(likePostStub, postId, userId);
         })
         .expect({ status: true }, done);
-    });
-    it('should not like the given post when it is liked', done => {
-      const isLikedByUserStub = sinon.stub().resolves(true);
-      const likePostStub = sinon.stub().resolves(false);
-      expressApp.locals.app = new App({
-        likePost: likePostStub,
-        isLikedByUser: isLikedByUserStub,
-      });
-      request(expressApp)
-        .post('/like')
-        .set('Cookie', ['user_id=1'])
-        .send({ postId })
-        .expect(OK_STATUS_CODE)
-        .expect(() => {
-          sinon.assert.calledOnce(isLikedByUserStub);
-          sinon.assert.notCalled(likePostStub);
-          sinon.assert.calledOnceWithExactly(
-            isLikedByUserStub,
-            user_id,
-            postId
-          );
-        })
-        .expect({ status: false }, done);
-    });
-  });
-
-  describe('POST /unlike', () => {
-    it('should unlike the given post when it is liked', done => {
-      const isLikedByUserStub = sinon.stub().resolves(true);
-      const unlikePostStub = sinon.stub().resolves(true);
-      expressApp.locals.app = new App({
-        unlikePost: unlikePostStub,
-        isLikedByUser: isLikedByUserStub,
-      });
-      request(expressApp)
-        .post('/unlike')
-        .send({ postId })
-        .set('Cookie', ['user_id=1'])
-        .expect(OK_STATUS_CODE)
-        .expect(() => {
-          sinon.assert.calledOnce(isLikedByUserStub);
-          sinon.assert.calledOnce(unlikePostStub);
-          sinon.assert.calledOnceWithExactly(
-            isLikedByUserStub,
-            user_id,
-            postId
-          );
-          sinon.assert.calledOnceWithExactly(unlikePostStub, postId, user_id);
-        })
-        .expect({ status: true }, done);
-    });
-    it('should not unlike the given post when it is not liked', done => {
-      const isLikedByUserStub = sinon.stub().resolves(false);
-      const unlikePostStub = sinon.stub().resolves(false);
-      expressApp.locals.app = new App({
-        unlikePost: unlikePostStub,
-        isLikedByUser: isLikedByUserStub,
-      });
-      request(expressApp)
-        .post('/unlike')
-        .set('Cookie', ['user_id=1'])
-        .send({ postId })
-        .expect(OK_STATUS_CODE)
-        .expect(() => {
-          sinon.assert.calledOnce(isLikedByUserStub);
-          sinon.assert.notCalled(unlikePostStub);
-          sinon.assert.calledOnceWithExactly(
-            isLikedByUserStub,
-            user_id,
-            postId
-          );
-        })
-        .expect({ status: false }, done);
     });
   });
 
@@ -241,29 +144,30 @@ describe.skip('#Handlers', () => {
     it('should give all the matching users for the search input', done => {
       const getMatchingUsersStub = sinon
         .stub()
-        .resolves([{ username: 'john' }]);
+        .resolves([{ username: 'john', name: 'john' }]);
       expressApp.locals.app = new App({
+        getUserDetails: getUserDetailsStub,
         getMatchingUsers: getMatchingUsersStub,
       });
       request(expressApp)
         .post('/search')
-        .set('Cookie', ['user_id=1'])
+        .set('Cookie', ['userId=1'])
         .send({ searchInput: 'j' })
         .expect(OK_STATUS_CODE)
         .expect(() => {
           sinon.assert.calledOnceWithExactly(getMatchingUsersStub, 'j');
         })
-        .expect([{ username: 'john', initials: 'J' }], done);
+        .expect([{ username: 'john', name: 'john', initials: 'J' }], done);
     });
   });
 
   describe('POST /save-user', () => {
     it('should save a user in database', done => {
       const saveUserStub = sinon.stub().resolves();
-      const getUserIdByGithubUsernameStub = sinon.stub().resolves({ user_id });
       expressApp.locals.app = new App({
+        getUserDetails: getUserDetailsStub,
         saveUser: saveUserStub,
-        getUserIdByGithubUsername: getUserIdByGithubUsernameStub,
+        getIdByUsername: getIdByUsernameStub,
       });
       const userDetails = {
         githubUsername: 'hello',
@@ -279,54 +183,29 @@ describe.skip('#Handlers', () => {
         .expect(() => {
           sinon.assert.calledOnceWithExactly(saveUserStub, userDetails);
         })
-        .expect({ user_id }, done);
-    });
-
-    it('should response back with errMessage if saveUser fails', done => {
-      const expectedError = new Error('table not found');
-      const saveUserStub = sinon.stub().rejects(expectedError);
-      const getUserIdByGithubUsernameStub = sinon.stub().resolves({ user_id });
-      expressApp.locals.app = new App({
-        saveUser: saveUserStub,
-        getUserIdByGithubUsername: getUserIdByGithubUsernameStub,
-      });
-      const userDetails = {
-        githubUsername: 'hello',
-        username: 'me',
-        dob: '2001-02-18',
-        bio: 'something',
-        name: 'someone',
-      };
-      request(expressApp)
-        .post('/save-user')
-        .send(userDetails)
-        .expect(OK_STATUS_CODE)
-        .expect(() => {
-          sinon.assert.calledOnceWithExactly(saveUserStub, userDetails);
-        })
-        .expect({ errMsg: expectedError.message }, done);
+        .expect({ status: true }, done);
     });
   });
 
-  describe('GET /user/:username', () => {
+  describe.skip('GET /user/:username', () => {
     it('should serve the Profile Page of searched user', done => {
       const user_id = 2;
       const userDetails = { username: 'jani', name: 'jani', user_id };
       const getUserIdByUsernameStub = sinon.stub().resolves({ user_id });
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().resolves(true);
-      const getAllLikedUsersStub = sinon.stub().resolves([]);
-      const getPostsByUserIdStub = sinon.stub().resolves(createDummyPosts());
-      const getFollowingsStub = sinon.stub().resolves([]);
+      const getAllPostLikersStub = sinon.stub().resolves([]);
+      const getUserPostsStub = sinon.stub().resolves(createDummyPosts());
+      const getFollowingStub = sinon.stub().resolves([]);
       const getFollowersStub = sinon.stub().resolves([]);
       const isFollowerStub = sinon.stub().resolves(true);
       expressApp.locals.app = new App({
         getUserIdByUsername: getUserIdByUsernameStub,
         getUserDetails: getUserDetailsStub,
-        getPostsByUserId: getPostsByUserIdStub,
+        getUserPosts: getUserPostsStub,
         isLikedByUser: isLikedByUserStub,
-        getAllLikedUsers: getAllLikedUsersStub,
-        getFollowings: getFollowingsStub,
+        getAllPostLikers: getAllPostLikersStub,
+        getFollowing: getFollowingStub,
         getFollowers: getFollowersStub,
         isFollower: isFollowerStub,
       });
@@ -337,29 +216,29 @@ describe.skip('#Handlers', () => {
         .expect(() => {
           sinon.assert.calledOnce(getUserIdByUsernameStub);
           sinon.assert.calledTwice(getUserDetailsStub);
-          sinon.assert.calledOnce(getPostsByUserIdStub);
+          sinon.assert.calledOnce(getUserPostsStub);
           sinon.assert.calledWith(getUserDetailsStub, 2);
-          sinon.assert.calledOnceWithExactly(getPostsByUserIdStub, 2);
+          sinon.assert.calledOnceWithExactly(getUserPostsStub, 2);
         })
         .expect(/jani/, done);
     });
 
     it('should serve the Profile Page of logged user when the searched user is logged user', done => {
-      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id });
+      const getUserIdByUsernameStub = sinon.stub().resolves({ userId: userId });
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const isLikedByUserStub = sinon.stub().resolves(true);
-      const getAllLikedUsersStub = sinon.stub().resolves([]);
-      const getPostsByUserIdStub = sinon.stub().resolves(createDummyPosts());
-      const getFollowingsStub = sinon.stub().resolves([]);
+      const getAllPostLikersStub = sinon.stub().resolves([]);
+      const getUserPostsStub = sinon.stub().resolves(createDummyPosts());
+      const getFollowingStub = sinon.stub().resolves([]);
       const getFollowersStub = sinon.stub().resolves([]);
       const isFollowerStub = sinon.stub().resolves(true);
       expressApp.locals.app = new App({
         getUserIdByUsername: getUserIdByUsernameStub,
         getUserDetails: getUserDetailsStub,
-        getPostsByUserId: getPostsByUserIdStub,
+        getUserPosts: getUserPostsStub,
         isLikedByUser: isLikedByUserStub,
-        getAllLikedUsers: getAllLikedUsersStub,
-        getFollowings: getFollowingsStub,
+        getAllPostLikers: getAllPostLikersStub,
+        getFollowing: getFollowingStub,
         getFollowers: getFollowersStub,
         isFollower: isFollowerStub,
       });
@@ -370,15 +249,15 @@ describe.skip('#Handlers', () => {
         .expect(() => {
           sinon.assert.calledOnce(getUserIdByUsernameStub);
           sinon.assert.calledTwice(getUserDetailsStub);
-          sinon.assert.calledOnce(getPostsByUserIdStub);
-          sinon.assert.calledWith(getUserDetailsStub, user_id);
-          sinon.assert.calledOnceWithExactly(getPostsByUserIdStub, user_id);
+          sinon.assert.calledOnce(getUserPostsStub);
+          sinon.assert.calledWith(getUserDetailsStub, userId);
+          sinon.assert.calledOnceWithExactly(getUserPostsStub, userId);
         })
         .expect(/john/, done);
     });
   });
 
-  describe('GET /auth', () => {
+  describe.skip('GET /auth', () => {
     it('should redirect me to the authorize url', done => {
       const app = new App({});
       const auth = sinon.createStubInstance(Auth);
@@ -392,9 +271,11 @@ describe.skip('#Handlers', () => {
     });
   });
 
-  describe('GET /callback', () => {
+  describe.skip('GET /callback', () => {
     it('should redirect to /home if user_id cookie is present', done => {
-      const getUserIdByGithubUsernameStub = sinon.stub().resolves({ user_id });
+      const getUserIdByGithubUsernameStub = sinon
+        .stub()
+        .resolves({ userId: userId });
       const app = new App({
         getUserIdByGithubUsername: getUserIdByGithubUsernameStub,
       });
@@ -434,7 +315,7 @@ describe.skip('#Handlers', () => {
     });
   });
 
-  describe('POST /isUsernameAvailable', () => {
+  describe.skip('POST /isUsernameAvailable', () => {
     it('should respond with true if the username is available', done => {
       const getUserIdByUsernameStub = sinon.stub().resolves();
       const app = new App({ getUserIdByUsername: getUserIdByUsernameStub });
@@ -446,7 +327,7 @@ describe.skip('#Handlers', () => {
         .expect({ status: true }, done);
     });
     it('should respond with false if the username is not available', done => {
-      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id });
+      const getUserIdByUsernameStub = sinon.stub().resolves({ userId: userId });
       const app = new App({ getUserIdByUsername: getUserIdByUsernameStub });
       expressApp.locals.app = app;
       request(expressApp)
@@ -457,9 +338,9 @@ describe.skip('#Handlers', () => {
     });
   });
 
-  describe('POST /follow', () => {
+  describe.skip('POST /follow', () => {
     it('should respond with true when the follower added successfully', done => {
-      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id: 1 });
+      const getUserIdByUsernameStub = sinon.stub().resolves({ userId: 1 });
       const addFollowerStub = sinon.stub().resolves(true);
       const app = new App({
         getUserIdByUsername: getUserIdByUsernameStub,
@@ -474,7 +355,7 @@ describe.skip('#Handlers', () => {
         .expect({ status: true }, done);
     });
     it('should respond with false when follower added unsuccessful', done => {
-      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id });
+      const getUserIdByUsernameStub = sinon.stub().resolves({ userId: userId });
       const addFollowerStub = sinon.stub().resolves(false);
       const app = new App({
         getUserIdByUsername: getUserIdByUsernameStub,
@@ -490,9 +371,9 @@ describe.skip('#Handlers', () => {
     });
   });
 
-  describe('POST /unfollow', () => {
+  describe.skip('POST /unfollow', () => {
     it('should respond with true when the follower added successfully', done => {
-      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id: 1 });
+      const getUserIdByUsernameStub = sinon.stub().resolves({ userId: 1 });
       const removeFollowerStub = sinon.stub().resolves(true);
       const app = new App({
         getUserIdByUsername: getUserIdByUsernameStub,
@@ -507,7 +388,7 @@ describe.skip('#Handlers', () => {
         .expect({ status: true }, done);
     });
     it('should respond with false when follower added unsuccessful', done => {
-      const getUserIdByUsernameStub = sinon.stub().resolves({ user_id });
+      const getUserIdByUsernameStub = sinon.stub().resolves({ userId: userId });
       const removeFollowerStub = sinon.stub().resolves(false);
       const app = new App({
         getUserIdByUsername: getUserIdByUsernameStub,
@@ -525,11 +406,11 @@ describe.skip('#Handlers', () => {
 
   describe.skip('GET /user/:username/following', () => {
     it('should serve followings of given user', done => {
-      const followings = [{ name: 'samuel', username: 'samuel', user_id: 2 }];
+      const followings = [{ name: 'samuel', username: 'samuel', userId: 2 }];
       const dbClient = {
         getUserDetails: sinon.stub().resolves(userDetails),
-        getFollowings: sinon.stub().resolves(followings),
-        getUserIdByUsername: sinon.stub().resolves({ user_id }),
+        getFollowing: sinon.stub().resolves(followings),
+        getUserIdByUsername: sinon.stub().resolves({ userId: userId }),
       };
       expressApp.locals.app = new App(dbClient);
       request(expressApp)
@@ -538,20 +419,20 @@ describe.skip('#Handlers', () => {
         .expect(OK_STATUS_CODE)
         .expect(() => {
           sinon.assert.calledTwice(dbClient.getUserDetails);
-          sinon.assert.calledOnce(dbClient.getFollowings);
+          sinon.assert.calledOnce(dbClient.getFollowing);
           sinon.assert.calledOnce(dbClient.getUserIdByUsername);
         })
         .expect(/john/, done);
     });
   });
 
-  describe('GET /user/:username/followers', () => {
+  describe.skip('GET /user/:username/followers', () => {
     it('should serve followings of given user', done => {
-      const followers = [{ user_id: 2, name: 'samuel', username: 'samuel' }];
+      const followers = [{ userId: 2, name: 'samuel', username: 'samuel' }];
       const dbClient = {
         getUserDetails: sinon.stub().resolves(userDetails),
         getFollowers: sinon.stub().resolves(followers),
-        getUserIdByUsername: sinon.stub().resolves({ user_id }),
+        getUserIdByUsername: sinon.stub().resolves({ userId: userId }),
         isFollower: sinon.stub().resolves(true),
       };
       expressApp.locals.app = new App(dbClient);
@@ -568,7 +449,7 @@ describe.skip('#Handlers', () => {
     });
   });
 
-  describe('POST /deletePost', () => {
+  describe.skip('POST /deletePost', () => {
     it('should respond status true when deletion happened successfully', done => {
       const deletePostStub = sinon.stub().resolves(postId);
       const app = new App({ deletePost: deletePostStub });
