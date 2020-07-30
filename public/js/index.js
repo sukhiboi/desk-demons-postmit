@@ -1,4 +1,8 @@
-const toggleLikeButton = function (target, className) {
+const toggleLikeButton = function (target) {
+  let className = ['far', 'LikeBtn'];
+  if (target.className.includes('far')) {
+    className = ['fas', 'likeColor'];
+  }
   setTimeout(() => location.reload(), 200);
   const classToRemove = className.includes('fas')
     ? ['far', 'LikeBtn']
@@ -9,18 +13,10 @@ const toggleLikeButton = function (target, className) {
 
 const toggleLikeUnlike = function (postId) {
   const target = document.querySelector(`#like_${postId}`);
-  if (target.className.includes('far')) {
-    sendPOSTRequest(
-      '/like',
-      { postId },
-      ({ status }) => status && toggleLikeButton(target, ['fas', 'likeColor'])
-    );
-    return;
-  }
   sendPOSTRequest(
-    '/unlike',
+    '/toggleLike',
     { postId },
-    ({ status }) => status && toggleLikeButton(target, ['far', 'LikeBtn'])
+    ({ status }) => status && toggleLikeButton(target)
   );
 };
 
@@ -76,11 +72,13 @@ const displayHeart = function (postId) {
   heart.classList.add('heart');
   setTimeout(() => heart.classList.remove('heart'), 600);
   const target = document.querySelector(`#like_${postId}`);
-  sendPOSTRequest(
-    '/like',
-    { postId },
-    ({ status }) => status && toggleLikeButton(target, ['fas', 'likeColor'])
-  );
+  if (target.className.includes('far')) {
+    sendPOSTRequest(
+      '/toggleLike',
+      { postId },
+      ({ status }) => status && toggleLikeButton(target)
+    );
+  }
 };
 
 const sendRequestForProfile = function (username) {
