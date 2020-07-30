@@ -9,7 +9,9 @@ describe('#App', () => {
   const userDetails = { name: 'john samuel', username: 'john', userId };
 
   const createDummyPosts = function () {
-    return [{ postId: postId, userId, postedAt: new Date(), message: 'hi' }];
+    return [
+      { postId: postId, userId, postedAt: new Date().toJSON(), message: 'hi' },
+    ];
   };
 
   const createApp = function (datastore) {
@@ -139,7 +141,7 @@ describe('#App', () => {
       sinon.assert.calledTwice(getUserDetailsStub);
       sinon.assert.calledTwice(getAllPostLikersStub);
     });
-    
+
     it('should reject any error', async () => {
       const getFollowingStub = sinon.stub().rejects(expectedTableError);
       const app = createApp({ getFollowing: getFollowingStub });
@@ -148,6 +150,130 @@ describe('#App', () => {
       } catch (err) {
         assert.deepStrictEqual(err, expectedTableError);
         sinon.assert.calledOnceWithExactly(getFollowingStub, userId);
+      }
+    });
+  });
+
+  describe('savePost()', () => {
+    it('should save a post with give', async () => {
+      const savePostStub = sinon.stub().resolves(null);
+      const app = createApp({ savePost: savePostStub });
+      const content = 'hello';
+      assert.isNull(await app.savePost(content));
+      sinon.assert.alwaysCalledWithExactly(savePostStub, userId, content);
+    });
+
+    it('should reject any error', async () => {
+      const savePostStub = sinon.stub().rejects(expectedTableError);
+      const app = createApp({ savePost: savePostStub });
+      const content = 'hello';
+      try {
+        await app.savePost(content);
+      } catch (err) {
+        sinon.assert.alwaysCalledWithExactly(savePostStub, userId, content);
+        assert.deepStrictEqual(err, expectedTableError);
+      }
+    });
+  });
+
+  describe('toggleLikeOnPost()', () => {
+    it('should unlike a post when it is liked', async () => {
+      const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
+      const likePostStub = sinon.stub().resolves(null);
+      const unlikePostStub = sinon.stub().resolves(null);
+      const app = createApp({
+        getAllPostLikers: getAllPostLikersStub,
+        likePost: likePostStub,
+        unlikePost: unlikePostStub,
+      });
+      assert.isNull(await app.toggleLikeOnPost(postId));
+      sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
+      sinon.assert.calledOnceWithExactly(unlikePostStub, postId, userId);
+      sinon.assert.notCalled(likePostStub);
+    });
+
+    it('should like a post when it is not liked', async () => {
+      const getAllPostLikersStub = sinon.stub().resolves([{ userId: 3 }]);
+      const likePostStub = sinon.stub().resolves(null);
+      const unlikePostStub = sinon.stub().resolves(null);
+      const app = createApp({
+        getAllPostLikers: getAllPostLikersStub,
+        likePost: likePostStub,
+        unlikePost: unlikePostStub,
+      });
+      assert.isNull(await app.toggleLikeOnPost(postId));
+      sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
+      sinon.assert.calledOnceWithExactly(likePostStub, postId, userId);
+      sinon.assert.notCalled(unlikePostStub);
+    });
+
+    it('should reject any errors', async () => {
+      const getAllPostLikersStub = sinon.stub().rejects(expectedTableError);
+      const app = createApp({
+        getAllPostLikers: getAllPostLikersStub,
+      });
+      try {
+        await app.toggleLikeOnPost(postId);
+      } catch (err) {
+        sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
+        assert.deepStrictEqual(err, expectedTableError);
+      }
+    });
+  });
+
+  describe('toggleFollowingAUser()', () => {
+    const otherUserId = 2;
+
+    it('should unFollow are user when being followed', async () => {
+      const getIdByUsernameStub = sinon
+        .stub()
+        .resolves({ userId: otherUserId });
+      const getFollowersStub = sinon.stub().resolves([{ userId }]);
+      const unFollowUserStub = sinon.stub().resolves(null);
+      const followUserStub = sinon.stub().resolves(null);
+      const app = createApp({
+        getIdByUsername: getIdByUsernameStub,
+        getFollowers: getFollowersStub,
+        unFollowUser: unFollowUserStub,
+        followUser: followUserStub,
+      });
+      assert.isNull(await app.toggleFollowingAUser('naveen'));
+      sinon.assert.calledOnceWithExactly(getIdByUsernameStub, 'naveen');
+      sinon.assert.calledOnceWithExactly(getFollowersStub, otherUserId);
+      sinon.assert.calledOnceWithExactly(unFollowUserStub, userId, otherUserId);
+      sinon.assert.notCalled(followUserStub);
+    });
+
+    it('should follow are user when not being followed', async () => {
+      const getIdByUsernameStub = sinon
+        .stub()
+        .resolves({ userId: otherUserId });
+      const getFollowersStub = sinon.stub().resolves([{ userId: 3 }]);
+      const unFollowUserStub = sinon.stub().resolves(null);
+      const followUserStub = sinon.stub().resolves(null);
+      const app = createApp({
+        getIdByUsername: getIdByUsernameStub,
+        getFollowers: getFollowersStub,
+        unFollowUser: unFollowUserStub,
+        followUser: followUserStub,
+      });
+      assert.isNull(await app.toggleFollowingAUser('naveen'));
+      sinon.assert.calledOnceWithExactly(getIdByUsernameStub, 'naveen');
+      sinon.assert.calledOnceWithExactly(getFollowersStub, otherUserId);
+      sinon.assert.calledOnceWithExactly(followUserStub, userId, otherUserId);
+      sinon.assert.notCalled(unFollowUserStub);
+    });
+
+    it('should reject any error', async () => {
+      const getIdByUsernameStub = sinon.stub().rejects(expectedTableError);
+      const app = createApp({
+        getIdByUsername: getIdByUsernameStub,
+      });
+      try {
+        await app.toggleFollowingAUser('naveen');
+      } catch (err) {
+        sinon.assert.calledOnceWithExactly(getIdByUsernameStub, 'naveen');
+        assert.deepStrictEqual(err, expectedTableError);
       }
     });
   });
