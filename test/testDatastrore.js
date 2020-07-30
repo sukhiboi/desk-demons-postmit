@@ -2,203 +2,148 @@ const sinon = require('sinon');
 const { assert } = require('chai');
 const Datastore = require('../lib/datastore');
 
-describe.skip('#Datastore', () => {
+describe('#Datastore', () => {
   const expectedTableError = new Error('Error: table not found');
-  const expectedUserDetailsError = new Error('Error: Invalid userId');
-  const user_id = 1;
-  const post_id = 1;
-
-  describe('getPosts()', () => {
-    it('should resolve to all the records from the posts table', async () => {
-      const expected = [{ id: 1 }];
-      const allStub = sinon.stub().yields(null, expected);
-      const dbClient = new Datastore({ all: allStub });
-      const actual = await dbClient.getAllPosts();
-      assert.deepStrictEqual(actual, expected);
-      sinon.assert.calledOnce(allStub);
-    });
-
-    it('should resolve to empty array when posts table is empty', async () => {
-      const allStub = sinon.stub().yields(null, []);
-      const dbClient = new Datastore({ all: allStub });
-      const actual = await dbClient.getAllPosts();
-      assert.deepStrictEqual(actual, []);
-      sinon.assert.calledOnce(allStub);
-    });
-
-    it('should reject with err when posts table does not exists', async () => {
-      const allStub = sinon.stub().yields(expectedTableError, null);
-      const dbClient = new Datastore({ all: allStub });
-      try {
-        const posts = await dbClient.getAllPosts();
-        assert.isNull(posts);
-      } catch (err) {
-        assert.deepStrictEqual(err, expectedTableError);
-      }
-      sinon.assert.calledOnce(allStub);
-    });
-  });
+  const userId = 1;
+  const postId = 1;
 
   describe('getUserDetails()', () => {
-    it('should resolve to user details of a valid userId', async () => {
-      const expectedUserDetail = {
-        id: 1,
+    it('should give user details of an existing userId', async () => {
+      const expectedUserDetails = {
+        userId: 1,
         username: 'sukhiboi',
         name: 'sukhdev',
       };
-      const getStub = sinon.stub().yields(null, expectedUserDetail);
+      const getStub = sinon.stub().yields(null, expectedUserDetails);
       const client = new Datastore({ get: getStub });
-      const userId = 1;
       const userDetails = await client.getUserDetails(userId);
-      assert.deepStrictEqual(userDetails, expectedUserDetail);
+      assert.deepStrictEqual(userDetails, expectedUserDetails);
       sinon.assert.calledOnce(getStub);
     });
 
-    it('should reject giving user details for invalid userId', async () => {
-      const getStub = sinon.stub().yields(expectedUserDetailsError, null);
+    it('should give error when the user table is not found', async () => {
+      const getStub = sinon.stub().yields(expectedTableError, null);
       const client = new Datastore({ get: getStub });
-      const userId = 1;
       try {
         const userDetails = await client.getUserDetails(userId);
         assert.isNull(userDetails);
       } catch (err) {
-        assert.equal(err, expectedUserDetailsError);
+        assert.equal(err, expectedTableError);
         sinon.assert.calledOnce(getStub);
       }
     });
   });
 
-  describe('getPostsByUserId()', () => {
-    it('should resolve to posts of a valid userId', async () => {
+  describe('getUserPosts()', () => {
+    it('should give all the posts of the given user', async () => {
       const expectedPosts = [
-        { id: 1, userId: 2, message: 'hi', posted_at: '2020-02-21 12:45:16' },
+        {
+          postId: 1,
+          userId: 2,
+          message: 'hi',
+          posted_at: '2020-02-21 12:45:16',
+        },
       ];
       const allStub = sinon.stub().yields(null, expectedPosts);
       const client = new Datastore({ all: allStub });
       const userId = 2;
-      const posts = await client.getPostsByUserId(userId);
+      const posts = await client.getUserPosts(userId);
       assert.deepStrictEqual(posts, expectedPosts);
       sinon.assert.calledOnce(allStub);
     });
 
-    it('should reject giving posts for invalid userId', async () => {
-      const allStub = sinon.stub().yields(expectedUserDetailsError, null);
+    it('should give error when the posts table is not found', async () => {
+      const allStub = sinon.stub().yields(expectedTableError, null);
       const client = new Datastore({ all: allStub });
       const userId = 2;
       try {
-        const posts = await client.getPostsByUserId(userId);
+        const posts = await client.getUserPosts(userId);
         assert.isNull(posts);
       } catch (err) {
-        assert.equal(err, expectedUserDetailsError);
+        assert.equal(err, expectedTableError);
         sinon.assert.calledOnce(allStub);
       }
     });
   });
 
-  describe('addPost()', () => {
-    it('should resolve to details of the post added', async () => {
+  describe('savePost()', () => {
+    it('should save the details of the post', async () => {
       const postDetails = { user_id: 1, message: 'hi' };
       const runStub = sinon.stub().yields(null);
       const client = new Datastore({ run: runStub });
-      const latestPostDetails = await client.addPost(postDetails);
-      assert.isTrue(latestPostDetails);
+      const latestPostDetails = await client.savePost(postDetails);
+      assert.isUndefined(latestPostDetails);
       sinon.assert.calledOnce(runStub);
     });
 
-    it('should reject when unable to add a new post', async () => {
-      const tableError = new Error('Error: posts table not found');
-      const runStub = sinon.stub().yields(tableError);
+    it('should give error when the post table not found', async () => {
+      const runStub = sinon.stub().yields(expectedTableError);
       const client = new Datastore({ run: runStub });
       const postDetails = { user_id: 2, message: 'hello' };
-      const result = await client.addPost(postDetails);
-      assert.isFalse(result);
-      sinon.assert.calledOnce(runStub);
+      try {
+        await client.savePost(postDetails);
+      } catch (err) {
+        assert.strictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(runStub);
+      }
     });
   });
 
   describe('likePost()', () => {
-    const user_id = 1,
-      postId = 1;
-
-    it('should resolve to true after liking a post', async () => {
+    it('should add like to likes table', async () => {
       const runStub = sinon.stub().yields(null);
       const client = new Datastore({ run: runStub });
-      assert.isTrue(await client.likePost(user_id, postId));
+      assert.isUndefined(await client.likePost(userId, postId));
       sinon.assert.calledOnce(runStub);
     });
 
-    it('should resolve false when there is any error', async () => {
+    it('should give error when likes table not found', async () => {
       const runStub = sinon.stub().yields(expectedTableError);
       const client = new Datastore({ run: runStub });
-      assert.isFalse(await client.likePost(user_id, postId));
-      sinon.assert.calledOnce(runStub);
+      try {
+        await client.likePost(userId, postId);
+      } catch (err) {
+        assert.strictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(runStub);
+      }
     });
   });
 
   describe('unlikePost()', () => {
-    const user_id = 1,
-      postId = 1;
-
-    it('should resolve to true after unlinking a post', async () => {
+    it('should remove like from likes table', async () => {
       const runStub = sinon.stub().yields(null);
       const client = new Datastore({ run: runStub });
-      assert.isTrue(await client.unlikePost(postId, user_id));
+      assert.isUndefined(await client.unlikePost(postId, userId));
       sinon.assert.calledOnce(runStub);
     });
 
-    it('should resolve false when there is any error', async () => {
+    it('should give error when likes table not found', async () => {
       const runStub = sinon.stub().yields(expectedTableError);
       const client = new Datastore({ run: runStub });
-      assert.isFalse(await client.unlikePost(postId, user_id));
-      sinon.assert.calledOnce(runStub);
-    });
-  });
-
-  describe('isLikedByUser()', () => {
-    const user_id = 1,
-      postId = 1;
-
-    it('should resolve to true when post is liked by user', async () => {
-      const getStub = sinon.stub().yields(null, [{ isLiked: true }]);
-      const client = new Datastore({ get: getStub });
-      assert.isTrue(await client.isLikedByUser(user_id, postId));
-      sinon.assert.calledOnce(getStub);
-    });
-
-    it('should resolve to false when post is not liked by user', async () => {
-      const getStub = sinon.stub().yields(null);
-      const client = new Datastore({ get: getStub });
-      assert.isFalse(await client.isLikedByUser(user_id, postId));
-      sinon.assert.calledOnce(getStub);
-    });
-
-    it('should reject with err when posts table does not exists', async () => {
-      const getStub = sinon.stub().yields(expectedTableError);
-      const client = new Datastore({ get: getStub });
       try {
-        await client.isLikedByUser(user_id, postId);
+        await client.unlikePost(postId, userId);
       } catch (err) {
-        assert.equal(err, expectedTableError);
+        assert.strictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(runStub);
       }
-      sinon.assert.calledOnce(getStub);
     });
   });
 
-  describe('getAllLikedUsers()', () => {
-    it('should give list of users who liked the given post', async () => {
-      const expected = [{ user_id, post_id: 1 }];
+  describe('getAllPostLikers()', () => {
+    it('should give list of likes of given post', async () => {
+      const expected = [{ userId, postId }];
       const allStub = sinon.stub().yields(null, expected);
       const dbClient = new Datastore({ all: allStub });
-      const actual = await dbClient.getAllLikedUsers(user_id);
+      const actual = await dbClient.getAllPostLikers(postId);
       assert.deepStrictEqual(actual, expected);
       sinon.assert.calledOnce(allStub);
     });
 
-    it('should give error when table not found', async () => {
+    it('should give error when likes table not found', async () => {
       const allStub = sinon.stub().yields(expectedTableError, null);
       const dbClient = new Datastore({ all: allStub });
       try {
-        assert.isNull(await dbClient.getAllLikedUsers(user_id));
+        assert.isNull(await dbClient.getAllPostLikers(postId));
       } catch (err) {
         assert.deepStrictEqual(err, expectedTableError);
         sinon.assert.calledOnce(allStub);
@@ -228,42 +173,13 @@ describe.skip('#Datastore', () => {
     });
   });
 
-  describe('saveUser()', () => {
-    const userDetails = {
-      githubUsername: 'hello',
-      username: 'me',
-      dob: '2001-02-18',
-      bio: 'something',
-      name: 'someone',
-    };
-    it('should resolve to true when user details saved', async () => {
-      const runStub = sinon.stub().yields(null);
-      const client = new Datastore({ run: runStub });
-      const result = await client.saveUser(userDetails);
-      assert.isTrue(result);
-      sinon.assert.calledOnce(runStub);
-    });
-
-    it("should reject error when user details doesn't saved", async () => {
-      const errorToBeThrown = new Error('users table not found');
-      const runStub = sinon.stub().yields(errorToBeThrown);
-      const client = new Datastore({ run: runStub });
-      try {
-        await client.saveUser(userDetails);
-      } catch (err) {
-        assert.strictEqual(err, errorToBeThrown);
-        sinon.assert.calledOnce(runStub);
-      }
-    });
-  });
-
-  describe('getUserIdByGithubUsername()', () => {
+  describe('getIdByGithubUsername()', () => {
     it('should resolve to userId from username', async () => {
       const githubUsername = 'someone';
-      const getStub = sinon.stub().yields(null, user_id);
+      const getStub = sinon.stub().yields(null, userId);
       const client = new Datastore({ get: getStub });
-      const result = await client.getUserIdByGithubUsername(githubUsername);
-      assert.strictEqual(result, user_id);
+      const result = await client.getIdByGithubUsername(githubUsername);
+      assert.strictEqual(result, userId);
       sinon.assert.calledOnce(getStub);
     });
 
@@ -271,7 +187,7 @@ describe.skip('#Datastore', () => {
       const githubUsername = 'someone';
       const getStub = sinon.stub().yields(null);
       const client = new Datastore({ get: getStub });
-      const result = await client.getUserIdByGithubUsername(githubUsername);
+      const result = await client.getIdByGithubUsername(githubUsername);
       assert.isUndefined(result);
       sinon.assert.calledOnce(getStub);
     });
@@ -282,7 +198,7 @@ describe.skip('#Datastore', () => {
       const getStub = sinon.stub().yields(expectedError);
       const client = new Datastore({ get: getStub });
       try {
-        await client.getUserIdByGithubUsername(githubUsername);
+        await client.getIdByGithubUsername(githubUsername);
       } catch (err) {
         assert.strictEqual(err, expectedError);
         sinon.assert.calledOnce(getStub);
@@ -290,12 +206,12 @@ describe.skip('#Datastore', () => {
     });
   });
 
-  describe('getUserIdByUsername()', () => {
+  describe('getIdByUsername()', () => {
     it('should give userId from username', async () => {
-      const getStub = sinon.stub().yields(null, { user_id });
+      const getStub = sinon.stub().yields(null, { userId });
       const client = new Datastore({ get: getStub });
-      const result = await client.getUserIdByUsername('john');
-      assert.deepStrictEqual(result, { user_id });
+      const result = await client.getIdByUsername('john');
+      assert.deepStrictEqual(result, { userId });
       sinon.assert.calledOnce(getStub);
     });
 
@@ -304,7 +220,7 @@ describe.skip('#Datastore', () => {
       const getStub = sinon.stub().yields(expectedError);
       const client = new Datastore({ get: getStub });
       try {
-        await client.getUserIdByUsername('john');
+        await client.getIdByUsername('john');
       } catch (err) {
         assert.strictEqual(err, expectedError);
         sinon.assert.calledOnce(getStub);
@@ -312,21 +228,21 @@ describe.skip('#Datastore', () => {
     });
   });
 
-  describe('addFollower()', () => {
+  describe('followUser()', () => {
     it('should add the follower into the table', async () => {
       const runStub = sinon.stub().yields(null);
       const client = new Datastore({ run: runStub });
-      const result = await client.addFollower(1, 2);
-      assert.isTrue(result);
+      const result = await client.followUser(1, 2);
+      assert.isUndefined(result);
       sinon.assert.calledOnce(runStub);
     });
 
-    it("should reject error when follower table doesn't exists", async () => {
+    it("should give error when follower table doesn't exists", async () => {
       const errorToBeThrown = new Error('users table not found');
       const runStub = sinon.stub().yields(errorToBeThrown);
       const client = new Datastore({ run: runStub });
       try {
-        await client.addFollower(1, 2);
+        await client.followUser(1, 2);
       } catch (err) {
         assert.strictEqual(err, errorToBeThrown);
         sinon.assert.calledOnce(runStub);
@@ -334,12 +250,12 @@ describe.skip('#Datastore', () => {
     });
   });
 
-  describe('removeFollower()', () => {
+  describe('unFollowUser()', () => {
     it('should remove the follower from the table', async () => {
       const runStub = sinon.stub().yields(null);
       const client = new Datastore({ run: runStub });
-      const result = await client.removeFollower(1, 2);
-      assert.isTrue(result);
+      const result = await client.unFollowUser(1, 2);
+      assert.isUndefined(result);
       sinon.assert.calledOnce(runStub);
     });
 
@@ -348,50 +264,20 @@ describe.skip('#Datastore', () => {
       const runStub = sinon.stub().yields(errorToBeThrown);
       const client = new Datastore({ run: runStub });
       try {
-        await client.removeFollower(1, 2);
+        await client.unFollowUser(1, 2);
       } catch (err) {
         assert.strictEqual(err, errorToBeThrown);
         sinon.assert.calledOnce(runStub);
-      }
-    });
-  });
-
-  describe('isFollower()', () => {
-    it('should give true when the given user is following', async () => {
-      const getStub = sinon.stub().yields(null, { user_id: 1, follower_id: 2 });
-      const client = new Datastore({ get: getStub });
-      const result = await client.isFollower(1, 2);
-      assert.isTrue(result);
-      sinon.assert.calledOnce(getStub);
-    });
-
-    it('should give false when the given user is not following', async () => {
-      const getStub = sinon.stub().yields(null, null);
-      const client = new Datastore({ get: getStub });
-      const result = await client.isFollower(1, 2);
-      assert.isFalse(result);
-      sinon.assert.calledOnce(getStub);
-    });
-
-    it("should reject error when follower table doesn't exists", async () => {
-      const errorToBeThrown = new Error('users table not found');
-      const getStub = sinon.stub().yields(errorToBeThrown);
-      const client = new Datastore({ get: getStub });
-      try {
-        await client.isFollower(1, 2);
-      } catch (err) {
-        assert.strictEqual(err, errorToBeThrown);
-        sinon.assert.calledOnce(getStub);
       }
     });
   });
 
   describe('getFollowers()', () => {
     it('should give list of followers who following the given user', async () => {
-      const expected = [{ user_id: 2 }];
+      const expected = [{ userId: 2 }];
       const allStub = sinon.stub().yields(null, expected);
       const dbClient = new Datastore({ all: allStub });
-      const actual = await dbClient.getFollowers(user_id);
+      const actual = await dbClient.getFollowers(userId);
       assert.deepStrictEqual(actual, expected);
       sinon.assert.calledOnce(allStub);
     });
@@ -400,7 +286,7 @@ describe.skip('#Datastore', () => {
       const allStub = sinon.stub().yields(expectedTableError, null);
       const dbClient = new Datastore({ all: allStub });
       try {
-        assert.isNull(await dbClient.getFollowers(user_id));
+        assert.isNull(await dbClient.getFollowers(userId));
       } catch (err) {
         assert.deepStrictEqual(err, expectedTableError);
         sinon.assert.calledOnce(allStub);
@@ -408,12 +294,12 @@ describe.skip('#Datastore', () => {
     });
   });
 
-  describe('getFollowings()', () => {
+  describe('getFollowing()', () => {
     it('should give list of followers who following the given user', async () => {
-      const expected = [{ follower_id: 2 }];
+      const expected = [{ userId: 2 }];
       const allStub = sinon.stub().yields(null, expected);
       const dbClient = new Datastore({ all: allStub });
-      const actual = await dbClient.getFollowings(user_id);
+      const actual = await dbClient.getFollowing(userId);
       assert.deepStrictEqual(actual, expected);
       sinon.assert.calledOnce(allStub);
     });
@@ -422,28 +308,71 @@ describe.skip('#Datastore', () => {
       const allStub = sinon.stub().yields(expectedTableError, null);
       const dbClient = new Datastore({ all: allStub });
       try {
-        assert.isNull(await dbClient.getFollowings(user_id));
+        assert.isNull(await dbClient.getFollowing(userId));
       } catch (err) {
-        assert.deepStrictEqual(err, expectedTableError);
+        assert.strictEqual(err, expectedTableError);
         sinon.assert.calledOnce(allStub);
       }
     });
   });
 
-  describe('deletePost()', () => {
+  describe('getLikedPosts()', () => {
+    it('should give liked posts of given user', async () => {
+      const expected = [{ userId: 2 }];
+      const allStub = sinon.stub().yields(null, expected);
+      const dbClient = new Datastore({ all: allStub });
+      const actual = await dbClient.getLikedPosts(userId);
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledOnce(allStub);
+    });
+
+    it('should give error when the likes table not found', async () => {
+      const allStub = sinon.stub().yields(expectedTableError, null);
+      const dbClient = new Datastore({ all: allStub });
+      try {
+        assert.isNull(await dbClient.getLikedPosts(userId));
+      } catch (err) {
+        assert.strictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(allStub);
+      }
+    });
+  });
+
+  describe('removePost()', () => {
     it('should delete the given post and return post id', async () => {
       const execStub = sinon.stub().yields(null);
       const dbClient = new Datastore({ exec: execStub });
-      const result = await dbClient.deletePost(post_id);
-      assert.strictEqual(result, post_id);
+      assert.isUndefined(await dbClient.removePost(postId));
     });
     it('should reject when any error occurred', async () => {
       const execStub = sinon.stub().yields(expectedTableError);
       const dbClient = new Datastore({ exec: execStub });
       try {
-        await dbClient.deletePost(post_id);
+        await dbClient.removePost(postId);
       } catch (err) {
         assert.strictEqual(err, expectedTableError);
+      }
+    });
+  });
+
+  describe('saveUser()', () => {
+    it('should save the user details into the user table', async () => {
+      const userDetails = { userId };
+      const runStub = sinon.stub().yields(null);
+      const client = new Datastore({ run: runStub });
+      assert.isUndefined(await client.saveUser(userDetails));
+      sinon.assert.calledOnce(runStub);
+    });
+
+    it('should give error when the user table not found', async () => {
+      const runStub = sinon.stub().yields(expectedTableError);
+      const client = new Datastore({ run: runStub });
+      const postDetails = { user_id: 2, message: 'hello' };
+      try {
+        await client.saveUser(postDetails);
+      } catch (err) {
+        assert.strictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(runStub);
       }
     });
   });
