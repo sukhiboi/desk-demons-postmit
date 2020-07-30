@@ -90,11 +90,11 @@ const saveUser = async function (username) {
     return { ...fieldValues, [fieldId]: fieldValue };
   }, {});
   userDetails['githubUsername'] = username;
-  sendPOSTRequest('/save-user', userDetails, response => {
-    if (Number(response.userId)) {
+  sendPOSTRequest('/save-user', userDetails, ({ status }) => {
+    if (status) {
       window.location.href = '/home';
     } else {
-      location.reload();
+      window.location.href = '/auth';
     }
   });
 };
