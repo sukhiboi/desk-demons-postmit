@@ -44,7 +44,7 @@ html(lang='en')
                         span.count= followers.length
                         span(onclick=`showFollowersList('${username}')`) Followers
                 div.follow-btn-wrapper
-                    button.follow-btn.primary-btn(onclick=`toggleFollowUnfollow('${username}',${isFollower})`)= isFollower ? 'Unfollow' : 'Follow'
+                    button.follow-btn.primary-btn(onclick=`toggleFollowUnfollow('${username}')`)= isFollower ? 'Unfollow' : 'Follow'
             .user-activity
                 .activity-bar
                     .activity-title.activeTab(onclick="display('posts')" id="posts-tab") Posts
