@@ -479,4 +479,160 @@ describe('#App', () => {
       sinon.assert.calledOnceWithExactly(getFollowingStub, userId);
     });
   });
+
+  describe('getUserSuggestions()', () => {
+    it('should resolve to searched user suggestions', async () => {
+      const getMatchingUsersStub = sinon.stub().resolves([userDetails]);
+      const app = createApp({ getMatchingUsers: getMatchingUsersStub });
+      const actual = await app.getUserSuggestions('john');
+      const expected = [{ ...userDetails, initials: 'JS' }];
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledOnceWithExactly(getMatchingUsersStub, 'john');
+    });
+
+    it('should reject any error', async () => {
+      const getMatchingUsersStub = sinon.stub().rejects(expectedTableError);
+      const app = createApp({ getMatchingUsers: getMatchingUsersStub });
+      try {
+        await app.getUserSuggestions('john');
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnceWithExactly(getMatchingUsersStub, 'john');
+      }
+    });
+  });
+
+  describe('updateUserList()', () => {
+    it('should update given list of users', async () => {
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getFollowersStub = sinon.stub().resolves([]);
+      const app = createApp({
+        getUserDetails: getUserDetailsStub,
+        getFollowers: getFollowersStub,
+      });
+      const actual = await app.updateUsersList([userDetails]);
+      const expected = [
+        {
+          initials: 'JS',
+          isFollowingMe: false,
+          name: 'john samuel',
+          userId: 1,
+          username: 'john',
+        },
+      ];
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledOnceWithExactly(getUserDetailsStub, userId);
+      sinon.assert.calledOnceWithExactly(getFollowersStub, userId);
+    });
+
+    it('should reject any errors', async () => {
+      const getUserDetailsStub = sinon.stub().rejects(expectedTableError);
+      const app = createApp({
+        getUserDetails: getUserDetailsStub,
+      });
+      try {
+        await app.updateUsersList([userDetails]);
+      } catch (err) {
+        sinon.assert.calledOnceWithExactly(getUserDetailsStub, userId);
+        assert.deepStrictEqual(err, expectedTableError);
+      }
+    });
+  });
+
+  describe('getFollowingList()', () => {
+    it('should return the list of following of a user', async () => {
+      const getFollowersStub = sinon.stub().resolves([]);
+      const getIdByUsernameStub = sinon.stub().resolves({ userId });
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getFollowingStub = sinon.stub().resolves([{ userId }]);
+      const app = createApp({
+        getIdByUsername: getIdByUsernameStub,
+        getUserDetails: getUserDetailsStub,
+        getFollowing: getFollowingStub,
+        getFollowers: getFollowersStub,
+      });
+      const actual = await app.getFollowingList('naveen');
+      const expected = {
+        followingList: [
+          {
+            initials: 'JS',
+            isFollowingMe: false,
+            name: 'john samuel',
+            userId: 1,
+            username: 'john',
+          },
+        ],
+        loggedUser: 'john',
+        profile: {
+          initials: 'JS',
+          isFollowingMe: false,
+          name: 'john samuel',
+          userId: 1,
+          username: 'john',
+        },
+      };
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledOnceWithExactly(getIdByUsernameStub, 'naveen');
+      sinon.assert.calledTwice(getUserDetailsStub);
+      sinon.assert.calledOnceWithExactly(getFollowingStub, userId);
+    });
+
+    it('should reject any error', async () => {
+      const getIdByUsernameStub = sinon.stub().rejects(expectedTableError);
+      const app = createApp({ getIdByUsername: getIdByUsernameStub });
+      try {
+        await app.getFollowingList('naveen');
+      } catch (err) {
+        sinon.assert.calledOnceWithExactly(getIdByUsernameStub, 'naveen');
+        assert.deepStrictEqual(err, expectedTableError);
+      }
+    });
+  });
+
+  describe('getFollowersList()', () => {
+    it('should return the list of followers of a user', async () => {
+      const getFollowersStub = sinon.stub().resolves([userDetails]);
+      const getIdByUsernameStub = sinon.stub().resolves({ userId });
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const app = createApp({
+        getIdByUsername: getIdByUsernameStub,
+        getUserDetails: getUserDetailsStub,
+        getFollowers: getFollowersStub,
+      });
+      const actual = await app.getFollowersList('naveen');
+      const expected = {
+        followersList: [
+          {
+            initials: 'JS',
+            isFollowingMe: true,
+            name: 'john samuel',
+            userId: 1,
+            username: 'john',
+          },
+        ],
+        loggedUser: 'john',
+        profile: {
+          initials: 'JS',
+          isFollowingMe: true,
+          name: 'john samuel',
+          userId: 1,
+          username: 'john',
+        },
+      };
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledOnceWithExactly(getIdByUsernameStub, 'naveen');
+      sinon.assert.calledTwice(getUserDetailsStub);
+    });
+
+    it('should reject any error', async () => {
+      const getIdByUsernameStub = sinon.stub().rejects(expectedTableError);
+      const app = createApp({ getIdByUsername: getIdByUsernameStub });
+      try {
+        await app.getFollowersList('naveen');
+      } catch (err) {
+        sinon.assert.calledOnceWithExactly(getIdByUsernameStub, 'naveen');
+        assert.deepStrictEqual(err, expectedTableError);
+      }
+    });
+  });
 });
