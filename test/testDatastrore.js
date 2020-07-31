@@ -427,7 +427,14 @@ describe('#Datastore', () => {
 
   describe('getBookmarks()', () => {
     it('should give all bookmarks related to given user', async () => {
-      const expected = [{ userId }];
+      const expected = [{ postId }];
+      const allStub = sinon.stub().yields(null, expected);
+      const client = new Datastore({ all: allStub });
+      assert.deepStrictEqual(await client.getBookmarks(userId), expected);
+      sinon.assert.calledOnce(allStub);
+    });
+    it('should give empty list when there is no bookmarks related to given user', async () => {
+      const expected = [];
       const allStub = sinon.stub().yields(null, expected);
       const client = new Datastore({ all: allStub });
       assert.deepStrictEqual(await client.getBookmarks(userId), expected);

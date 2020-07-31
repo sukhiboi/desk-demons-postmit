@@ -791,6 +791,7 @@ describe('#App', () => {
       sinon.assert.calledOnceWithExactly(getIdByUsernameStub, 'naveen');
     });
   });
+
   describe('getHashtagRelatedPosts', () => {
     it('should give all posts with the given hashtag', async () => {
       const post = {
@@ -832,6 +833,70 @@ describe('#App', () => {
       sinon.assert.calledOnceWithExactly(getUserDetailsStub, userId);
       sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
       sinon.assert.calledOnceWithExactly(getHashtagsByPostIdStub, postId);
+    });
+  });
+
+  describe('getBookmarks()', () => {
+    it('should give list of bookmarked posts of user', async () => {
+      const getBookmarksStub = sinon.stub().resolves(createDummyPosts());
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
+      const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
+      const app = createApp({
+        getBookmarks: getBookmarksStub,
+        getUserDetails: getUserDetailsStub,
+        getAllPostLikers: getAllPostLikersStub,
+        getHashtagsByPostId: getHashtagsByPostIdStub,
+      });
+      const expected = {
+        loggedUser: 'john',
+        posts: [
+          {
+            hashtags: ['html'],
+            initials: 'JS',
+            isDeletable: true,
+            isLiked: true,
+            likedUsers: [{ userId: 1 }],
+            isFollowingMe: false,
+            mentions: [],
+            message: 'hi',
+            name: 'john samuel',
+            postId: 1,
+            postedAt: 'a few seconds ago',
+            userId: 1,
+            username: 'john',
+          },
+        ],
+      };
+      assert.deepStrictEqual(await app.getBookmarks(), expected);
+      sinon.assert.calledOnce(getBookmarksStub);
+    });
+
+    it('should give empty list when no posts are bookmarked', async () => {
+      const getBookmarksStub = sinon.stub().resolves([]);
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
+      const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
+      const app = createApp({
+        getBookmarks: getBookmarksStub,
+        getUserDetails: getUserDetailsStub,
+        getAllPostLikers: getAllPostLikersStub,
+        getHashtagsByPostId: getHashtagsByPostIdStub,
+      });
+      const expected = { posts: [], loggedUser: 'john' };
+      assert.deepStrictEqual(await app.getBookmarks(), expected);
+      sinon.assert.calledOnce(getBookmarksStub);
+    });
+
+    it('should reject any error', async () => {
+      const getBookmarksStub = sinon.stub().rejects(expectedTableError);
+      const app = createApp({ getBookmarks: getBookmarksStub });
+      try {
+        await app.getBookmarks();
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(getBookmarksStub);
+      }
     });
   });
 });
