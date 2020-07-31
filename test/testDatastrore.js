@@ -535,4 +535,26 @@ describe('#Datastore', () => {
       }
     });
   });
+
+  describe('getMatchingHashtags()', () => {
+    it('should return matching hashtags', async () => {
+      const expectedHashtags = [{ hashtag: 'html' }];
+      const allStub = sinon.stub().yields(null, expectedHashtags);
+      const client = new Datastore({ all: allStub });
+      const hashtags = await client.getMatchingHashtags('ht');
+      assert.deepStrictEqual(hashtags, [{ hashtag: 'html' }]);
+      sinon.assert.calledOnce(allStub);
+    });
+
+    it("should give error when hashtags table doesn't exists", async () => {
+      const allStub = sinon.stub().yields(expectedTableError, null);
+      const client = new Datastore({ all: allStub });
+      try {
+        await client.getMatchingHashtags('ht');
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(allStub);
+      }
+    });
+  });
 });
