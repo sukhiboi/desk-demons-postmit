@@ -903,4 +903,68 @@ describe('#App', () => {
       }
     });
   });
+
+  describe('isBookmarked()', () => {
+    it('should give true if bookmarked by user', async () => {
+      const getBookmarksStub = sinon.stub().resolves(createDummyPosts());
+      const app = createApp({ getBookmarks: getBookmarksStub });
+      assert.isTrue(await app.isBookmarked(postId));
+      sinon.assert.calledOnceWithExactly(getBookmarksStub, userId);
+    });
+
+    it('should give false if not bookmarked by user', async () => {
+      const getBookmarksStub = sinon.stub().resolves([]);
+      const app = createApp({ getBookmarks: getBookmarksStub });
+      assert.isFalse(await app.isBookmarked(postId));
+      sinon.assert.calledOnceWithExactly(getBookmarksStub, userId);
+    });
+
+    it('should reject any error', async () => {
+      const getBookmarksStub = sinon.stub().rejects(expectedTableError);
+      const app = createApp({ getBookmarks: getBookmarksStub });
+      try {
+        await app.isBookmarked(postId);
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnceWithExactly(getBookmarksStub, userId);
+      }
+    });
+  });
+
+  describe('toggleBookmarkOnPost()', () => {
+    it('should add post to bookmarks if it is not bookmarked', async () => {
+      const getBookmarksStub = sinon.stub().resolves([]);
+      const addBookmarkStub = sinon.stub().resolves();
+      const app = createApp({
+        getBookmarks: getBookmarksStub,
+        addBookmark: addBookmarkStub,
+      });
+      assert.isUndefined(await app.toggleBookmarkOnPost(postId));
+      sinon.assert.calledOnceWithExactly(addBookmarkStub, postId, userId);
+      sinon.assert.calledOnceWithExactly(getBookmarksStub, userId);
+    });
+
+    it('should add post to bookmarks if it is not bookmarked', async () => {
+      const getBookmarksStub = sinon.stub().resolves(createDummyPosts());
+      const removeBookmarkStub = sinon.stub().resolves();
+      const app = createApp({
+        getBookmarks: getBookmarksStub,
+        removeBookmark: removeBookmarkStub,
+      });
+      assert.isUndefined(await app.toggleBookmarkOnPost(postId));
+      sinon.assert.calledOnceWithExactly(removeBookmarkStub, postId, userId);
+      sinon.assert.calledOnceWithExactly(getBookmarksStub, userId);
+    });
+
+    it('should reject any error', async () => {
+      const getBookmarksStub = sinon.stub().rejects(expectedTableError);
+      const app = createApp({ getBookmarks: getBookmarksStub });
+      try {
+        await app.toggleBookmarkOnPost(postId);
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnceWithExactly(getBookmarksStub, userId);
+      }
+    });
+  });
 });
