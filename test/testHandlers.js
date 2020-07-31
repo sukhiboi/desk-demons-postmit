@@ -605,4 +605,20 @@ describe('#Handlers', () => {
         .expect({ status: true }, done);
     });
   });
+
+  describe('GET /logout()', () => {
+    it('should clear the userCookies', done => {
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const app = createApp({ getUserDetails: getUserDetailsStub });
+      expressApp.locals.app = app;
+      request(expressApp)
+        .get('/logout')
+        .set('Cookie', ['userId=1'])
+        .expect(FOUND_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnceWithExactly(getUserDetailsStub, userId);
+        })
+        .expect(/Redirect/, done);
+    });
+  });
 });

@@ -15,7 +15,9 @@ head
     .pages
       a.page.active-page(href='/home') Home
       a.page(href=`/user/${loggedUser}`) Profile
+      a.page(href=`/user/bookmarks`) Bookmarks
       button.popup-post-btn(onclick='showNewPostElement()') Post
+      a.page(href='/logout') Logout
 .root
   .main-panel
     .header
