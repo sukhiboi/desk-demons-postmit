@@ -468,4 +468,27 @@ describe('#Handlers', () => {
         .expect(/hello/, done);
     });
   });
+
+  describe('GET /post/:postId/likes', () => {
+    it('should response back with user who like that post', done => {
+      const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getFollowersStub = sinon.stub().resolves([]);
+      const app = createApp({
+        getAllPostLikers: getAllPostLikersStub,
+        getUserDetails: getUserDetailsStub,
+        getFollowers: getFollowersStub,
+      });
+      expressApp.locals.app = app;
+      request(expressApp)
+        .get(`/post/${postId}/likes`)
+        .set('Cookie', ['userId=1'])
+        .expect(() => {
+          sinon.assert.calledOnceWithExactly(getFollowersStub, userId);
+          sinon.assert.calledTwice(getUserDetailsStub);
+          sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
+        })
+        .expect(/john/, done);
+    });
+  });
 });

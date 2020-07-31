@@ -40,7 +40,7 @@ head
                      = line
                      br
              - let likeCount=likedUsers.length
-             a(href=`#` class=`link ${likeCount>0?"likeDetails":"hideCount"}`) 
+             a(href=`/post/${postId}/likes` class=`link ${likeCount>0?"likeDetails":"hideCount"}`) 
                 span(class="likeCount")= likeCount
                 span= `${likeCount>1 ? 'Likes':'Like'}`
              .actions.flex

@@ -1,0 +1,38 @@
+doctype
+html(lang='en')
+    head
+        meta(charset='UTF-8')
+        meta(name='viewport' content='width=device-width, initial-scale=1.0')
+        link(rel='stylesheet' href='/styles/styles.css' type='text/css')
+        link(href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css' rel='stylesheet')
+        link(rel='stylesheet' href='/styles/profile.css' type='text/css')
+        script(src="/js/popup.js")
+        script(src="/js/request.js")
+        script(src="/js/index.js")
+        title Postmit
+    body
+    .root
+        .menu
+            div
+                .app-name POSTMIT
+                .pages
+                    a.page(href='/home') Home
+                    a.page(href=`/user/${loggedUser}`) Profile
+                    button.popup-post-btn(onclick='showNewPostElement()') Post
+        .main-panel 
+            .header
+                a(href=`/post/${postId}`)
+                    i(class="fas fa-arrow-left fa-2x back-arrow")
+                span Liked By
+            .follow-feed
+                .posts
+                    include components/following.pug
+                    each item in list
+                        +following(item)
+        .search-panel
+            .search-bar.flex
+              .search-icon
+                img(src='/assets/search.svg' alt='Search')
+              .search-input(onkeyup='search()')
+               input(type='text' placeholder='Search')
+            .search-output

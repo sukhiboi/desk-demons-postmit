@@ -729,7 +729,11 @@ describe('#App', () => {
         getFollowers: getFollowersStub,
       });
       const actual = await app.getPostLikers(postId);
-      const expected = [{ ...userDetails, isFollowingMe: false }];
+      const expected = {
+        list: [{ ...userDetails, isFollowingMe: false }],
+        loggedUser: userDetails.username,
+        postId,
+      };
       assert.deepStrictEqual(actual, expected);
       sinon.assert.calledOnceWithExactly(getFollowersStub, userId);
       sinon.assert.calledOnceWithExactly(getUserDetailsStub, userId);
