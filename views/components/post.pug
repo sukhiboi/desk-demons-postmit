@@ -12,10 +12,11 @@ mixin post(post)
             span= post.name 
             span(class="timestamp")= ` ・ ${post.postedAt}`
           .username
-            span= `@${post.username}`
+            a(href=`/user/${post.username}`)= `@${post.username}`
       .post-content
             each line in post.message.split(/\n/)
-              = line
+              - let replacedLine=post.mentions.reduce((line,user) => line.replace(new RegExp(user),`<a class="mention" href="/user/${user.slice(1)}">${user}</a>`),line) 
+              != replacedLine
               br
       .actions.flex
         .action

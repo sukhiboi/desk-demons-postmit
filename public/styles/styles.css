@@ -207,9 +207,18 @@ button:hover {
   font-weight: 700;
 }
 
-.user-details .username,
+.user-details,
 .user-details .timestamp {
   color: #8898a6;
+}
+
+.username a {
+  color: #8898a6;
+  text-decoration: none;
+}
+
+.username a:hover {
+  text-decoration: underline;
 }
 
 .timestamp {
@@ -505,6 +514,7 @@ button:hover {
   font-size: 1rem;
 }
 
-.link {
+.mention {
+  color: #1da1f2;
   text-decoration: none;
 }
