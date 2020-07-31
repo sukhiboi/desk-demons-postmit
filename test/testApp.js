@@ -810,23 +810,27 @@ describe('#App', () => {
         getAllPostLikers: getAllPostLikersStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
       });
-      const expected = [
-        {
-          initials: 'JS',
-          isDeletable: true,
-          isLiked: true,
-          isFollowingMe: false,
-          likedUsers: [{ userId: 1 }],
-          message: 'hi #html',
-          name: 'john samuel',
-          postId: 1,
-          postedAt: 'a few seconds ago',
-          userId: 1,
-          username: 'john',
-          mentions: [],
-          hashtags: ['html'],
-        },
-      ];
+      const expected = {
+        posts: [
+          {
+            initials: 'JS',
+            isDeletable: true,
+            isLiked: true,
+            isFollowingMe: false,
+            likedUsers: [{ userId: 1 }],
+            message: 'hi #html',
+            name: 'john samuel',
+            postId: 1,
+            postedAt: 'a few seconds ago',
+            userId: 1,
+            username: 'john',
+            mentions: [],
+            hashtags: ['html'],
+          },
+        ],
+        loggedUser: userDetails.username,
+        hashtag: 'html',
+      };
       const actual = await app.getHashtagRelatedPosts('html');
       assert.deepStrictEqual(actual, expected);
       sinon.assert.calledOnceWithExactly(getPostsByHashtagStub, 'html');
