@@ -463,15 +463,36 @@ describe('#Datastore', () => {
       assert.deepStrictEqual(posts, expected);
       sinon.assert.calledOnce(allStub);
     });
+
+    it('should give error when the table not found', async () => {
+      const allStub = sinon.stub().yields(expectedTableError, null);
+      const client = new Datastore({ all: allStub });
+      try {
+        await client.getPostsByHashtag('html');
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(allStub);
+      }
+    });
   });
-  it('should give error when the table not found', async () => {
-    const allStub = sinon.stub().yields(expectedTableError, null);
-    const client = new Datastore({ all: allStub });
-    try {
-      await client.getPostsByHashtag('html');
-    } catch (err) {
-      assert.deepStrictEqual(err, expectedTableError);
-      sinon.assert.calledOnce(allStub);
-    }
+
+  describe('addHashtag', () => {
+    it('should save a hashtag to hashtag table', async () => {
+      const runStub = sinon.stub().yields(null);
+      const client = new Datastore({ run: runStub });
+      assert.isUndefined(await client.addHashtag('html', postId));
+      sinon.assert.calledOnce(runStub);
+    });
+
+    it('should give error when hashtag table not found', async () => {
+      const runStub = sinon.stub().yields(expectedTableError);
+      const client = new Datastore({ run: runStub });
+      try {
+        await client.addHashtag('html', postId);
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(runStub);
+      }
+    });
   });
 });
