@@ -659,4 +659,49 @@ describe('#App', () => {
       }
     });
   });
+
+  describe('getPostDetails()', () => {
+    it('should give all the post details based on postId', async () => {
+      const expectedPost = {
+        postId,
+        userId,
+        postedAt: new Date(),
+        message: 'hello',
+      };
+      const getPostStub = sinon.stub().resolves(expectedPost);
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getAllPostLikersStub = sinon.stub().resolves([]);
+      const app = createApp({
+        getPost: getPostStub,
+        getUserDetails: getUserDetailsStub,
+        getAllPostLikers: getAllPostLikersStub,
+      });
+      const expected = {
+        ...expectedPost,
+        ...userDetails,
+        postedAt: 'a few seconds ago',
+        likedUsers: [],
+        isLiked: false,
+        isDeletable: true,
+      };
+      const actual = await app.getPostDetails(postId);
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledOnceWithExactly(getPostStub, postId);
+      sinon.assert.calledOnceWithExactly(getUserDetailsStub, userId);
+      sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
+    });
+
+    it('should give error when post table not found', async () => {
+      const getPostStub = sinon.stub().rejects(expectedTableError);
+      const app = createApp({
+        getPost: getPostStub,
+      });
+      try {
+        await app.getPostDetails(postId);
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnceWithExactly(getPostStub, postId);
+      }
+    });
+  });
 });
