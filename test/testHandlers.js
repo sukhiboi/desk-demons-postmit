@@ -500,4 +500,36 @@ describe('#Handlers', () => {
         .expect(/john/, done);
     });
   });
+
+  describe('GET /hashtag/:hashtag', () => {
+    it('should respond with posts related to given hashtag', done => {
+      const post = {
+        postId,
+        postedAt: new Date(),
+        userId,
+        message: 'hi #html',
+      };
+      const getPostsByHashtagStub = sinon.stub().resolves([post]);
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
+      const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
+      const app = createApp({
+        getPostsByHashtag: getPostsByHashtagStub,
+        getUserDetails: getUserDetailsStub,
+        getAllPostLikers: getAllPostLikersStub,
+        getHashtagsByPostId: getHashtagsByPostIdStub,
+      });
+      expressApp.locals.app = app;
+      request(expressApp)
+        .get('/hashtag/html')
+        .set('Cookie', ['userId=1'])
+        .expect(() => {
+          sinon.assert.calledOnceWithExactly(getPostsByHashtagStub, 'html');
+          sinon.assert.calledTwice(getUserDetailsStub);
+          sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
+          sinon.assert.calledOnceWithExactly(getHashtagsByPostIdStub, postId);
+        })
+        .expect(/john/, done);
+    });
+  });
 });
