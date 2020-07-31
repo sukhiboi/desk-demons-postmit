@@ -791,4 +791,47 @@ describe('#App', () => {
       sinon.assert.calledOnceWithExactly(getIdByUsernameStub, 'naveen');
     });
   });
+  describe('getHashtagRelatedPosts', () => {
+    it('should give all posts with the given hashtag', async () => {
+      const post = {
+        postId,
+        postedAt: new Date(),
+        userId,
+        message: 'hi #html',
+      };
+      const getPostsByHashtagStub = sinon.stub().resolves([post]);
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
+      const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
+      const app = createApp({
+        getPostsByHashtag: getPostsByHashtagStub,
+        getUserDetails: getUserDetailsStub,
+        getAllPostLikers: getAllPostLikersStub,
+        getHashtagsByPostId: getHashtagsByPostIdStub,
+      });
+      const expected = [
+        {
+          initials: 'JS',
+          isDeletable: true,
+          isLiked: true,
+          isFollowingMe: false,
+          likedUsers: [{ userId: 1 }],
+          message: 'hi #html',
+          name: 'john samuel',
+          postId: 1,
+          postedAt: 'a few seconds ago',
+          userId: 1,
+          username: 'john',
+          mentions: [],
+          hashtags: ['html'],
+        },
+      ];
+      const actual = await app.getHashtagRelatedPosts('html');
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledOnceWithExactly(getPostsByHashtagStub, 'html');
+      sinon.assert.calledOnceWithExactly(getUserDetailsStub, userId);
+      sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
+      sinon.assert.calledOnceWithExactly(getHashtagsByPostIdStub, postId);
+    });
+  });
 });
