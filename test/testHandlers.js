@@ -10,6 +10,7 @@ const FOUND_STATUS_CODE = 302;
 describe('#Handlers', () => {
   const userId = 1,
     postId = 1;
+  const hashtags = [{ hashtag: 'html' }];
 
   const userDetails = {
     name: 'john samuel',
@@ -49,7 +50,9 @@ describe('#Handlers', () => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getUserPostsStub = sinon.stub().resolves(createDummyPosts());
       const getFollowingStub = sinon.stub().resolves([]);
+      const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const app = createApp({
+        getHashtagsByPostId: getHashtagsByPostIdStub,
         getUserDetails: getUserDetailsStub,
         getFollowing: getFollowingStub,
         getUserPosts: getUserPostsStub,
@@ -200,7 +203,9 @@ describe('#Handlers', () => {
       const getFollowingStub = sinon.stub().resolves([]);
       const getFollowersStub = sinon.stub().resolves([]);
       const getLikedPostsStub = sinon.stub().resolves([]);
+      const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       expressApp.locals.app = createApp({
+        getHashtagsByPostId: getHashtagsByPostIdStub,
         getIdByUsername: getIdByUsernameStub,
         getUserDetails: getUserDetailsStub,
         getUserPosts: getUserPostsStub,
@@ -231,7 +236,9 @@ describe('#Handlers', () => {
       const getFollowingStub = sinon.stub().resolves([]);
       const getFollowersStub = sinon.stub().resolves([]);
       const getLikedPostsStub = sinon.stub().resolves([]);
+      const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       expressApp.locals.app = createApp({
+        getHashtagsByPostId: getHashtagsByPostIdStub,
         getIdByUsername: getIdByUsernameStub,
         getUserDetails: getUserDetailsStub,
         getUserPosts: getUserPostsStub,
@@ -451,7 +458,9 @@ describe('#Handlers', () => {
       const getPostStub = sinon.stub().resolves(expectedPost);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getAllPostLikersStub = sinon.stub().resolves([]);
+      const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const app = createApp({
+        getHashtagsByPostId: getHashtagsByPostIdStub,
         getPost: getPostStub,
         getUserDetails: getUserDetailsStub,
         getAllPostLikers: getAllPostLikersStub,

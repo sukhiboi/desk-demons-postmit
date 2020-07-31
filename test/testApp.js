@@ -5,6 +5,7 @@ const App = require('../lib/app');
 describe('#App', () => {
   const userId = 1;
   const postId = 1;
+  const hashtags = [{ hashtag: 'html' }];
 
   const userDetails = { name: 'john samuel', username: 'john', userId };
 
@@ -60,9 +61,11 @@ describe('#App', () => {
     it('should update the given posts with required details', async () => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
+      const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const app = createApp({
         getUserDetails: getUserDetailsStub,
         getAllPostLikers: getAllPostLikersStub,
+        getHashtagsByPostId: getHashtagsByPostIdStub,
       });
       const expected = [
         {
@@ -77,6 +80,7 @@ describe('#App', () => {
           userId: 1,
           username: 'john',
           mentions: [],
+          hashtags: ['html'],
         },
       ];
       const actual = await app.updatePost(userId, createDummyPosts());
@@ -103,11 +107,13 @@ describe('#App', () => {
       const getUserPostsStub = sinon.stub().resolves(createDummyPosts());
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
+      const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const app = createApp({
         getFollowing: getFollowingStub,
         getUserPosts: getUserPostsStub,
         getUserDetails: getUserDetailsStub,
         getAllPostLikers: getAllPostLikersStub,
+        getHashtagsByPostId: getHashtagsByPostIdStub,
       });
       const expected = {
         initials: 'JS',
@@ -124,6 +130,7 @@ describe('#App', () => {
             postedAt: 'a few seconds ago',
             userId: 1,
             username: 'john',
+            hashtags: ['html'],
             mentions: [],
           },
           {
@@ -137,6 +144,7 @@ describe('#App', () => {
             postedAt: 'a few seconds ago',
             userId: 1,
             username: 'john',
+            hashtags: ['html'],
             mentions: [],
           },
         ],
@@ -364,11 +372,13 @@ describe('#App', () => {
       const getLikedPostsStub = sinon.stub().resolves(createDummyPosts());
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
+      const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const app = createApp({
         getUserDetails: getUserDetailsStub,
         getAllPostLikers: getAllPostLikersStub,
         getUserPosts: getUserPostsStub,
         getLikedPosts: getLikedPostsStub,
+        getHashtagsByPostId: getHashtagsByPostIdStub,
       });
       const actual = await app.getProfilePosts({ userId });
       const expected = {
@@ -384,6 +394,7 @@ describe('#App', () => {
             postedAt: 'a few seconds ago',
             userId: 1,
             username: 'john',
+            hashtags: ['html'],
             mentions: [],
           },
         ],
@@ -399,6 +410,7 @@ describe('#App', () => {
             postedAt: 'a few seconds ago',
             userId: 1,
             username: 'john',
+            hashtags: ['html'],
             mentions: [],
           },
         ],
@@ -442,6 +454,7 @@ describe('#App', () => {
       const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
       const getFollowersStub = sinon.stub().resolves([]);
       const getFollowingStub = sinon.stub().resolves([]);
+      const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const app = createApp({
         getUserDetails: getUserDetailsStub,
         getAllPostLikers: getAllPostLikersStub,
@@ -450,6 +463,7 @@ describe('#App', () => {
         getIdByUsername: getIdByUsernameStub,
         getFollowers: getFollowersStub,
         getFollowing: getFollowingStub,
+        getHashtagsByPostId: getHashtagsByPostIdStub,
       });
       const actual = await app.getUserProfile(userDetails.username);
       const expected = {
@@ -472,6 +486,7 @@ describe('#App', () => {
             postedAt: 'a few seconds ago',
             userId: 1,
             username: 'john',
+            hashtags: ['html'],
             mentions: [],
           },
         ],
@@ -682,7 +697,9 @@ describe('#App', () => {
       const getPostStub = sinon.stub().resolves(expectedPost);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getAllPostLikersStub = sinon.stub().resolves([]);
+      const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const app = createApp({
+        getHashtagsByPostId: getHashtagsByPostIdStub,
         getPost: getPostStub,
         getUserDetails: getUserDetailsStub,
         getAllPostLikers: getAllPostLikersStub,
@@ -696,6 +713,7 @@ describe('#App', () => {
         isDeletable: true,
         loggedUser: userDetails.username,
         mentions: [],
+        hashtags: ['html'],
       };
       const actual = await app.getPostDetails(postId);
       assert.deepStrictEqual(actual, expected);
