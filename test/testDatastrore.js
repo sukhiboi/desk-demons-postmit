@@ -403,4 +403,26 @@ describe('#Datastore', () => {
       }
     });
   });
+
+  describe('getHashtagsByPostId', () => {
+    it('should give all hashtags related to given post', async () => {
+      const expected = { hashtag: 'html' };
+      const allStub = sinon.stub().yields(null, [expected]);
+      const client = new Datastore({ all: allStub });
+      const hashtags = await client.getHashtagsByPostId(postId);
+      assert.deepStrictEqual(hashtags, [expected]);
+      sinon.assert.calledOnce(allStub);
+    });
+  });
+
+  it('should give error when the hashtags table not found', async () => {
+    const allStub = sinon.stub().yields(expectedTableError, null);
+    const client = new Datastore({ all: allStub });
+    try {
+      await client.getHashtagsByPostId(postId);
+    } catch (err) {
+      assert.strictEqual(err, expectedTableError);
+      sinon.assert.calledOnce(allStub);
+    }
+  });
 });
