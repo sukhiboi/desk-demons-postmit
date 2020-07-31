@@ -175,7 +175,7 @@ describe('#App', () => {
       const app = createApp({ savePost: savePostStub });
       const content = 'hello';
       assert.isNull(await app.savePost(content));
-      sinon.assert.alwaysCalledWithExactly(savePostStub, userId, content);
+      sinon.assert.calledOnce(savePostStub);
     });
 
     it('should reject any error', async () => {
@@ -185,7 +185,7 @@ describe('#App', () => {
       try {
         await app.savePost(content);
       } catch (err) {
-        sinon.assert.alwaysCalledWithExactly(savePostStub, userId, content);
+        sinon.assert.calledOnce(savePostStub);
         assert.deepStrictEqual(err, expectedTableError);
       }
     });
