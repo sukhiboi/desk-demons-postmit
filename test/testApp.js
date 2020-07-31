@@ -174,7 +174,7 @@ describe('#App', () => {
       const savePostStub = sinon.stub().resolves(null);
       const app = createApp({ savePost: savePostStub });
       const content = 'hello';
-      assert.isNull(await app.savePost(content));
+      assert.isUndefined(await app.savePost(content));
       sinon.assert.calledOnce(savePostStub);
     });
 
@@ -964,6 +964,26 @@ describe('#App', () => {
       } catch (err) {
         assert.deepStrictEqual(err, expectedTableError);
         sinon.assert.calledOnceWithExactly(getBookmarksStub, userId);
+      }
+    });
+  });
+
+  describe('saveHashtag()', () => {
+    it('should save the hashtag to db', async () => {
+      const addHashtagStub = sinon.stub().resolves(null);
+      const app = createApp({ addHashtag: addHashtagStub });
+      await app.saveHashTag('#html', postId);
+      sinon.assert.calledOnceWithExactly(addHashtagStub, 'html', postId);
+    });
+
+    it('should give error when hashtag table not found', async () => {
+      const addHashtagStub = sinon.stub().rejects(expectedTableError);
+      const app = createApp({ addHashtag: addHashtagStub });
+      try {
+        await app.saveHashTag('#html', postId);
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnceWithExactly(addHashtagStub, 'html', postId);
       }
     });
   });
