@@ -505,21 +505,32 @@ describe('#App', () => {
     });
   });
 
-  describe('getUserSuggestions()', () => {
+  describe('getSearchSuggestions()', () => {
     it('should resolve to searched user suggestions', async () => {
       const getMatchingUsersStub = sinon.stub().resolves([userDetails]);
       const app = createApp({ getMatchingUsers: getMatchingUsersStub });
-      const actual = await app.getUserSuggestions('john');
+      const actual = await app.getSearchSuggestions('john');
       const expected = [{ ...userDetails, initials: 'JS' }];
       assert.deepStrictEqual(actual, expected);
       sinon.assert.calledOnceWithExactly(getMatchingUsersStub, 'john');
+    });
+
+    it('should give hashtag suggestions', async () => {
+      const getMatchingHashtagsStub = sinon
+        .stub()
+        .resolves([{ hashtag: 'html' }]);
+      const app = createApp({ getMatchingHashtags: getMatchingHashtagsStub });
+      const actual = await app.getSearchSuggestions('#ht');
+      const expected = ['html'];
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledOnceWithExactly(getMatchingHashtagsStub, 'ht');
     });
 
     it('should reject any error', async () => {
       const getMatchingUsersStub = sinon.stub().rejects(expectedTableError);
       const app = createApp({ getMatchingUsers: getMatchingUsersStub });
       try {
-        await app.getUserSuggestions('john');
+        await app.getSearchSuggestions('john');
       } catch (err) {
         assert.deepStrictEqual(err, expectedTableError);
         sinon.assert.calledOnceWithExactly(getMatchingUsersStub, 'john');
