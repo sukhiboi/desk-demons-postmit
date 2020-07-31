@@ -376,4 +376,31 @@ describe('#Datastore', () => {
       }
     });
   });
+
+  describe('getPost()', () => {
+    it('should give post details based on postId', async () => {
+      const expected = {
+        postId,
+        userId,
+        message: 'hello',
+        postedAt: new Date(),
+      };
+      const getStub = sinon.stub().yields(null, expected);
+      const client = new Datastore({ get: getStub });
+      const postDetails = await client.getPost(postId);
+      assert.deepStrictEqual(postDetails, expected);
+      sinon.assert.calledOnce(getStub);
+    });
+
+    it('should give error when table not found', async () => {
+      const getStub = sinon.stub().yields(expectedTableError, null);
+      const client = new Datastore({ get: getStub });
+      try {
+        await client.getPost(postId);
+      } catch (err) {
+        sinon.assert.calledOnce(getStub);
+        assert.deepStrictEqual(err, expectedTableError);
+      }
+    });
+  });
 });
