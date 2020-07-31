@@ -156,9 +156,9 @@ button:hover {
   text-align: center;
 }
 
-.primary-btn:hover{
+.primary-btn:hover {
   cursor: pointer;
-} 
+}
 
 .popup-post-btn {
   margin-top: 2rem;
@@ -480,4 +480,31 @@ button:hover {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.hideCount {
+  visibility: hidden !important;
+}
+
+.likeCount {
+  font-weight: 700 !important;
+  font-size: 1rem;
+  margin-left: 5px;
+  margin-top: 1rem;
+  margin-right: 2px;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.link {
+  color: #8898a6;
+  cursor: pointer;
+  margin: 1rem 0.5rem 0 0;
+}
+.link span {
+  font-size: 1rem;
+}
+
+.link {
+  text-decoration: none;
 }

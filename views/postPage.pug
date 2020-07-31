@@ -1,1 +1,59 @@
-div= message
+doctype html
+head
+  meta(charset='UTF-8')
+  meta(name='viewport' content='width=device-width, initial-scale=1.0')
+  link(rel='stylesheet' href='/styles/styles.css' type='text/css')
+  link(rel='stylesheet' href='/styles/deletePopUp.css' type='text/css')
+  link(href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css' rel='stylesheet')
+  script(src="/js/popup.js")
+  script(src="/js/request.js")
+  script(src="/js/index.js")
+  title Postmit
+.menu
+  div
+    .app-name POSTMIT
+    .pages
+      a.page(href='/home') Home
+      a.page(href=`/user/${loggedUser}`) Profile
+      button.popup-post-btn(onclick='showNewPostElement()') Post
+.root
+  .main-panel
+    .header
+      span Home
+    .feed
+        .card
+            .post(ondblclick=`displayHeart(${postId})` id=`post_${postId}`)
+             .delete
+               if isDeletable
+                 i(class="fas fa-trash" onclick=`showDeletePopUp(${postId}, true)`)
+             .flex
+               .profile-pic
+                 span= initials
+               .user-details
+                 .name
+                   span= name 
+                   span(class="timestamp")= ` ・ ${postedAt}`
+                 .username
+                   span= `@${username}`
+             .post-content
+                   each line in message.split(/\n/)
+                     = line
+                     br
+             - let likeCount=likedUsers.length
+             a(href=`#` class=`link ${likeCount>0?"likeDetails":"hideCount"}`) 
+                span(class="likeCount")= likeCount
+                span= `${likeCount>1 ? 'Likes':'Like'}`
+             .actions.flex
+               .action
+                 - let className="far fa-heart icon likeBtn";
+                 if isLiked
+                  - className="fas fa-heart icon likeColor"
+                 i(class=className onclick=`toggleLikeUnlike(${postId})` id=`like_${postId}`) 
+            i(class='fas fa-heart fa-3x instagramLike' id=`heart_${postId}` ondblclick=`displayHeart(${postId})`) 
+  .search-panel
+    .search-bar.flex
+      .search-icon
+        img(src='/assets/search.svg' alt='Search')
+      .search-input(onkeyup='search()')
+       input(type='text' placeholder='Search')
+    .search-output

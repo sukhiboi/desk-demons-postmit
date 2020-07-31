@@ -12,6 +12,7 @@ const toggleLikeButton = function (target) {
 };
 
 const toggleLikeUnlike = function (postId) {
+  event.stopPropagation();
   const target = document.querySelector(`#like_${postId}`);
   sendPOSTRequest(
     '/toggleLike',
@@ -124,8 +125,14 @@ const showFollowersList = function (username) {
   window.location = `/user/${username}/followers`;
 };
 
-const deletePost = function (postId) {
-  sendPOSTRequest('/deletePost', { postId }, () => location.reload());
+const deletePost = function (postId, redirectToHome) {
+  sendPOSTRequest('/deletePost', { postId }, () => {
+    if (redirectToHome) {
+      window.location.href = '/home';
+      return;
+    }
+    location.reload();
+  });
 };
 
 const removeFilter = function () {
@@ -133,7 +140,7 @@ const removeFilter = function () {
   filter.remove();
 };
 
-const createDeletePopUp = function (postId) {
+const createDeletePopUp = function (postId, redirectToHome) {
   const popup = document.createElement('div');
   popup.innerHTML = `
   <div class="delete-popup">
@@ -142,20 +149,25 @@ const createDeletePopUp = function (postId) {
   removed from your profile, the timeline of any accounts that follow you.</div>
   <div class="flex action-btn">
     <button onclick="removeFilter()">Cancel</button>
-    <button class="delete-btn" onclick="deletePost(${postId})">Delete</button>
+    <button class="delete-btn" onclick="deletePost(${postId}, ${redirectToHome})">Delete</button>
   </div>
 </div>
   `;
   return popup;
 };
 
-const showDeletePopUp = function (postId) {
+const showDeletePopUp = function (postId, redirectToHome) {
+  event.stopPropagation();
   const filter = document.createElement('div');
   filter.classList.add('filter');
   filter.id = 'filter';
-  const newPostElement = createDeletePopUp(postId);
+  const newPostElement = createDeletePopUp(postId, redirectToHome);
   filter.appendChild(newPostElement);
   document.body.appendChild(filter);
+};
+
+const expandPost = function (postId) {
+  window.location.href = `/post/${postId}`;
 };
 
 const main = function () {

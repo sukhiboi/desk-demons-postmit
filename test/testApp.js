@@ -683,6 +683,7 @@ describe('#App', () => {
         likedUsers: [],
         isLiked: false,
         isDeletable: true,
+        loggedUser: userDetails.username,
       };
       const actual = await app.getPostDetails(postId);
       assert.deepStrictEqual(actual, expected);

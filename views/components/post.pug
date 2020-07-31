@@ -1,5 +1,5 @@
 mixin post(post)
-  .card
+  .card(onclick=`expandPost('${post.postId}')`)
     .post(ondblclick=`displayHeart(${post.postId})` id=`post_${post.postId}`)
       .delete
         if post.isDeletable

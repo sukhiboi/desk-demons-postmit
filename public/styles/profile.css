@@ -117,11 +117,3 @@
   color: #1da1f2;
   border-bottom: 2px solid #1da1f2;
 }
-.link {
-  color: #8898a6;
-  cursor: pointer;
-  margin: 0.2rem 0.5rem 0 0;
-}
-.link span {
-  font-size: 1rem;
-}
