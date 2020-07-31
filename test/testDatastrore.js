@@ -413,16 +413,35 @@ describe('#Datastore', () => {
       assert.deepStrictEqual(hashtags, [expected]);
       sinon.assert.calledOnce(allStub);
     });
+    it('should give error when the hashtags table not found', async () => {
+      const allStub = sinon.stub().yields(expectedTableError, null);
+      const client = new Datastore({ all: allStub });
+      try {
+        await client.getHashtagsByPostId(postId);
+      } catch (err) {
+        assert.strictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(allStub);
+      }
+    });
   });
 
-  it('should give error when the hashtags table not found', async () => {
-    const allStub = sinon.stub().yields(expectedTableError, null);
-    const client = new Datastore({ all: allStub });
-    try {
-      await client.getHashtagsByPostId(postId);
-    } catch (err) {
-      assert.strictEqual(err, expectedTableError);
+  describe('getBookmarks()', () => {
+    it('should give all bookmarks related to given user', async () => {
+      const expected = [{ userId }];
+      const allStub = sinon.stub().yields(null, expected);
+      const client = new Datastore({ all: allStub });
+      assert.deepStrictEqual(await client.getBookmarks(userId), expected);
       sinon.assert.calledOnce(allStub);
-    }
+    });
+    it('should give error when the bookmarks table not found', async () => {
+      const allStub = sinon.stub().yields(expectedTableError, null);
+      const client = new Datastore({ all: allStub });
+      try {
+        await client.getBookmarks(userId);
+      } catch (err) {
+        assert.strictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(allStub);
+      }
+    });
   });
 });
