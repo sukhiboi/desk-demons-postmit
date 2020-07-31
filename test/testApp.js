@@ -705,4 +705,34 @@ describe('#App', () => {
       }
     });
   });
+
+  describe('getPostLikers()', () => {
+    it('should give users who liked a post based on postId', async () => {
+      const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getFollowersStub = sinon.stub().resolves([]);
+      const app = createApp({
+        getAllPostLikers: getAllPostLikersStub,
+        getUserDetails: getUserDetailsStub,
+        getFollowers: getFollowersStub,
+      });
+      const actual = await app.getPostLikers(postId);
+      const expected = [{ ...userDetails, isFollowingMe: false }];
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledOnceWithExactly(getFollowersStub, userId);
+      sinon.assert.calledOnceWithExactly(getUserDetailsStub, userId);
+      sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
+    });
+
+    it('should give error when posts table not found', async () => {
+      const getAllPostLikersStub = sinon.stub().rejects(expectedTableError);
+      const app = createApp({ getAllPostLikers: getAllPostLikersStub });
+      try {
+        await app.getPostLikers(postId);
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
+      }
+    });
+  });
 });
