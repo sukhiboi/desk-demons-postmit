@@ -439,4 +439,33 @@ describe('#Handlers', () => {
         .expect({ status: false }, done);
     });
   });
+
+  describe('GET /post/:postId', () => {
+    it('should response back with postDetails', done => {
+      const expectedPost = {
+        postId,
+        userId,
+        postedAt: new Date(),
+        message: 'hello',
+      };
+      const getPostStub = sinon.stub().resolves(expectedPost);
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getAllPostLikersStub = sinon.stub().resolves([]);
+      const app = createApp({
+        getPost: getPostStub,
+        getUserDetails: getUserDetailsStub,
+        getAllPostLikers: getAllPostLikersStub,
+      });
+      expressApp.locals.app = app;
+      request(expressApp)
+        .get(`/post/${postId}`)
+        .set('Cookie', ['userId=1'])
+        .expect(() => {
+          sinon.assert.calledOnceWithExactly(getPostStub, postId);
+          sinon.assert.calledTwice(getUserDetailsStub);
+          sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
+        })
+        .expect(/hello/, done);
+    });
+  });
 });
