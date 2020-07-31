@@ -60,12 +60,14 @@ describe('#App', () => {
   describe('updatePost()', () => {
     it('should update the given posts with required details', async () => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getBookmarksStub = sinon.stub().resolves([]);
       const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const app = createApp({
         getUserDetails: getUserDetailsStub,
         getAllPostLikers: getAllPostLikersStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
+        getBookmarks: getBookmarksStub,
       });
       const expected = [
         {
@@ -77,6 +79,7 @@ describe('#App', () => {
           name: 'john samuel',
           postId: 1,
           postedAt: 'a few seconds ago',
+          isBookmarked: false,
           userId: 1,
           username: 'john',
           mentions: [],
@@ -369,8 +372,9 @@ describe('#App', () => {
   describe('getProfilePosts()', () => {
     it('should give both liked and posted posts of given user', async () => {
       const getUserPostsStub = sinon.stub().resolves(createDummyPosts());
-      const getLikedPostsStub = sinon.stub().resolves(createDummyPosts());
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getLikedPostsStub = sinon.stub().resolves(createDummyPosts());
+      const getBookmarksStub = sinon.stub().resolves([]);
       const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const app = createApp({
@@ -379,6 +383,7 @@ describe('#App', () => {
         getUserPosts: getUserPostsStub,
         getLikedPosts: getLikedPostsStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
+        getBookmarks: getBookmarksStub,
       });
       const actual = await app.getProfilePosts({ userId });
       const expected = {
@@ -392,6 +397,7 @@ describe('#App', () => {
             name: 'john samuel',
             postId: 1,
             postedAt: 'a few seconds ago',
+            isBookmarked: false,
             userId: 1,
             username: 'john',
             hashtags: ['html'],
@@ -408,6 +414,7 @@ describe('#App', () => {
             name: 'john samuel',
             postId: 1,
             postedAt: 'a few seconds ago',
+            isBookmarked: false,
             userId: 1,
             username: 'john',
             hashtags: ['html'],
@@ -448,6 +455,7 @@ describe('#App', () => {
 
     it('should resolve to user profile', async () => {
       const getIdByUsernameStub = sinon.stub().resolves({ userId });
+      const getBookmarksStub = sinon.stub().resolves([]);
       const getUserPostsStub = sinon.stub().resolves(createDummyPosts());
       const getLikedPostsStub = sinon.stub().resolves([]);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
@@ -464,6 +472,7 @@ describe('#App', () => {
         getFollowers: getFollowersStub,
         getFollowing: getFollowingStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
+        getBookmarks: getBookmarksStub,
       });
       const actual = await app.getUserProfile(userDetails.username);
       const expected = {
@@ -484,6 +493,7 @@ describe('#App', () => {
             name: 'john samuel',
             postId: 1,
             postedAt: 'a few seconds ago',
+            isBookmarked: false,
             userId: 1,
             username: 'john',
             hashtags: ['html'],
@@ -704,9 +714,11 @@ describe('#App', () => {
         userId,
         postedAt: new Date(),
         message: 'hello',
+        isBookmarked: false,
       };
       const getPostStub = sinon.stub().resolves(expectedPost);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getBookmarksStub = sinon.stub().resolves([]);
       const getAllPostLikersStub = sinon.stub().resolves([]);
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const app = createApp({
@@ -714,6 +726,7 @@ describe('#App', () => {
         getPost: getPostStub,
         getUserDetails: getUserDetailsStub,
         getAllPostLikers: getAllPostLikersStub,
+        getBookmarks: getBookmarksStub,
       });
       const expected = {
         ...expectedPost,
@@ -814,12 +827,14 @@ describe('#App', () => {
       const getPostsByHashtagStub = sinon.stub().resolves([post]);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
+      const getBookmarksStub = sinon.stub().resolves([]);
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const app = createApp({
         getPostsByHashtag: getPostsByHashtagStub,
         getUserDetails: getUserDetailsStub,
         getAllPostLikers: getAllPostLikersStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
+        getBookmarks: getBookmarksStub,
       });
       const expected = {
         posts: [
@@ -833,6 +848,7 @@ describe('#App', () => {
             name: 'john samuel',
             postId: 1,
             postedAt: 'a few seconds ago',
+            isBookmarked: false,
             userId: 1,
             username: 'john',
             mentions: [],
@@ -878,13 +894,14 @@ describe('#App', () => {
             name: 'john samuel',
             postId: 1,
             postedAt: 'a few seconds ago',
+            isBookmarked: true,
             userId: 1,
             username: 'john',
           },
         ],
       };
       assert.deepStrictEqual(await app.getBookmarks(), expected);
-      sinon.assert.calledOnce(getBookmarksStub);
+      sinon.assert.calledTwice(getBookmarksStub);
     });
 
     it('should give empty list when no posts are bookmarked', async () => {

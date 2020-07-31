@@ -20,12 +20,17 @@ mixin post(post)
               != replacedLine
               br
       .actions.flex
-        .action
-          - let className="far fa-heart icon likeBtn";
-          - let countClass = "likeBtn"
+        .action.like
+          - let className="far fa-heart icon ";
+          - let countClass = ""
           if post.isLiked
            - className="fas fa-heart icon likeColor"
            - countClass = "likeColor"
           i(class=className onclick=`toggleLikeUnlike(${post.postId})` id=`like_${post.postId}`) 
           span(class=`count ${countClass}`)= post.likedUsers.length?post.likedUsers.length:''
+        .action.bookmark
+          - className="far fa-bookmark icon";
+          if post.isBookmarked
+           - className="fas fa-bookmark icon bookmarkColor"
+          i(class=className onclick=`toggleBookmark(${post.postId})` id=`bookmark_${post.postId}`) 
     i(class='fas fa-heart fa-3x instagramLike' id=`heart_${post.postId}` ondblclick=`displayHeart(${post.postId})`) 

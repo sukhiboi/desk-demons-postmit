@@ -1,11 +1,11 @@
 const toggleLikeButton = function (target) {
-  let className = ['far', 'LikeBtn'];
+  let className = ['far'];
   if (target.className.includes('far')) {
     className = ['fas', 'likeColor'];
   }
   setTimeout(() => location.reload(), 200);
   const classToRemove = className.includes('fas')
-    ? ['far', 'LikeBtn']
+    ? ['far']
     : ['fas', 'likeColor'];
   target.classList.remove(...classToRemove);
   target.classList.add(...className);
@@ -18,6 +18,29 @@ const toggleLikeUnlike = function (postId) {
     '/toggleLike',
     { postId },
     ({ status }) => status && toggleLikeButton(target)
+  );
+};
+
+const toggleBookmarkButton = function (target) {
+  let className = ['far'];
+  if (target.className.includes('far')) {
+    className = ['fas', 'bookmarkColor'];
+  }
+  const classToRemove = className.includes('fas')
+    ? ['far']
+    : ['fas', 'bookmarkColor'];
+  target.classList.remove(...classToRemove);
+  target.classList.add(...className);
+  location.reload();
+};
+
+const toggleBookmark = function (postId) {
+  event.stopPropagation();
+  const target = document.querySelector(`#bookmark_${postId}`);
+  sendPOSTRequest(
+    '/toggleBookmark',
+    { postId },
+    ({ status }) => status && toggleBookmarkButton(target)
   );
 };
 

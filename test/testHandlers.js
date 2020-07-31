@@ -49,6 +49,7 @@ describe('#Handlers', () => {
       const getAllPostLikersStub = sinon.stub().resolves([]);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getUserPostsStub = sinon.stub().resolves(createDummyPosts());
+      const getBookmarksStub = sinon.stub().resolves([]);
       const getFollowingStub = sinon.stub().resolves([]);
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const app = createApp({
@@ -57,6 +58,7 @@ describe('#Handlers', () => {
         getFollowing: getFollowingStub,
         getUserPosts: getUserPostsStub,
         getAllPostLikers: getAllPostLikersStub,
+        getBookmarks: getBookmarksStub,
       });
       expressApp.locals.app = app;
       request(expressApp)
@@ -198,6 +200,7 @@ describe('#Handlers', () => {
       const userDetails = { username: 'jani', name: 'jani', userId };
       const getIdByUsernameStub = sinon.stub().resolves({ userId });
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getBookmarksStub = sinon.stub().resolves([]);
       const getAllPostLikersStub = sinon.stub().resolves([]);
       const getUserPostsStub = sinon.stub().resolves(createDummyPosts());
       const getFollowingStub = sinon.stub().resolves([]);
@@ -213,6 +216,7 @@ describe('#Handlers', () => {
         getFollowing: getFollowingStub,
         getFollowers: getFollowersStub,
         getLikedPosts: getLikedPostsStub,
+        getBookmarks: getBookmarksStub,
       });
       request(expressApp)
         .get('/user/jani')
@@ -233,6 +237,7 @@ describe('#Handlers', () => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getAllPostLikersStub = sinon.stub().resolves([]);
       const getUserPostsStub = sinon.stub().resolves(createDummyPosts());
+      const getBookmarksStub = sinon.stub().resolves([]);
       const getFollowingStub = sinon.stub().resolves([]);
       const getFollowersStub = sinon.stub().resolves([]);
       const getLikedPostsStub = sinon.stub().resolves([]);
@@ -246,6 +251,7 @@ describe('#Handlers', () => {
         getFollowing: getFollowingStub,
         getFollowers: getFollowersStub,
         getLikedPosts: getLikedPostsStub,
+        getBookmarks: getBookmarksStub,
       });
       request(expressApp)
         .get('/user/john')
@@ -458,12 +464,14 @@ describe('#Handlers', () => {
       const getPostStub = sinon.stub().resolves(expectedPost);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getAllPostLikersStub = sinon.stub().resolves([]);
+      const getBookmarksStub = sinon.stub().resolves([]);
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const app = createApp({
         getHashtagsByPostId: getHashtagsByPostIdStub,
         getPost: getPostStub,
         getUserDetails: getUserDetailsStub,
         getAllPostLikers: getAllPostLikersStub,
+        getBookmarks: getBookmarksStub,
       });
       expressApp.locals.app = app;
       request(expressApp)
@@ -512,12 +520,14 @@ describe('#Handlers', () => {
       const getPostsByHashtagStub = sinon.stub().resolves([post]);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
+      const getBookmarksStub = sinon.stub().resolves([]);
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const app = createApp({
         getPostsByHashtag: getPostsByHashtagStub,
         getUserDetails: getUserDetailsStub,
         getAllPostLikers: getAllPostLikersStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
+        getBookmarks: getBookmarksStub,
       });
       expressApp.locals.app = app;
       request(expressApp)
@@ -551,7 +561,7 @@ describe('#Handlers', () => {
         .set('Cookie', ['userId=1'])
         .expect(OK_STATUS_CODE)
         .expect(() => {
-          sinon.assert.calledOnce(getBookmarksStub);
+          sinon.assert.calledTwice(getBookmarksStub);
           sinon.assert.calledTwice(getUserDetailsStub);
           sinon.assert.calledOnce(getAllPostLikersStub);
           sinon.assert.calledOnce(getHashtagsByPostIdStub);

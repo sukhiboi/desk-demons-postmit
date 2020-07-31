@@ -21,7 +21,7 @@ head
 .root
   .main-panel
     .header
-      span Home
+      span Post
     .feed
         .card
             .post(ondblclick=`displayHeart(${postId})` id=`post_${postId}`)
@@ -48,11 +48,16 @@ head
                 span(class="likeCount")= likeCount
                 span= `${likeCount>1 ? 'Likes':'Like'}`
              .actions.flex
-               .action
-                 - let className="far fa-heart icon likeBtn";
+               .action.like
+                 - let className="far fa-heart icon";
                  if isLiked
                   - className="fas fa-heart icon likeColor"
                  i(class=className onclick=`toggleLikeUnlike(${postId})` id=`like_${postId}`) 
+               .action.bookmark
+                  - className="far fa-bookmark icon";
+                  if isBookmarked
+                   - className="fas fa-bookmark icon bookmarkColor"
+                  i(class=className onclick=`toggleBookmark(${postId})` id=`bookmark_${postId}`) 
             i(class='fas fa-heart fa-3x instagramLike' id=`heart_${postId}` ondblclick=`displayHeart(${postId})`) 
   .search-panel
     .search-bar.flex
