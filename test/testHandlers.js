@@ -559,4 +559,50 @@ describe('#Handlers', () => {
         .expect(/Bookmarks/, done);
     });
   });
+
+  describe('POST /toggleBookmark', () => {
+    it('should add the post in bookmarks if it is not bookmarked', done => {
+      const getBookmarksStub = sinon.stub().resolves([]);
+      const addBookmarkStub = sinon.stub().resolves();
+      const app = createApp({
+        getBookmarks: getBookmarksStub,
+        addBookmark: addBookmarkStub,
+      });
+      expressApp.locals.app = app;
+      request(expressApp)
+        .post('/toggleBookmark')
+        .send({ postId })
+        .set('Cookie', ['userId=1'])
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnceWithExactly(getBookmarksStub, userId);
+          sinon.assert.calledOnceWithExactly(addBookmarkStub, postId, userId);
+        })
+        .expect({ status: true }, done);
+    });
+
+    it('should remove the post from bookmarks if it is bookmarked', done => {
+      const getBookmarksStub = sinon.stub().resolves(createDummyPosts());
+      const removeBookmarkStub = sinon.stub().resolves();
+      const app = createApp({
+        getBookmarks: getBookmarksStub,
+        removeBookmark: removeBookmarkStub,
+      });
+      expressApp.locals.app = app;
+      request(expressApp)
+        .post('/toggleBookmark')
+        .send({ postId })
+        .set('Cookie', ['userId=1'])
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnceWithExactly(getBookmarksStub, userId);
+          sinon.assert.calledOnceWithExactly(
+            removeBookmarkStub,
+            postId,
+            userId
+          );
+        })
+        .expect({ status: true }, done);
+    });
+  });
 });

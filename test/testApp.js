@@ -944,7 +944,7 @@ describe('#App', () => {
       sinon.assert.calledOnceWithExactly(getBookmarksStub, userId);
     });
 
-    it('should add post to bookmarks if it is not bookmarked', async () => {
+    it('should remove post from bookmarks if it is bookmarked', async () => {
       const getBookmarksStub = sinon.stub().resolves(createDummyPosts());
       const removeBookmarkStub = sinon.stub().resolves();
       const app = createApp({
