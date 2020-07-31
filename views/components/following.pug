@@ -9,5 +9,6 @@ mixin following(following)
             span= following.name
           .username
             span= `@${following.username}`
-      div.follow-btn-wrapper
-        button.follow-btn.primary-btn(onclick=`toggleFollowUnfollow('${following.username}')`)= following.isFollowingMe ? 'Unfollow' : 'Follow'
+      if following.username != loggedUser
+        div.follow-btn-wrapper
+          button.follow-btn.primary-btn(onclick=`toggleFollowUnfollow('${following.username}')`)= following.isFollowingMe ? 'Unfollow' : 'Follow'

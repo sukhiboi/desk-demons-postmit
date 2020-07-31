@@ -13,7 +13,10 @@ mixin post(post)
             span(class="timestamp")= ` ・ ${post.postedAt}`
           .username
             span= `@${post.username}`
-      .post-content= post.message
+      .post-content
+            each line in post.message.split(/\n/)
+              = line
+              br
       .actions.flex
         .action
           - let className="far fa-heart icon likeBtn";

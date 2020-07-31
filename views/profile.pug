@@ -37,12 +37,12 @@ html(lang='en')
                     span Joined on #{joinedDate}
             .extra-details
                 div.flex
-                    div(style="cursor:pointer")
+                    a(href=`/user/${username}/following` class="link") 
                         span.count= following.length
-                        span(onclick=`showFollowingList('${username}')`) Following
-                    div(style="cursor:pointer")
+                        span Following
+                    a(href=`/user/${username}/followers` class="link") 
                         span.count= followers.length
-                        span(onclick=`showFollowersList('${username}')`) Followers
+                        span Followers
             .user-activity
                 .activity-bar
                     .activity-title.activeTab(onclick="display('posts')" id="posts-tab") Posts
