@@ -495,4 +495,24 @@ describe('#Datastore', () => {
       }
     });
   });
+
+  describe('addBookmark', () => {
+    it('should save a hashtag to hashtag table', async () => {
+      const runStub = sinon.stub().yields(null);
+      const client = new Datastore({ run: runStub });
+      assert.isUndefined(await client.addBookmark(postId, userId));
+      sinon.assert.calledOnce(runStub);
+    });
+
+    it('should give error when hashtag table not found', async () => {
+      const runStub = sinon.stub().yields(expectedTableError);
+      const client = new Datastore({ run: runStub });
+      try {
+        await client.addBookmark(postId, userId);
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(runStub);
+      }
+    });
+  });
 });
