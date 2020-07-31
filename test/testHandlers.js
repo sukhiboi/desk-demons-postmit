@@ -532,4 +532,31 @@ describe('#Handlers', () => {
         .expect(/john/, done);
     });
   });
+
+  describe('GET /user/bookmarks', () => {
+    it('should give bookmarks page with all bookmarked posts', done => {
+      const getBookmarksStub = sinon.stub().resolves(createDummyPosts());
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
+      const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
+      const app = createApp({
+        getBookmarks: getBookmarksStub,
+        getUserDetails: getUserDetailsStub,
+        getAllPostLikers: getAllPostLikersStub,
+        getHashtagsByPostId: getHashtagsByPostIdStub,
+      });
+      expressApp.locals.app = app;
+      request(expressApp)
+        .get('/user/bookmarks')
+        .set('Cookie', ['userId=1'])
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnce(getBookmarksStub);
+          sinon.assert.calledTwice(getUserDetailsStub);
+          sinon.assert.calledOnce(getAllPostLikersStub);
+          sinon.assert.calledOnce(getHashtagsByPostIdStub);
+        })
+        .expect(/Bookmarks/, done);
+    });
+  });
 });
