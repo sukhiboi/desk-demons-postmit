@@ -1,6 +1,6 @@
 mixin post(post)
   .card(onclick=`expandPost('${post.postId}')`)
-    .post(ondblclick=`displayHeart(${post.postId})` id=`post_${post.postId}`)
+    .post(id=`post_${post.postId}`)
       .delete
         if post.isDeletable
           i(class="fas fa-trash" onclick=`showDeletePopUp(${post.postId})`)
