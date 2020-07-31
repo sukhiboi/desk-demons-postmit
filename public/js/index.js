@@ -86,21 +86,38 @@ const sendRequestForProfile = function (username) {
   window.location = `/user/${username}`;
 };
 
-const showSearchResult = function (result) {
-  const searchOutputDiv = document.querySelector('.search-output');
-  let html = '';
-  result.forEach(result => {
-    html += `
-<div class="searchedUser" onclick="sendRequestForProfile('${result.username}')">
+const getUserResultTemplate = function (user) {
+  const userTemplate = `
+<div class="searchedUser" onclick="sendRequestForProfile('${user.username}')">
       <div class="flex">
-          <div class="profile-pic"><span>${result.initials}</span></div>
+          <div class="profile-pic"><span>${user.initials}</span></div>
           <div class="user-details">
-              <div class="name"><span>${result.name}</span></div>
-              <div class="username"><span>@${result.username}</span></div>
+              <div class="name"><span>${user.name}</span></div>
+              <div class="username"><span>@${user.username}</span></div>
           </div>
       </div>
     </div>`;
-  });
+  return userTemplate;
+};
+
+const getHashtagResultTemplate = function (hashtag) {
+  const hashtagTemplate = `
+<a class="searchedHashtag" href="/hashtag/${hashtag}">
+    <div class="name"><span>#${hashtag}</span></div>
+</a>`;
+  return hashtagTemplate;
+};
+
+const showSearchResult = function (result, searchInput) {
+  let templateCreator = getUserResultTemplate;
+  if (searchInput[0] === '#') {
+    templateCreator = getHashtagResultTemplate;
+  }
+  const searchOutputDiv = document.querySelector('.search-output');
+  const limitedSearchResults = result.slice(0, 10);
+  const html = limitedSearchResults.reduce((html, result) => {
+    return html + templateCreator(result);
+  }, '');
   searchOutputDiv.innerHTML = html;
 };
 
@@ -110,7 +127,9 @@ const search = function () {
     document.querySelector('.search-output').innerHTML = '';
     return;
   }
-  sendPOSTRequest('/search', { searchInput }, showSearchResult);
+  sendPOSTRequest('/search', { searchInput }, result => {
+    showSearchResult(result, searchInput);
+  });
 };
 
 const toggleFollowUnfollow = function (username) {
