@@ -149,7 +149,9 @@ const createDeletePopUp = function (postId, redirectToHome) {
   removed from your profile, the timeline of any accounts that follow you.</div>
   <div class="flex action-btn">
     <button onclick="removeFilter()">Cancel</button>
-    <button class="delete-btn" onclick="deletePost(${postId}, ${redirectToHome})">Delete</button>
+    <button
+      class="delete-btn"
+      onclick="deletePost(${postId}, ${redirectToHome})">Delete</button>
   </div>
 </div>
   `;
