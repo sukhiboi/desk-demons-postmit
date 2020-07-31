@@ -33,14 +33,14 @@ head
                  span= initials
                .user-details
                  .name
-                   span= name 
+                   a(href=`/user/${username}`)= name 
                    span(class="timestamp")= ` ・ ${postedAt}`
                  .username
                     a(href=`/user/${username}`)= `@${username}`
              .post-content
                     each line in message.split(/\n/)
                       - let replacedLine=mentions.reduce((line,user) => line.replace(new RegExp(user),`<a class="mention" href="/user/${user.slice(1)}">${user}</a>`),line) 
-                      - replacedLine=hashtags.reduce((line,hashtag) => line.replace(new RegExp(`#${hashtag}`),`<a class="mention" href="/hashtag/${hashtag}">#${hashtag}</a>`),line) 
+                      - replacedLine=hashtags.reduce((line,hashtag) => line.replace(new RegExp(`#${hashtag}`),`<a class="mention" href="/hashtag/${hashtag}">#${hashtag}</a>`),replacedLine) 
                       != replacedLine
                       br
              - let likeCount=likedUsers.length

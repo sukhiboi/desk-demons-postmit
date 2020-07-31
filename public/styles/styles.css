@@ -202,6 +202,11 @@ button:hover {
   font-size: 1.1rem;
 }
 
+.user-details .name a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+}
+
 .name {
   color: rgba(255, 255, 255, 0.8);
   font-weight: 700;

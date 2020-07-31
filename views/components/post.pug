@@ -9,14 +9,14 @@ mixin post(post)
           span= post.initials
         .user-details
           .name
-            span= post.name 
-            span(class="timestamp")= ` ・ ${post.postedAt}`
+            a(href=`/user/${post.username}`)= post.name 
+            a(class="timestamp")= ` ・ ${post.postedAt}`
           .username
             a(href=`/user/${post.username}`)= `@${post.username}`
       .post-content
             each line in post.message.split(/\n/)
               - let replacedLine=post.mentions.reduce((line,user) => line.replace(new RegExp(user),`<a class="mention" href="/user/${user.slice(1)}">${user}</a>`),line) 
-              - replacedLine=post.hashtags.reduce((line,hashtag) => line.replace(new RegExp(`#${hashtag}`),`<a class="mention" href="/hashtag/${hashtag}">#${hashtag}</a>`),line) 
+              - replacedLine=post.hashtags.reduce((line,hashtag) => line.replace(new RegExp(`#${hashtag}`),`<a class="mention" href="/hashtag/${hashtag}">#${hashtag}</a>`),replacedLine) 
               != replacedLine
               br
       .actions.flex
