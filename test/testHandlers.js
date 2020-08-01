@@ -11,7 +11,9 @@ describe('#Handlers', () => {
   const userId = 1;
   const postId = 1;
   const hashtags = [{ hashtag: 'html' }];
-  const responses = [{ responseId: 2 }];
+  const responses = [
+    { postId: 2, message: 'hi', postedAt: new Date(), userId },
+  ];
 
   const userDetails = {
     name: 'john samuel',
@@ -488,8 +490,8 @@ describe('#Handlers', () => {
         .set('Cookie', ['userId=1'])
         .expect(() => {
           sinon.assert.calledOnceWithExactly(getPostStub, postId);
-          sinon.assert.calledTwice(getUserDetailsStub);
-          sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
+          sinon.assert.calledThrice(getUserDetailsStub);
+          sinon.assert.calledTwice(getAllPostLikersStub);
         })
         .expect(/hello/, done);
     });

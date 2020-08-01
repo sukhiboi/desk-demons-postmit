@@ -6,7 +6,9 @@ describe('#App', () => {
   const userId = 1;
   const postId = 1;
   const hashtags = [{ hashtag: 'html' }];
-  const responses = [{ responseId: 2 }];
+  const responses = [
+    { postId: 2, message: 'hi', postedAt: new Date(), userId },
+  ];
 
   const userDetails = { name: 'john samuel', username: 'john', userId };
 
@@ -746,21 +748,49 @@ describe('#App', () => {
         getBookmarks: getBookmarksStub,
       });
       const expected = {
-        ...expectedPost,
-        ...userDetails,
-        postedAt: 'a few seconds ago',
-        likedUsers: [],
-        isLiked: false,
-        isDeletable: true,
-        loggedUser: userDetails.username,
-        mentions: [],
-        hashtags: ['html'],
+        loggedUser: 'john',
+        post: {
+          hashtags: ['html'],
+          initials: 'JS',
+          isBookmarked: false,
+          isDeletable: true,
+          isFollowingMe: true,
+          isLiked: false,
+          likedUsers: [],
+          mentions: [],
+          message: 'hello',
+          name: 'john samuel',
+          postId: 1,
+          postedAt: 'a few seconds ago',
+          responseCount: 1,
+          userId: 1,
+          username: 'john',
+        },
+        responses: [
+          {
+            hashtags: ['html'],
+            initials: 'JS',
+            isBookmarked: false,
+            isDeletable: true,
+            isFollowingMe: true,
+            isLiked: false,
+            likedUsers: [],
+            mentions: [],
+            message: 'hi',
+            name: 'john samuel',
+            postId: 2,
+            postedAt: 'a few seconds ago',
+            responseCount: 1,
+            userId: 1,
+            username: 'john',
+          },
+        ],
       };
       const actual = await app.getPostDetails(postId);
       assert.deepStrictEqual(actual, expected);
       sinon.assert.calledOnceWithExactly(getPostStub, postId);
-      sinon.assert.calledOnceWithExactly(getUserDetailsStub, userId);
-      sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
+      sinon.assert.calledTwice(getUserDetailsStub);
+      sinon.assert.calledTwice(getAllPostLikersStub);
     });
 
     it('should give error when post table not found', async () => {

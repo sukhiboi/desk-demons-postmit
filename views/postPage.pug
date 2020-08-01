@@ -24,47 +24,47 @@ head
       span Post
     .feed
         .card
-            .post(ondblclick=`displayHeart(${postId})` id=`post_${postId}`)
+            .post(ondblclick=`displayHeart(${post.postId})` id=`post_${post.postId}`)
              .delete
-               if isDeletable
-                 i(class="fas fa-trash" onclick=`showDeletePopUp(${postId}, true)`)
+               if post.isDeletable
+                 i(class="fas fa-trash" onclick=`showDeletePopUp(${post.postId}, true)`)
              .flex
                .profile-pic
-                 span= initials
+                 span= post.initials
                .user-details
                  .name
-                   a(href=`/user/${username}`)= name 
-                   span(class="timestamp")= ` ・ ${postedAt}`
+                   a(href=`/user/${post.username}`)= post.name 
+                   span(class="timestamp")= ` ・ ${post.postedAt}`
                  .username
-                    a(href=`/user/${username}`)= `@${username}`
+                    a(href=`/user/${post.username}`)= `@${post.username}`
              .post-content
-                    each line in message.split(/\n/)
+                    each line in post.message.split(/\n/)
                       - let urlRegEx= /(https?:\/\/[^\s]+)/g;
                       - let replacedLine= line.replace(/</g,'&lt;').replace(/>/g,'&gt;')
-                      - replacedLine= mentions.reduce((line,user) => line.replace(new RegExp(user),`<a class="mention" href="/user/${user.slice(1)}">${user}</a>`),replacedLine) 
-                      - replacedLine= hashtags.reduce((line,hashtag) => line.replace(new RegExp(`#${hashtag}`),`<a class="mention" href="/hashtag/${hashtag}">#${hashtag}</a>`),replacedLine) 
+                      - replacedLine= post.mentions.reduce((line,user) => line.replace(new RegExp(user),`<a class="mention" href="/user/${user.slice(1)}">${user}</a>`),replacedLine) 
+                      - replacedLine= post.hashtags.reduce((line,hashtag) => line.replace(new RegExp(`#${hashtag}`),`<a class="mention" href="/hashtag/${hashtag}">#${hashtag}</a>`),replacedLine) 
                       - replacedLine= replacedLine.replace(urlRegEx,(url)=>`<a class="mention" href="${url}">${url}</a>`)
                       != replacedLine
                       br
-             - let likeCount=likedUsers.length
-             a(href=`/post/${postId}/likes` class=`link ${likeCount>0?"likeDetails":"hideCount"}`) 
+             - let likeCount=post.likedUsers.length
+             a(href=`/post/${post.postId}/likes` class=`link ${post.likeCount>0?"likeDetails":"hideCount"}`) 
                 span(class="likeCount")= likeCount
-                span= `${likeCount>1 ? 'Likes':'Like'}`
+                span= `${post.likeCount>1 ? 'Likes':'Like'}`
              .actions.flex
                .action.like
                  - let className="far fa-heart icon";
                  if isLiked
                   - className="fas fa-heart icon likeColor"
-                 i(class=className onclick=`toggleLikeUnlike(${postId})` id=`like_${postId}`) 
+                 i(class=className onclick=`toggleLikeUnlike(${post.postId})` id=`like_${post.postId}`) 
                .action.respond
                   i(class="far fa-comment icon")
-                  span.count= responseCount? responseCount: ''
+                  span.count= post.responseCount? post.responseCount: ''
                .action.bookmark
                   - className="far fa-bookmark icon";
                   if isBookmarked
                    - className="fas fa-bookmark icon bookmarkColor"
-                  i(class=className onclick=`toggleBookmark(${postId})` id=`bookmark_${postId}`) 
-            i(class='fas fa-heart fa-3x instagramLike' id=`heart_${postId}` ondblclick=`displayHeart(${postId})`) 
+                  i(class=className onclick=`toggleBookmark(${post.postId})` id=`bookmark_${post.postId}`) 
+            i(class='fas fa-heart fa-3x instagramLike' id=`heart_${post.postId}` ondblclick=`displayHeart(${post.postId})`) 
   .search-panel
     .search-bar.flex
       .search-icon
