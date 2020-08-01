@@ -109,6 +109,7 @@ describe('#App', () => {
       const getFollowingStub = sinon.stub().resolves([{ userId: 2 }]);
       const getUserPostsStub = sinon.stub().resolves(createDummyPosts());
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getBookmarksStub = sinon.stub().resolves([]);
       const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const app = createApp({
@@ -117,6 +118,7 @@ describe('#App', () => {
         getUserDetails: getUserDetailsStub,
         getAllPostLikers: getAllPostLikersStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
+        getBookmarks: getBookmarksStub,
       });
       const expected = {
         initials: 'JS',
@@ -133,6 +135,7 @@ describe('#App', () => {
             postedAt: 'a few seconds ago',
             userId: 1,
             username: 'john',
+            isBookmarked: false,
             hashtags: ['html'],
             mentions: [],
           },
@@ -146,6 +149,7 @@ describe('#App', () => {
             postId: 1,
             postedAt: 'a few seconds ago',
             userId: 1,
+            isBookmarked: false,
             username: 'john',
             hashtags: ['html'],
             mentions: [],
@@ -155,6 +159,7 @@ describe('#App', () => {
       const actual = await app.getUserFeed();
       assert.deepStrictEqual(actual, expected);
       sinon.assert.calledOnceWithExactly(getFollowingStub, userId);
+      sinon.assert.calledOnce(getBookmarksStub);
       sinon.assert.calledTwice(getUserPostsStub);
       sinon.assert.calledTwice(getUserDetailsStub);
       sinon.assert.calledTwice(getAllPostLikersStub);
