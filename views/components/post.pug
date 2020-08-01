@@ -31,6 +31,10 @@ mixin post(post)
            - countClass = "likeColor"
           i(class=className onclick=`toggleLikeUnlike(${post.postId})` id=`like_${post.postId}`) 
           span(class=`count ${countClass}`)= post.likedUsers.length?post.likedUsers.length:''
+        .action.respond
+          i(class="far fa-comment icon")
+          if post.responseCount > 0
+          span.count 34
         .action.bookmark
           - className="far fa-bookmark icon";
           if post.isBookmarked
