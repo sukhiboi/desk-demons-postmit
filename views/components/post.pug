@@ -33,8 +33,7 @@ mixin post(post)
           span(class=`count ${countClass}`)= post.likedUsers.length?post.likedUsers.length:''
         .action.respond
           i(class="far fa-comment icon")
-          if post.responseCount > 0
-          span.count 34
+          span.count= post.responseCount? post.responseCount: ''
         .action.bookmark
           - className="far fa-bookmark icon";
           if post.isBookmarked

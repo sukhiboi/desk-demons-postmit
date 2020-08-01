@@ -56,6 +56,9 @@ head
                  if isLiked
                   - className="fas fa-heart icon likeColor"
                  i(class=className onclick=`toggleLikeUnlike(${postId})` id=`like_${postId}`) 
+               .action.respond
+                  i(class="far fa-comment icon")
+                  span.count= responseCount? responseCount: ''
                .action.bookmark
                   - className="far fa-bookmark icon";
                   if isBookmarked
