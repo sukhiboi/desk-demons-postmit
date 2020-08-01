@@ -17,15 +17,6 @@ const addNewPost = function (textareaId) {
   sendPOSTRequest('/add-new-post', { message }, reloadOnStatus);
 };
 
-const display = function (id) {
-  const divToDisable = `#${id === 'posts' ? 'likedPosts' : 'posts'}`;
-  const headerToDisable = `#${id === 'posts' ? 'likes-tab' : 'posts-tab'}`;
-  document.querySelector(divToDisable).classList.add('disable');
-  document.querySelector(headerToDisable).classList.remove('activeTab');
-  document.querySelector(`#${id}`).classList.remove('disable');
-  event.target.classList.add('activeTab');
-};
-
 const handlePostSubmission = function (textarea, postBtn, count) {
   const maxCharacterLength = 180;
   const warningCharacterLength = 170;

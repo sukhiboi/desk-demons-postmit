@@ -3,10 +3,10 @@ extends components/profilePage.pug
 append posts
   .user-activity
     .activity-bar
-      a.activity-title.activeTab(href='#') Posts
-      a.activity-title(href=`/user/${username}/likes`) Likes
+      a.activity-title(href=`/user/${username}`) Posts
+      a.activity-title.activeTab(href='#') Likes
   .feed
     .posts
         include components/post.pug
-        each item in posts 
+        each item in likedPosts 
             +post(item)

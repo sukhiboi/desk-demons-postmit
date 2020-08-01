@@ -267,6 +267,45 @@ describe('#Handlers', () => {
     });
   });
 
+  describe('GET /user/:username/likes', () => {
+    it('should serve the Profile Page of searched user with liked posts', done => {
+      const userId = 2;
+      const userDetails = { username: 'jani', name: 'jani', userId };
+      const getIdByUsernameStub = sinon.stub().resolves({ userId });
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getBookmarksStub = sinon.stub().resolves([]);
+      const getAllPostLikersStub = sinon.stub().resolves([]);
+      const getUserPostsStub = sinon.stub().resolves([]);
+      const getFollowingStub = sinon.stub().resolves([]);
+      const getFollowersStub = sinon.stub().resolves([]);
+      const getLikedPostsStub = sinon.stub().resolves(createDummyPosts());
+      const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
+      expressApp.locals.app = createApp({
+        getHashtagsByPostId: getHashtagsByPostIdStub,
+        getIdByUsername: getIdByUsernameStub,
+        getUserDetails: getUserDetailsStub,
+        getUserPosts: getUserPostsStub,
+        getAllPostLikers: getAllPostLikersStub,
+        getFollowing: getFollowingStub,
+        getFollowers: getFollowersStub,
+        getLikedPosts: getLikedPostsStub,
+        getBookmarks: getBookmarksStub,
+      });
+      request(expressApp)
+        .get('/user/jani/likes')
+        .set('Cookie', ['userId=1'])
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnce(getIdByUsernameStub);
+          sinon.assert.calledThrice(getUserDetailsStub);
+          sinon.assert.calledOnce(getUserPostsStub);
+          sinon.assert.calledWith(getUserDetailsStub, 2);
+          sinon.assert.calledOnceWithExactly(getUserPostsStub, 2);
+        })
+        .expect(/jani/, done);
+    });
+  });
+
   describe('GET /auth', () => {
     it('should redirect me to the authorize url', done => {
       const app = createApp({});
