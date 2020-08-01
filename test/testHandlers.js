@@ -157,7 +157,7 @@ describe('#Handlers', () => {
       request(expressApp)
         .post('/search')
         .set('Cookie', ['userId=1'])
-        .send({ searchInput: 'j' })
+        .send({ searchInput: '@j' })
         .expect(OK_STATUS_CODE)
         .expect(() => {
           sinon.assert.calledOnceWithExactly(getMatchingUsersStub, 'j');

@@ -524,7 +524,7 @@ describe('#App', () => {
     it('should resolve to searched user suggestions', async () => {
       const getMatchingUsersStub = sinon.stub().resolves([userDetails]);
       const app = createApp({ getMatchingUsers: getMatchingUsersStub });
-      const actual = await app.getSearchSuggestions('john');
+      const actual = await app.getSearchSuggestions('@john');
       const expected = [{ ...userDetails, initials: 'JS' }];
       assert.deepStrictEqual(actual, expected);
       sinon.assert.calledOnceWithExactly(getMatchingUsersStub, 'john');
