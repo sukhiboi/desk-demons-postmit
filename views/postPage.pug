@@ -39,8 +39,11 @@ head
                     a(href=`/user/${username}`)= `@${username}`
              .post-content
                     each line in message.split(/\n/)
-                      - let replacedLine=mentions.reduce((line,user) => line.replace(new RegExp(user),`<a class="mention" href="/user/${user.slice(1)}">${user}</a>`),line) 
-                      - replacedLine=hashtags.reduce((line,hashtag) => line.replace(new RegExp(`#${hashtag}`),`<a class="mention" href="/hashtag/${hashtag}">#${hashtag}</a>`),replacedLine) 
+                      - let urlRegEx= /(https?:\/\/[^\s]+)/g;
+                      - let replacedLine= line.replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                      - replacedLine= mentions.reduce((line,user) => line.replace(new RegExp(user),`<a class="mention" href="/user/${user.slice(1)}">${user}</a>`),replacedLine) 
+                      - replacedLine= hashtags.reduce((line,hashtag) => line.replace(new RegExp(`#${hashtag}`),`<a class="mention" href="/hashtag/${hashtag}">#${hashtag}</a>`),replacedLine) 
+                      - replacedLine= replacedLine.replace(urlRegEx,(url)=>`<a class="mention" href="${url}">${url}</a>`)
                       != replacedLine
                       br
              - let likeCount=likedUsers.length

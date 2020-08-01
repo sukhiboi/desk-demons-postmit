@@ -15,8 +15,11 @@ mixin post(post)
             a(href=`/user/${post.username}`)= `@${post.username}`
       .post-content
             each line in post.message.split(/\n/)
-              - let replacedLine=post.mentions.reduce((line,user) => line.replace(new RegExp(user),`<a class="mention" href="/user/${user.slice(1)}">${user}</a>`),line) 
-              - replacedLine=post.hashtags.reduce((line,hashtag) => line.replace(new RegExp(`#${hashtag}`),`<a class="mention" href="/hashtag/${hashtag}">#${hashtag}</a>`),replacedLine) 
+              - let urlRegEx= /(https?:\/\/[^\s]+)/g;
+              - let replacedLine= line.replace(/</g,'&lt;').replace(/>/g,'&gt;')
+              - replacedLine= post.mentions.reduce((line,user) => line.replace(new RegExp(user),`<a class="mention" href="/user/${user.slice(1)}">${user}</a>`),replacedLine) 
+              - replacedLine= post.hashtags.reduce((line,hashtag) => line.replace(new RegExp(`#${hashtag}`),`<a class="mention" href="/hashtag/${hashtag}">#${hashtag}</a>`),replacedLine) 
+              - replacedLine= replacedLine.replace(urlRegEx,(url)=>`<a class="mention" href="${url}">${url}</a>`)
               != replacedLine
               br
       .actions.flex
