@@ -47,23 +47,25 @@ head
                       != replacedLine
                       br
              - let likeCount=post.likedUsers.length
-             a(href=`/post/${post.postId}/likes` class=`link ${post.likeCount>0?"likeDetails":"hideCount"}`) 
+             a(href=`/post/${post.postId}/likes` class=`link ${likeCount>0?"likeDetails":"hideCount"}`) 
                 span(class="likeCount")= likeCount
-                span= `${post.likeCount>1 ? 'Likes':'Like'}`
+                span= `${likeCount>1 ? 'Likes':'Like'}`
              .actions.flex
-               .action.like
-                 - let className="far fa-heart icon";
-                 if isLiked
-                  - className="fas fa-heart icon likeColor"
-                 i(class=className onclick=`toggleLikeUnlike(${post.postId})` id=`like_${post.postId}`) 
-               .action.respond
-                  i(class="far fa-comment icon")
-                  span.count= post.responseCount? post.responseCount: ''
-               .action.bookmark
-                  - className="far fa-bookmark icon";
-                  if isBookmarked
-                   - className="fas fa-bookmark icon bookmarkColor"
-                  i(class=className onclick=`toggleBookmark(${post.postId})` id=`bookmark_${post.postId}`) 
+              .action.like
+                - let className="far fa-heart icon ";
+                - let countClass = ""
+                if post.isLiked
+                 - className="fas fa-heart icon likeColor"
+                 - countClass = "likeColor"
+                i(class=className onclick=`toggleLikeUnlike(${post.postId})` id=`like_${post.postId}`) 
+              .action.respond
+                i(class="far fa-comment icon" onClick=`showResponsePopup(${post.postId})`)
+                span.count= post.responseCount? post.responseCount: ''
+              .action.bookmark
+                 - className="far fa-bookmark icon";
+                 if isBookmarked
+                  - className="fas fa-bookmark icon bookmarkColor"
+                 i(class=className onclick=`toggleBookmark(${post.postId})` id=`bookmark_${post.postId}`) 
             i(class='fas fa-heart fa-3x instagramLike' id=`heart_${post.postId}` ondblclick=`displayHeart(${post.postId})`) 
     .heading 
       span Responses

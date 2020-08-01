@@ -32,7 +32,7 @@ mixin post(post)
           i(class=className onclick=`toggleLikeUnlike(${post.postId})` id=`like_${post.postId}`) 
           span(class=`count ${countClass}`)= post.likedUsers.length?post.likedUsers.length:''
         .action.respond
-          i(class="far fa-comment icon")
+          i(class="far fa-comment icon response-icon" onClick=`showResponsePopup(${post.postId})`)
           span.count= post.responseCount? post.responseCount: ''
         .action.bookmark
           - className="far fa-bookmark icon";

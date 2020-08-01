@@ -1,4 +1,4 @@
-const createNewPostElement = function () {
+const createNewPostElement = function (placeholder, onClickListener, postId) {
   const newPostElement = document.createElement('div');
   newPostElement.innerHTML = `
     <div class="create-new-post">
@@ -7,7 +7,7 @@ const createNewPostElement = function () {
     <div class="content">
       <textarea
         id="newPopupPostMessage"
-        placeholder="What's happening?"
+        placeholder="${placeholder}"
         rows="3"
       ></textarea>
     </div>
@@ -17,13 +17,18 @@ const createNewPostElement = function () {
     ><button
       class="primary-btn"
       id="post-popup-btn"
-      onclick="addNewPost('newPopupPostMessage')">
+      onclick="${onClickListener}('newPopupPostMessage', ${postId})">
       Post
     </button>
   </div>
 </div>
     `;
   return newPostElement;
+};
+
+const addNewPost = function (textareaId) {
+  const message = document.getElementById(textareaId).value;
+  sendPOSTRequest('/add-new-post', { message }, reloadOnStatus);
 };
 
 const createCloseButton = function () {
@@ -41,7 +46,30 @@ const showNewPostElement = function () {
   const filter = document.createElement('div');
   filter.classList.add('filter');
   filter.id = 'filter';
-  const newPostElement = createNewPostElement();
+  const placeholder = "Whats's Happening?";
+  const newPostElement = createNewPostElement(placeholder, 'addNewPost');
+  filter.appendChild(newPostElement);
+  const closeBtn = createCloseButton();
+  filter.appendChild(closeBtn);
+  document.body.appendChild(filter);
+  initializePopupPostInput();
+};
+
+const saveResponse = function (textareaId, postId) {
+  const message = document.getElementById(textareaId).value;
+  sendPOSTRequest('/saveResponse', { message, postId }, reloadOnStatus);
+};
+
+const showResponsePopup = function (postId) {
+  event.stopPropagation();
+  const filter = document.createElement('div');
+  filter.classList.add('filter');
+  filter.id = 'filter';
+  const newPostElement = createNewPostElement(
+    'Post your Reply',
+    'saveResponse',
+    postId
+  );
   filter.appendChild(newPostElement);
   const closeBtn = createCloseButton();
   filter.appendChild(closeBtn);
