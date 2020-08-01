@@ -47,9 +47,9 @@ button:hover {
 
 .close-btn {
   position: absolute;
-  top: 1rem;
   right: 1rem;
-  width: 2rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.4rem;
 }
 
 .close-btn:hover {
@@ -114,6 +114,10 @@ button:hover {
   letter-spacing: 0.8px;
   width: 100%;
   height: 100%;
+}
+
+.popup {
+  border: none !important;
 }
 
 .create-new-post .content textarea::placeholder {

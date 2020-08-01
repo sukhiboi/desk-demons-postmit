@@ -16,8 +16,9 @@ head
       a.page(href='/home') Home
       a.page(href=`/user/${loggedUser}`) Profile
       a.page(href=`/user/bookmarks`) Bookmarks
-      button.popup-post-btn(onclick='showNewPostElement()') Post
       a.page(href='/logout') Logout
+      - let postPlaceholder = "What's Happening"
+      button.popup-post-btn(onclick=`showPopup("${postPlaceholder}", 'addNewPost')`) Post
 .root
   .main-panel
     .header
@@ -59,8 +60,8 @@ head
                  - countClass = "likeColor"
                 i(class=className onclick=`toggleLikeUnlike(${post.postId})` id=`like_${post.postId}`) 
               .action.respond
-                i(class="far fa-comment icon" onClick=`showResponsePopup(${post.postId})`)
-                span.count= post.responseCount? post.responseCount: ''
+                - let placeholder = 'Post you Reply'
+                i(class="far fa-comment icon response-icon" onClick=`showPopup('${placeholder}', 'saveResponse',${post.postId})`)
               .action.bookmark
                  - className="far fa-bookmark icon";
                  if isBookmarked
