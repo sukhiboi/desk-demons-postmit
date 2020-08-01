@@ -579,4 +579,24 @@ describe('#Datastore', () => {
       }
     });
   });
+
+  describe('addResponse()', () => {});
+  const responseId = 2;
+  it('should add response into responses table', async () => {
+    const runStub = sinon.stub().yields(null);
+    const client = new Datastore({ run: runStub });
+    assert.isUndefined(await client.addResponse(postId, responseId));
+    sinon.assert.calledOnce(runStub);
+  });
+
+  it('should give error when responses table not found', async () => {
+    const runStub = sinon.stub().yields(expectedTableError);
+    const client = new Datastore({ run: runStub });
+    try {
+      await client.addResponse(postId, responseId);
+    } catch (err) {
+      assert.strictEqual(err, expectedTableError);
+      sinon.assert.calledOnce(runStub);
+    }
+  });
 });
