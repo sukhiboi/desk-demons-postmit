@@ -186,7 +186,7 @@ describe('#App', () => {
       const savePostStub = sinon.stub().resolves(null);
       const app = createApp({ savePost: savePostStub });
       const content = 'hello';
-      assert.isUndefined(await app.savePost(content));
+      assert.isNumber(await app.savePost(content));
       sinon.assert.calledOnce(savePostStub);
     });
 
@@ -1065,6 +1065,33 @@ describe('#App', () => {
       } catch (err) {
         assert.deepStrictEqual(err, expectedTableError);
         sinon.assert.calledOnceWithExactly(addHashtagStub, 'html', postId);
+      }
+    });
+  });
+
+  describe('saveResponse()', () => {
+    it('should save a response', async () => {
+      const savePostStub = sinon.stub().resolves(null);
+      const addResponseStub = sinon.stub().resolves(null);
+      const app = createApp({
+        savePost: savePostStub,
+        addResponse: addResponseStub,
+      });
+      const content = 'hello';
+      assert.isNull(await app.saveResponse(content, postId));
+      sinon.assert.calledOnce(savePostStub);
+      sinon.assert.calledOnce(addResponseStub);
+    });
+
+    it('should give error when table not found', async () => {
+      const savePostStub = sinon.stub().rejects(expectedTableError);
+      const app = createApp({ savePost: savePostStub });
+      const content = 'hello';
+      try {
+        await app.saveResponse(content, postId);
+      } catch (err) {
+        sinon.assert.calledOnce(savePostStub);
+        assert.deepStrictEqual(err, expectedTableError);
       }
     });
   });
