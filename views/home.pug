@@ -9,29 +9,30 @@ head
   script(src="/js/request.js")
   script(src="/js/index.js")
   title Postmit
-.menu
-  div
-    .app-name POSTMIT
-    .pages
-      a.page.active-page(href='#') Home
-      a.page(href=`/user/${loggedUser}`) Profile
-      a.page(href=`/user/bookmarks`) Bookmarks
-      button.popup-post-btn(onclick='showNewPostElement()') Post
-      a.page(href='/logout') Logout
-.root
-  .main-panel
-    .header
-      span Home
-    .feed
-      include components/newPost.pug
-      .posts#posts
-        include components/post.pug
-        each item in posts 
-          +post(item)
-  .search-panel
-    .search-bar.flex
-      .search-icon
-        img(src='./assets/search.svg' alt='Search')
-      .search-input(onkeyup='search()')
-       input(type='text' placeholder='Search')
-    .search-output
+body(onload="initializeHomePostInput()")
+  .menu
+    div
+      .app-name POSTMIT
+      .pages
+        a.page.active-page(href='#') Home
+        a.page(href=`/user/${loggedUser}`) Profile
+        a.page(href=`/user/bookmarks`) Bookmarks
+        button.popup-post-btn(onclick='showNewPostElement()') Post
+        a.page(href='/logout') Logout
+  .root
+    .main-panel
+      .header
+        span Home
+      .feed
+        include components/newPost.pug
+        .posts#posts
+          include components/post.pug
+          each item in posts 
+            +post(item)
+    .search-panel
+      .search-bar.flex
+        .search-icon
+          img(src='./assets/search.svg' alt='Search')
+        .search-input(onkeyup='search()')
+         input(type='text' placeholder='Search')
+      .search-output

@@ -177,10 +177,3 @@ const showDeletePopUp = function (postId, redirectToHome) {
 const expandPost = function (postId) {
   window.location.href = `/post/${postId}`;
 };
-
-const main = function () {
-  initializeHomePostInput();
-};
-
-window.onload = main;
-
