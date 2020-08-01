@@ -47,9 +47,9 @@ button:hover {
 
 .close-btn {
   position: absolute;
-  top: 1rem;
   right: 1rem;
-  width: 2rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.4rem;
 }
 
 .close-btn:hover {
@@ -114,6 +114,10 @@ button:hover {
   letter-spacing: 0.8px;
   width: 100%;
   height: 100%;
+}
+
+.popup {
+  border: none !important;
 }
 
 .create-new-post .content textarea::placeholder {
@@ -362,6 +366,10 @@ button:hover {
   color: #1da1f2 !important;
 }
 
+.response-icon:hover {
+  color: #1da1f2;
+}
+
 .count {
   font-size: 1.2rem;
   margin-left: 5px;
@@ -521,6 +529,8 @@ button:hover {
   color: #8898a6;
   cursor: pointer;
   margin: 1rem 0.5rem 0 0;
+  width: fit-content;
+  text-decoration: none;
 }
 .link span {
   font-size: 1rem;
@@ -546,4 +556,17 @@ button:hover {
   margin-bottom: 0.5rem;
   cursor: pointer;
   font-size: 1.2rem;
+}
+
+.heading {
+  margin-top: 1rem;
+  padding-bottom: 10px;
+  display: flex;
+  justify-content: flex-start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.heading span {
+  font-size: 1.6rem;
+  color: #fff;
 }

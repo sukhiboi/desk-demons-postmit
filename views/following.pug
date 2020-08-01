@@ -19,8 +19,9 @@ html(lang='en')
                     a.page(href='/home') Home
                     a.page(href=`/user/${loggedUser}`) Profile
                     a.page(href=`/user/bookmarks`) Bookmarks
-                    button.popup-post-btn(onclick='showNewPostElement()') Post
                     a.page(href='/logout') Logout
+                    - let postPlaceholder = "What's Happening"
+                    button.popup-post-btn(onclick=`showPopup("${postPlaceholder}", 'addNewPost')`) Post
         .main-panel
             .header
                 a(href=`/user/${profile.username}`)

@@ -557,4 +557,46 @@ describe('#Datastore', () => {
       }
     });
   });
+
+  describe('getAllResponses()', () => {
+    it('should give all the responses of the given post', async () => {
+      const expectedResponses = [{ responseId: 2 }];
+      const allStub = sinon.stub().yields(null, expectedResponses);
+      const client = new Datastore({ all: allStub });
+      const responses = await client.getAllResponses(postId);
+      assert.deepStrictEqual(responses, expectedResponses);
+      sinon.assert.calledOnce(allStub);
+    });
+
+    it('should give error when response table not found', async () => {
+      const allStub = sinon.stub().yields(expectedTableError, null);
+      const client = new Datastore({ all: allStub });
+      try {
+        await client.getAllResponses(postId);
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(allStub);
+      }
+    });
+  });
+
+  describe('addResponse()', () => {});
+  const responseId = 2;
+  it('should add response into responses table', async () => {
+    const runStub = sinon.stub().yields(null);
+    const client = new Datastore({ run: runStub });
+    assert.isUndefined(await client.addResponse(postId, responseId));
+    sinon.assert.calledOnce(runStub);
+  });
+
+  it('should give error when responses table not found', async () => {
+    const runStub = sinon.stub().yields(expectedTableError);
+    const client = new Datastore({ run: runStub });
+    try {
+      await client.addResponse(postId, responseId);
+    } catch (err) {
+      assert.strictEqual(err, expectedTableError);
+      sinon.assert.calledOnce(runStub);
+    }
+  });
 });

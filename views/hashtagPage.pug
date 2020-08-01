@@ -16,7 +16,8 @@ head
       a.page(href='/home') Home
       a.page(href=`/user/${loggedUser}`) Profile
       a.page(href=`/user/bookmarks`) Bookmarks
-      button.popup-post-btn(onclick='showNewPostElement()') Post
+      - let postPlaceholder = "What's Happening"
+      button.popup-post-btn(onclick=`showPopup("${postPlaceholder}", 'addNewPost')`) Post
       a.page(href='/logout') Logout
 .root
   .main-panel
