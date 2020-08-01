@@ -316,6 +316,7 @@ button:hover {
 
 .page:hover {
   background-color: #1da0f23a;
+  color: #1da1f2;
   border-radius: 100px;
 }
 
@@ -528,6 +529,10 @@ button:hover {
 .mention {
   color: #1da1f2;
   text-decoration: none;
+}
+
+.mention:hover {
+  text-decoration: underline;
 }
 
 .searchedHashtag {

@@ -1,52 +1,20 @@
-const toggleLikeButton = function (target) {
-  let className = ['far'];
-  if (target.className.includes('far')) {
-    className = ['fas', 'likeColor'];
-  }
-  setTimeout(() => location.reload(), 200);
-  const classToRemove = className.includes('fas')
-    ? ['far']
-    : ['fas', 'likeColor'];
-  target.classList.remove(...classToRemove);
-  target.classList.add(...className);
+const reloadOnStatus = function (response) {
+  response.status && setTimeout(() => location.reload(), 200);
 };
 
 const toggleLikeUnlike = function (postId) {
   event.stopPropagation();
-  const target = document.querySelector(`#like_${postId}`);
-  sendPOSTRequest(
-    '/toggleLike',
-    { postId },
-    ({ status }) => status && toggleLikeButton(target)
-  );
-};
-
-const toggleBookmarkButton = function (target) {
-  let className = ['far'];
-  if (target.className.includes('far')) {
-    className = ['fas', 'bookmarkColor'];
-  }
-  const classToRemove = className.includes('fas')
-    ? ['far']
-    : ['fas', 'bookmarkColor'];
-  target.classList.remove(...classToRemove);
-  target.classList.add(...className);
-  location.reload();
+  sendPOSTRequest('/toggleLike', { postId }, reloadOnStatus);
 };
 
 const toggleBookmark = function (postId) {
   event.stopPropagation();
-  const target = document.querySelector(`#bookmark_${postId}`);
-  sendPOSTRequest(
-    '/toggleBookmark',
-    { postId },
-    ({ status }) => status && toggleBookmarkButton(target)
-  );
+  sendPOSTRequest('/toggleBookmark', { postId }, reloadOnStatus);
 };
 
 const addNewPost = function (textareaId) {
   const message = document.getElementById(textareaId).value;
-  sendPOSTRequest('/add-new-post', { message }, () => location.reload());
+  sendPOSTRequest('/add-new-post', { message }, reloadOnStatus);
 };
 
 const display = function (id) {
@@ -97,11 +65,7 @@ const displayHeart = function (postId) {
   setTimeout(() => heart.classList.remove('heart'), 600);
   const target = document.querySelector(`#like_${postId}`);
   if (target.className.includes('far')) {
-    sendPOSTRequest(
-      '/toggleLike',
-      { postId },
-      ({ status }) => status && toggleLikeButton(target)
-    );
+    sendPOSTRequest('/toggleLike', { postId }, reloadOnStatus);
   }
 };
 
@@ -219,3 +183,4 @@ const main = function () {
 };
 
 window.onload = main;
+
