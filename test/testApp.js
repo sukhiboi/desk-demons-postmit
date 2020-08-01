@@ -6,6 +6,7 @@ describe('#App', () => {
   const userId = 1;
   const postId = 1;
   const hashtags = [{ hashtag: 'html' }];
+  const responses = [{ responseId: 2 }];
 
   const userDetails = { name: 'john samuel', username: 'john', userId };
 
@@ -63,11 +64,13 @@ describe('#App', () => {
       const getBookmarksStub = sinon.stub().resolves([]);
       const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
+      const getAllResponsesStub = sinon.stub().resolves(responses);
       const app = createApp({
         getUserDetails: getUserDetailsStub,
         getAllPostLikers: getAllPostLikersStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
         getBookmarks: getBookmarksStub,
+        getAllResponses: getAllResponsesStub,
       });
       const expected = [
         {
@@ -84,6 +87,7 @@ describe('#App', () => {
           username: 'john',
           mentions: [],
           hashtags: ['html'],
+          responseCount: 1,
         },
       ];
       const actual = await app.updatePost(userId, createDummyPosts());
@@ -111,7 +115,9 @@ describe('#App', () => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
+      const getAllResponsesStub = sinon.stub().resolves(responses);
       const app = createApp({
+        getAllResponses: getAllResponsesStub,
         getFollowing: getFollowingStub,
         getUserPosts: getUserPostsStub,
         getUserDetails: getUserDetailsStub,
@@ -123,6 +129,7 @@ describe('#App', () => {
         loggedUser: 'john',
         posts: [
           {
+            responseCount: 1,
             initials: 'JS',
             isDeletable: true,
             isLiked: true,
@@ -377,8 +384,10 @@ describe('#App', () => {
       const getBookmarksStub = sinon.stub().resolves([]);
       const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
+      const getAllResponsesStub = sinon.stub().resolves(responses);
       const app = createApp({
         getUserDetails: getUserDetailsStub,
+        getAllResponses: getAllResponsesStub,
         getAllPostLikers: getAllPostLikersStub,
         getUserPosts: getUserPostsStub,
         getLikedPosts: getLikedPostsStub,
@@ -393,6 +402,7 @@ describe('#App', () => {
             isDeletable: true,
             isLiked: true,
             likedUsers: [{ userId: 1 }],
+            responseCount: 1,
             message: 'hi',
             name: 'john samuel',
             postId: 1,
@@ -408,6 +418,7 @@ describe('#App', () => {
           {
             initials: 'JS',
             isDeletable: true,
+            responseCount: 1,
             isLiked: true,
             likedUsers: [{ userId: 1 }],
             message: 'hi',
@@ -463,7 +474,9 @@ describe('#App', () => {
       const getFollowersStub = sinon.stub().resolves([]);
       const getFollowingStub = sinon.stub().resolves([]);
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
+      const getAllResponsesStub = sinon.stub().resolves(responses);
       const app = createApp({
+        getAllResponses: getAllResponsesStub,
         getUserDetails: getUserDetailsStub,
         getAllPostLikers: getAllPostLikersStub,
         getUserPosts: getUserPostsStub,
@@ -485,6 +498,7 @@ describe('#App', () => {
         name: 'john samuel',
         posts: [
           {
+            responseCount: 1,
             initials: 'JS',
             isDeletable: true,
             isLiked: true,
@@ -713,6 +727,7 @@ describe('#App', () => {
         postId,
         userId,
         postedAt: new Date(),
+        responseCount: 1,
         message: 'hello',
         isBookmarked: false,
       };
@@ -721,7 +736,9 @@ describe('#App', () => {
       const getBookmarksStub = sinon.stub().resolves([]);
       const getAllPostLikersStub = sinon.stub().resolves([]);
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
+      const getAllResponsesStub = sinon.stub().resolves(responses);
       const app = createApp({
+        getAllResponses: getAllResponsesStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
         getPost: getPostStub,
         getUserDetails: getUserDetailsStub,
@@ -829,7 +846,9 @@ describe('#App', () => {
       const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
       const getBookmarksStub = sinon.stub().resolves([]);
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
+      const getAllResponsesStub = sinon.stub().resolves(responses);
       const app = createApp({
+        getAllResponses: getAllResponsesStub,
         getPostsByHashtag: getPostsByHashtagStub,
         getUserDetails: getUserDetailsStub,
         getAllPostLikers: getAllPostLikersStub,
@@ -840,6 +859,7 @@ describe('#App', () => {
         posts: [
           {
             initials: 'JS',
+            responseCount: 1,
             isDeletable: true,
             isLiked: true,
             isFollowingMe: false,
@@ -873,7 +893,9 @@ describe('#App', () => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
+      const getAllResponsesStub = sinon.stub().resolves(responses);
       const app = createApp({
+        getAllResponses: getAllResponsesStub,
         getBookmarks: getBookmarksStub,
         getUserDetails: getUserDetailsStub,
         getAllPostLikers: getAllPostLikersStub,
@@ -888,6 +910,7 @@ describe('#App', () => {
             isDeletable: true,
             isLiked: true,
             likedUsers: [{ userId: 1 }],
+            responseCount: 1,
             isFollowingMe: false,
             mentions: [],
             message: 'hi',
