@@ -557,4 +557,26 @@ describe('#Datastore', () => {
       }
     });
   });
+
+  describe('getAllResponses()', () => {
+    it('should give all the responses of the given post', async () => {
+      const expectedResponses = [{ responseId: 2 }];
+      const allStub = sinon.stub().yields(null, expectedResponses);
+      const client = new Datastore({ all: allStub });
+      const responses = await client.getAllResponses(postId);
+      assert.deepStrictEqual(responses, expectedResponses);
+      sinon.assert.calledOnce(allStub);
+    });
+
+    it('should give error when response table not found', async () => {
+      const allStub = sinon.stub().yields(expectedTableError, null);
+      const client = new Datastore({ all: allStub });
+      try {
+        await client.getAllResponses(postId);
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(allStub);
+      }
+    });
+  });
 });
