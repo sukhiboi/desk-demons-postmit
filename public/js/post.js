@@ -66,7 +66,3 @@ const showDeletePostPopup = function (postId) {
   element.innerHTML = deletePopupHtml;
   displayPopup(element);
 };
-
-window.onload = function () {
-  setupCharCounter();
-};
