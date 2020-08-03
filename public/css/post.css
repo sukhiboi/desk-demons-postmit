@@ -1,17 +1,10 @@
-.center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
 .post {
   padding: 14px 10px 10px;
-  border-bottom: 1px solid rgb(230, 236, 240);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .create-post {
-  border-bottom: 10px solid rgb(230, 236, 240);
+  border-bottom: 10px solid rgba(0, 0, 0, 0.2);
 }
 
 .row {
@@ -67,8 +60,9 @@
 }
 
 .highlight-link {
-  color: #1da1f2;
+  color: rgba(22, 191, 99, 1);
   text-decoration: none;
+  font-weight: 600;
 }
 
 .highlight-link:hover {
@@ -133,7 +127,7 @@
 
 .highlight-blue:hover,
 .fill-blue {
-  color: rgba(29, 161, 242, 1);
+  color: rgba(22, 191, 99, 1);
 }
 
 .action-btn {

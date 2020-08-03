@@ -29,26 +29,16 @@
 }
 
 .page:hover {
-  background-color: rgba(29, 161, 242, 0.2);
+  background-color: rgba(22, 191, 99, 0.1);
   border-radius: 10rem;
   cursor: pointer;
 }
 
-.page:hover i {
-  color: rgba(29, 161, 242, 1);
-}
-
-.page:hover span {
-  color: rgba(29, 161, 242, 1);
-}
-
-.active-page i {
-  color: rgba(29, 161, 242, 1);
-}
-
+.page:hover i,
+.page:hover span,
+.active-page i,
 .active-page span {
-  color: rgba(29, 161, 242, 1);
-  font-weight: 600;
+  color: rgba(22, 191, 99, 1);
 }
 
 .app-name {
