@@ -42,6 +42,15 @@
   color: rgba(29, 161, 242, 1);
 }
 
+.active-page i {
+  color: rgba(29, 161, 242, 1);
+}
+
+.active-page span {
+  color: rgba(29, 161, 242, 1);
+  font-weight: 600;
+}
+
 .app-name {
   margin-bottom: 1rem;
 }

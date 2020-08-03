@@ -81,6 +81,9 @@
 
 .user-details {
   margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .name a:first-child {

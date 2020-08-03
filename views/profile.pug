@@ -1,10 +1,9 @@
 extends components/profilePage.pug
 
 append posts
-  .user-activity
-    .activity-bar
-      a.activity-title.activeTab(href='#') Posts
-      a.activity-title(href=`/user/${username}/likes`) Likes
+  .categories
+    a.category.active-category(href='#') Posts
+    a.category(href=`/user/${username}/likes`) Likes
   .feed
     .posts
         include components/post.pug

@@ -3,57 +3,56 @@ html(lang='en')
     head
         meta(charset='UTF-8')
         meta(name='viewport' content='width=device-width, initial-scale=1.0')
-        link(rel='stylesheet' href='/styles/styles.css' type='text/css')
+        link(rel='stylesheet' href='/css/layout.css' type='text/css')
+        link(rel='stylesheet' href='/css/menu-bar.css' type='text/css')
+        link(rel='stylesheet' href='/css/main-panel.css' type='text/css')
+        link(rel='stylesheet' href='/css/search-panel.css' type='text/css')
+        link(rel='stylesheet' href='/css/profile.css' type='text/css')
+        link(rel='stylesheet' href='/css/post.css' type='text/css')
         link(href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css' rel='stylesheet')
-        link(rel='stylesheet' href='/styles/profile.css' type='text/css')
-        link(rel='stylesheet' href='/styles/deletePopUp.css' type='text/css')
-        script(src="/js/popup.js")
         script(src="/js/request.js")
+        script(src="/js/popup.js")
         script(src="/js/index.js")
+        script(src="/js/post.js")
+        script(src="/js/search.js")
         title Postmit
     body
-    .root
-        .menu
-            div
-                .app-name POSTMIT
-                .pages
-                    a.page(href='/home') Home
-                    a(class=`page ${isMyProfile ? 'active-page' : ''}` href= isMyProfile ? '#' : `/user/${loggedUser}`) Profile
-                    a.page(href=`/user/bookmarks`) Bookmarks
-                    a.page(href='/logout') Logout
-                    - let postPlaceholder = "What's Happening"
-                    button.popup-post-btn(onclick=`showPopup("${postPlaceholder}", 'addNewPost')`) Post
+        include menubar.pug
         .main-panel
             .header
                 span Profile
             .profile
-            .big-profile
-                .profile-box
-                    .initials= initials
-                .details
-                    .name= name
-                    .name.username= `@${username}`
-            .bio= bio
-            .joined_date
-                img(src='/assets/calendar.svg' alt='Joined Date')
-                div
-                    span Joined on #{joinedDate}
-            .extra-details
-                div.flex
-                    a(href=`/user/${username}/following` class="link") 
-                        span.count= following.length
-                        span Following
-                    a(href=`/user/${username}/followers` class="link") 
-                        span.count= followers.length
-                        span Followers
-                if !isMyProfile
-                    div.follow-btn-wrapper
-                        button.follow-btn.primary-btn(onclick=`toggleFollowUnfollow('${username}')`)= isFollowing ? 'Unfollow' : 'Follow'
+                .row
+                    .user-info
+                        .profile-pic.profile-pic-big
+                          span.center= initials
+                        .user-details
+                          .name.big-name
+                            a(href=`/user/${username}`)= name 
+                          .username.big-username
+                            a(href=`/user/${username}`)= `@${username}`
+                .row
+                    .content.bio= bio
+                .row.space-between
+                    .row
+                        .small-detail
+                            .icon
+                                i.fas.fa-birthday-cake
+                            span= `Born ${dob}`
+                        .small-detail
+                            .icon
+                                i.fas.fa-calendar-alt
+                            span= `Joined ${joinedDate}`
+                    if !isMyProfile
+                        button.primary-btn(onclick=`toggleFollowUnFollow('${username}')`)= isFollowing ? 'Unfollow' : 'Follow'
+                .row
+                    .small-detail
+                        a(href=`/user/${username}/following`)
+                            span.count= following.length
+                            span Following
+                    .small-detail
+                        a(href=`/user/${username}/followers`)
+                            span.count= followers.length
+                            span Followers
             block posts
-        .search-panel
-            .search-bar.flex
-              .search-icon
-                img(src='/assets/search.svg' alt='Search')
-              .search-input(onkeyup='search()')
-               input(type='text' placeholder='Search')
-            .search-output
+        include searchPanel.pug

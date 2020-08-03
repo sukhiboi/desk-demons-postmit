@@ -6,9 +6,11 @@ const removePopup = function () {
 const setRemovePopupListeners = function () {
   document.getElementById('filter').addEventListener('click', removePopup);
   document.getElementById('closeBtn').addEventListener('click', removePopup);
-  if (event.key === 'Escape') {
-    removePopup();
-  }
+  document.addEventListener('keydown', () => {
+    if (event.key === 'Escape') {
+      removePopup();
+    }
+  });
 };
 
 const createPopup = function (element) {
@@ -28,4 +30,5 @@ const displayPopup = function (element) {
   const popup = createPopup(element);
   filter.appendChild(popup);
   document.body.appendChild(filter);
+  setRemovePopupListeners();
 };
