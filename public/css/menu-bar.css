@@ -49,12 +49,13 @@
   padding-left: 0;
   font-weight: 700;
   font-size: 2rem;
+  color: #333 !important;
 }
 
 .app-name span:hover {
-  color: #333;
+  color: #333 !important;
 }
 
 .app-name:hover {
-  background-color: transparent;
+  background-color: #fff !important;
 }

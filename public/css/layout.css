@@ -32,6 +32,7 @@ body {
   font-size: 1.4rem;
   font-weight: 600;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  display: flex;
 }
 
 .menu-bar {
@@ -70,6 +71,11 @@ body {
 
 .primary-btn:hover {
   cursor: pointer;
+}
+
+.auth-btn {
+  background-color: rgba(22, 191, 99, 1) !important;
+  color: #fff !important;
 }
 
 .disable-primary-btn {
