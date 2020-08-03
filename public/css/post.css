@@ -7,6 +7,7 @@
 
 .post {
   padding: 14px 10px 10px;
+  border-bottom: 1px solid rgb(230, 236, 240);
 }
 
 .create-post {
@@ -16,6 +17,10 @@
 .row {
   padding-bottom: 10px;
   display: flex;
+}
+
+.row:first-child {
+  justify-content: space-between;
 }
 
 .profile-pic {
@@ -55,4 +60,62 @@
   font-weight: 600;
   font-size: 1.2rem;
   margin-right: 1rem;
+}
+
+.user-info {
+  display: flex;
+}
+
+.user-details {
+  margin-left: 10px;
+}
+
+.name a:first-child {
+  color: #333;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 1.1rem;
+  text-transform: capitalize;
+}
+
+.username a {
+  color: #333;
+  text-decoration: none;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.icon {
+  color: rgba(101, 118, 134, 1);
+}
+
+.icon:hover {
+  cursor: pointer;
+}
+
+.icon i {
+  font-size: 1.2rem;
+}
+
+.count {
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding-left: 4px;
+}
+
+.hide-count {
+  visibility: hidden;
+}
+
+.highlight-red:hover,
+.fill-red {
+  color: rgba(224, 36, 94, 1);
+}
+
+.highlight-blue:hover,
+.fill-blue {
+  color: rgba(29, 161, 242, 1);
 }
