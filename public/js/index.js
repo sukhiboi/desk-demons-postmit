@@ -69,23 +69,26 @@ const sendRequestForProfile = function (username) {
 };
 
 const getUserResultTemplate = function (user) {
-  const userTemplate = `
-<div class="searchedUser" onclick="sendRequestForProfile('${user.username}')">
-      <div class="flex">
-          <div class="profile-pic"><span>${user.initials}</span></div>
-          <div class="user-details">
-              <div class="name"><span>${user.name}</span></div>
-              <div class="username"><span>@${user.username}</span></div>
-          </div>
+  return `
+  <a class="result" href="/user/${user.username}">
+    <div>
+      <div class="user-info">
+        <div class="profile-pic">
+          <span class="center">${user.initials}</span>
+        </div>
+        <div class="user-details">
+          <div class="name">${user.name}</div>
+          <div class="username">@${user.username}</div>
+        </div>
       </div>
-    </div>`;
-  return userTemplate;
+    </div>
+  </a>`;
 };
 
 const getHashtagResultTemplate = function (hashtag) {
   const hashtagTemplate = `
-<a class="searchedHashtag" href="/hashtag/${hashtag}">
-    <div class="name"><span>#${hashtag}</span></div>
+<a class="result" href="/hashtag/${hashtag}">
+    <div class="name"><span class="hashtag">#${hashtag}</span></div>
 </a>`;
   return hashtagTemplate;
 };
@@ -96,11 +99,12 @@ const showSearchResult = function (result, searchInput) {
     templateCreator = getHashtagResultTemplate;
   }
   const searchOutputDiv = document.querySelector('.search-output');
-  const limitedSearchResults = result.slice(0, 10);
-  const html = limitedSearchResults.reduce((html, result) => {
+  const html = result.reduce((html, result) => {
     return html + templateCreator(result);
   }, '');
-  searchOutputDiv.innerHTML = html;
+  const searchTitle = `
+  <div class="search-info">Searching for "${searchInput}"</div>`;
+  searchOutputDiv.innerHTML = searchTitle + html;
 };
 
 const search = function () {

@@ -29,6 +29,10 @@ body {
   width: 25vw;
   margin-right: 5vw;
   right: 0;
+  margin-top: 5vh;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }
 
 .primary-btn {
