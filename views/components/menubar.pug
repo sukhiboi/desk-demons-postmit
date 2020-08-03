@@ -2,12 +2,12 @@
   .pages
     .page.app-name
       span POSTMIT
-    a(href=`/home`).page.active-page
+    a(class=`page ${activePage === 'home' && 'active-page'}` href=`${activePage === 'home' ? '#' : '/home'}`)
       i.fas.fa-home
       span Home
-    a(href=`/user/${loggedUser}`).page
+    a(class=`page ${activePage === 'profile' && 'active-page'}` href=`${activePage === 'profile' ? '#' : `/user/${loggedUser}`}`)
       i.far.fa-user
       span Profile
-    a(href='/user/bookmarks').page
+    a(class=`page ${activePage === 'bookmarks' && 'active-page'}` href=`${activePage === 'bookmarks' ? '#' : '/user/bookmarks'}`)
       i.far.fa-bookmark
       span Bookmarks
