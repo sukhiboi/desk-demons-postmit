@@ -2,8 +2,8 @@
   .row
     .profile-pic
       span.center= initials
-    .content( contenteditable data-placeholder="What's Happening?")
-  div.row.right-aligned
+    .content#message( contenteditable data-placeholder="What's Happening?")
+  .row.right-aligned
     .counter
-      span#character-count 180
-    button.primary-btn#post-btn(onclick='addNewPost(\'newPostMessage\')') Post
+      span#char-count 180
+    button.primary-btn.disable-primary-btn#post-btn(onclick='postMessage()') Post

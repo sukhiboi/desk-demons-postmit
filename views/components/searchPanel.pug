@@ -2,6 +2,6 @@
   .search-bar
     .search-icon
       i.icon.fas.fa-search
-    .search-input(onkeyup='search()')
-      input(type='text' placeholder='Search')
+    .search-input
+      input(type='text' placeholder='Search' onkeyup='search(this.value)')
   .search-output

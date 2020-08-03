@@ -62,6 +62,19 @@
   margin-right: 1rem;
 }
 
+.content > a {
+  text-decoration: none;
+}
+
+.highlight-link {
+  color: #1da1f2;
+  text-decoration: none;
+}
+
+.highlight-link:hover {
+  text-decoration: underline;
+}
+
 .user-info {
   display: flex;
 }

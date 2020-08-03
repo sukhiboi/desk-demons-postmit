@@ -1,18 +1,12 @@
-const sendGETRequest = function (url, callback) {
-  fetch(url, { method: 'GET' })
-    .then(response => {
-      response.json();
-    })
-    .then(callback);
+const get = function (url) {
+  return fetch(url, { method: 'GET' });
 };
 
-const sendPOSTRequest = function (url, postData, callback) {
+const post = function (url, postData) {
   const requestOptions = {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(postData),
   };
-  fetch(url, requestOptions)
-    .then(response => response.json())
-    .then(callback);
+  return fetch(url, requestOptions);
 };

@@ -45,3 +45,12 @@ body {
   font-weight: 700;
   font-size: 1rem;
 }
+
+.primary-btn:hover {
+  cursor: pointer;
+}
+
+.disable-primary-btn {
+  pointer-events: none;
+  background-color: rgba(29, 161, 242, 0.4);
+}
