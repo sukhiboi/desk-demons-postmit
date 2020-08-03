@@ -35,10 +35,14 @@
 }
 
 .page:hover i,
-.page:hover span,
+.page:hover span {
+  color: rgba(22, 191, 99, 1);
+}
+
 .active-page i,
 .active-page span {
   color: rgba(22, 191, 99, 1);
+  font-weight: 600;
 }
 
 .app-name {

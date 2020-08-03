@@ -6,14 +6,14 @@ const isInRange = function (limit, value) {
   return value > limit.min && value <= limit.max;
 };
 
-const setupCharCounter = function () {
-  const counter = document.getElementById('char-count');
-  const contentBox = document.getElementById('message');
-  const postBtn = document.getElementById('post-btn');
+const setupCharCounter = function (counterId, messageId, postBtnId) {
+  const counter = document.getElementById(counterId);
+  const contentBox = document.getElementById(messageId);
+  const postBtn = document.getElementById(postBtnId);
   const disablePrimaryBtnClass = 'disable-primary-btn';
   const charLimit = { min: 0, max: 180 };
   contentBox.addEventListener('input', () => {
-    const messageLength = document.getElementById('message').innerText.length;
+    const messageLength = document.getElementById(messageId).innerText.length;
     counter.innerText = charLimit.max - messageLength;
     postBtn.classList.add(disablePrimaryBtnClass);
     if (isInRange(charLimit, messageLength)) {
@@ -67,6 +67,44 @@ const showDeletePostPopup = function (postId) {
   displayPopup(element);
 };
 
+const sendReply = function (postId) {
+  const message = document.getElementById('replyMessage').innerText;
+  post('/saveResponse', { postId, message })
+    .then(response => response.json())
+    .then(reloadOnStatus);
+};
+
+const replyToPost = function (postId) {
+  const replyPopupHtml = `
+  <div class="post popup-create-post">
+  <div class="row">
+    <div
+      class="content"
+      id="replyMessage"
+      contenteditable=""
+      data-placeholder="Post your Reply"
+    ></div>
+    </div>
+      <div class="row right-aligned">
+    <div class="counter"><span id="popupCharCount">180</span></div>
+    <button
+      class="primary-btn disable-primary-btn"
+      id="popupReplyBtn"
+      onclick="sendReply(${postId})"
+    >
+      Reply
+    </button>
+  </div>
+  </div>
+  `;
+  const element = document.createElement('div');
+  element.classList.add('center');
+  element.innerHTML = replyPopupHtml;
+  displayPopup(element);
+  setupCharCounter('popupCharCount', 'replyMessage', 'popupReplyBtn');
+};
+
 const expandPost = function (postId) {
+  event.stopPropagation();
   window.location.href = `/post/${postId}`;
 };

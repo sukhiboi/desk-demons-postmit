@@ -6,10 +6,10 @@ mixin post(post)
           span.center= post.initials
         .user-details
           .name
-            a(href=`/user/${post.username}`)= post.name 
+            a.link(href=`/user/${post.username}`)= post.name 
             a(class="timestamp")= ` ・ ${post.postedAt}`
           .username
-            a(href=`/user/${post.username}`)= `@${post.username}`
+            a.link(href=`/user/${post.username}`)= `@${post.username}`
       if post.isDeletable
         .icon(onclick=`showDeletePostPopup(${post.postId})`)
           i.fas.fa-trash.highlight-red

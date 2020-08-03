@@ -46,11 +46,11 @@ html(lang='en')
                         button.primary-btn(onclick=`toggleFollowUnFollow('${username}')`)= isFollowing ? 'Unfollow' : 'Follow'
                 .row
                     .small-detail
-                        a(href=`/user/${username}/following`)
+                        a.link(href=`/user/${username}/following`)
                             span.count= following.length
                             span Following
                     .small-detail
-                        a(href=`/user/${username}/followers`)
+                        a.link(href=`/user/${username}/followers`)
                             span.count= followers.length
                             span Followers
             block posts

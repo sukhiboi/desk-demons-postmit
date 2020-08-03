@@ -4,7 +4,6 @@ head
   meta(name='viewport' content='width=device-width, initial-scale=1.0')
   link(rel='stylesheet' href='/css/layout.css' type='text/css')
   link(rel='stylesheet' href='/css/menu-bar.css' type='text/css')
-  link(rel='stylesheet' href='/css/main-panel.css' type='text/css')
   link(rel='stylesheet' href='/css/search-panel.css' type='text/css')
   link(rel='stylesheet' href='/css/post.css' type='text/css')
   link(href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css' rel='stylesheet')
@@ -26,10 +25,10 @@ body
               span.center= post.initials
             .user-details
               .name
-                a(href=`/user/${post.username}`)= post.name 
+                a.link(href=`/user/${post.username}`)= post.name 
                 a(class="timestamp")= ` ・ ${post.postedAt}`
               .username
-                a(href=`/user/${post.username}`)= `@${post.username}`
+                a.link(href=`/user/${post.username}`)= `@${post.username}`
           if post.isDeletable
             .icon(onclick=`showDeletePostPopup(${post.postId})`)
               i.fas.fa-trash.highlight-red
@@ -43,10 +42,11 @@ body
               - replacedLine= replacedLine.replace(urlRegEx,(url)=>`<a class="highlight-link" href="${url}">${url}</a>`)
               != replacedLine
               br
-        - let likeCount=post.likedUsers.length
-        a(href=`/post/${post.postId}/likes` class=`count ${likeCount > 0 ? '' : 'hide-count'}`) 
-          span= likeCount
-          span= `${likeCount>1 ? 'Likes':'Like'}`
+        .row
+          - let likeCount=post.likedUsers.length
+          a.link(href=`/post/${post.postId}/likes` class=`count ${likeCount > 0 ? '' : 'hide-count'}`) 
+            span= likeCount
+            span= `${likeCount>1 ? ' Likes':' Like'}`
         .row.actions
           .action.icon.highlight-blue(onClick=`replyToPost(${post.postId})`)
             i.far.fa-comment

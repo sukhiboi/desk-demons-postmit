@@ -4,8 +4,6 @@ const removePopup = function () {
 };
 
 const setRemovePopupListeners = function () {
-  document.getElementById('filter').addEventListener('click', removePopup);
-  document.getElementById('closeBtn').addEventListener('click', removePopup);
   document.addEventListener('keydown', () => {
     if (event.key === 'Escape') {
       removePopup();
@@ -15,20 +13,17 @@ const setRemovePopupListeners = function () {
 
 const createPopup = function (element) {
   const popup = document.createElement('div');
-  const closeBtn = document.createElement('i');
-  closeBtn.id = 'closeBtn';
-  popup.appendChild(closeBtn);
   popup.appendChild(element);
   return popup;
 };
 
 const displayPopup = function (element) {
-  event.stopPropagation();
   const filter = document.createElement('div');
   filter.classList.add('filter');
   filter.id = 'filter';
-  const popup = createPopup(element);
+  const popup = element;
   filter.appendChild(popup);
   document.body.appendChild(filter);
   setRemovePopupListeners();
+  event.stopPropagation();
 };
