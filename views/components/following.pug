@@ -4,8 +4,10 @@ mixin following(user)
       .profile-pic
           span.center= `${user.initials}`
       .user-details
-          .name= `${user.name}`
-          .username= `@${user.username}`
+        .name
+          a(href=`/user/${user.username}`)= `${user.name}`
+        .username
+          a(href=`/user/${user.username}`)= `@${user.username}`
       if user.username != loggedUser
         div.follow-btn-wrapper
-          button.follow-btn.primary-btn(onclick=`toggleFollowUnfollow('${user.username}')`)= user.isFollowingMe ? 'Unfollow' : 'Follow' 
+          button.follow-btn.primary-btn(onclick=`toggleFollowUnFollow('${user.username}')`)= user.isFollowingMe ? 'Unfollow' : 'Follow' 
