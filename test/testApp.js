@@ -503,6 +503,8 @@ describe('#App', () => {
         likedPosts: [],
         loggedUser: 'john',
         name: 'john samuel',
+        dob: 'Aug 3, 2020',
+        joinedDate: 'Aug 3, 2020',
         posts: [
           {
             responseCount: 1,
@@ -585,6 +587,8 @@ describe('#App', () => {
           name: 'john samuel',
           userId: 1,
           username: 'john',
+          dob: 'Aug 3, 2020',
+          joinedDate: 'Aug 3, 2020',
         },
       ];
       assert.deepStrictEqual(actual, expected);
@@ -627,6 +631,8 @@ describe('#App', () => {
             name: 'john samuel',
             userId: 1,
             username: 'john',
+            dob: 'Aug 3, 2020',
+            joinedDate: 'Aug 3, 2020',
           },
         ],
         loggedUser: 'john',
@@ -636,6 +642,8 @@ describe('#App', () => {
           name: 'john samuel',
           userId: 1,
           username: 'john',
+          dob: 'Aug 3, 2020',
+          joinedDate: 'Aug 3, 2020',
         },
       };
       assert.deepStrictEqual(actual, expected);
@@ -675,6 +683,8 @@ describe('#App', () => {
             name: 'john samuel',
             userId: 1,
             username: 'john',
+            dob: 'Aug 3, 2020',
+            joinedDate: 'Aug 3, 2020',
           },
         ],
         loggedUser: 'john',
@@ -684,6 +694,8 @@ describe('#App', () => {
           name: 'john samuel',
           userId: 1,
           username: 'john',
+          dob: 'Aug 3, 2020',
+          joinedDate: 'Aug 3, 2020',
         },
       };
       assert.deepStrictEqual(actual, expected);
@@ -770,6 +782,8 @@ describe('#App', () => {
           responseCount: 1,
           userId: 1,
           username: 'john',
+          dob: 'Aug 3, 2020',
+          joinedDate: 'Aug 3, 2020',
         },
         responses: [
           {
@@ -788,6 +802,8 @@ describe('#App', () => {
             responseCount: 1,
             userId: 1,
             username: 'john',
+            dob: 'Aug 3, 2020',
+            joinedDate: 'Aug 3, 2020',
           },
         ],
       };
@@ -908,6 +924,8 @@ describe('#App', () => {
             username: 'john',
             mentions: [],
             hashtags: ['html'],
+            dob: 'Aug 3, 2020',
+            joinedDate: 'Aug 3, 2020',
           },
         ],
         loggedUser: userDetails.username,
@@ -955,6 +973,8 @@ describe('#App', () => {
             isBookmarked: true,
             userId: 1,
             username: 'john',
+            dob: 'Aug 3, 2020',
+            joinedDate: 'Aug 3, 2020',
           },
         ],
       };
