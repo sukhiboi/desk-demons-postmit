@@ -1,0 +1,58 @@
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.post {
+  padding: 14px 10px 10px;
+}
+
+.create-post {
+  border-bottom: 10px solid rgb(230, 236, 240);
+}
+
+.row {
+  padding-bottom: 10px;
+  display: flex;
+}
+
+.profile-pic {
+  position: relative;
+  height: 3rem;
+  width: 3rem;
+  border: 1px solid;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+.profile-pic span {
+  font-size: 1.4rem;
+}
+
+.content {
+  width: 90%;
+  font-size: 1.3rem;
+  margin-left: 10px;
+  outline: none;
+  padding-top: 6px;
+}
+
+.content:empty:before {
+  content: attr(data-placeholder);
+  color: rgb(145, 151, 163);
+}
+
+.right-aligned {
+  justify-content: flex-end;
+}
+
+.counter {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-right: 1rem;
+}

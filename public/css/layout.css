@@ -1,7 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
 .main-panel {
   width: 50vw;
+  min-height: 100vh;
   margin-left: 20vw;
   position: absolute;
+  border-left: 1px solid rgb(230, 236, 240);
+  border-right: 1px solid rgb(230, 236, 240);
+}
+
+.menu-bar {
+  width: 20vw;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  margin-top: 5vh;
+  align-items: center;
+  color: #333;
 }
 
 .search-panel {
@@ -9,4 +29,15 @@
   width: 25vw;
   margin-right: 5vw;
   right: 0;
+}
+
+.primary-btn {
+  border: none;
+  outline: none;
+  background-color: rgba(29, 161, 242, 1);
+  border-radius: 10rem;
+  padding: 8px 2rem;
+  color: #eee;
+  font-weight: 700;
+  font-size: 1rem;
 }
