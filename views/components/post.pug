@@ -1,5 +1,5 @@
 mixin post(post)
-  .post(onclick=`expandPost('${post.postId}')`)
+  .post
     .row
       .user-info
         .profile-pic
@@ -11,8 +11,8 @@ mixin post(post)
           .username
             a(href=`/user/${post.username}`)= `@${post.username}`
       if post.isDeletable
-        .icon 
-          i.fas.fa-trash.highlight-red(onclick=`deletePost(${post.postId})`)
+        .icon(onclick=`showDeletePostPopup(${post.postId})`)
+          i.fas.fa-trash.highlight-red
     .row
       .content
         each line in post.message.split(/\n/)

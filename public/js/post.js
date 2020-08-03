@@ -43,6 +43,30 @@ const toggleBookmark = function (postId) {
     .then(reloadOnStatus);
 };
 
+const deletePost = function (postId) {
+  post('/deletePost', { postId }).then(() => location.reload());
+};
+
+const showDeletePostPopup = function (postId) {
+  const deletePopupHtml = `
+  <div class="delete-popup center">
+    <div class="delete-popup-heading">Delete Post?</div>
+    <div class="row delete-popup-message">This can’t be undone and it will be 
+    removed from your profile, 
+    the timeline of any accounts that follow you.</div>
+    <div class="row action-btn">
+      <button class="primary-btn" onclick="removePopup()">Cancel</button>
+      <button
+      class="primary-btn delete-btn"
+      onclick="deletePost(${postId})">Delete</button>
+    </div>
+  </div>
+  `;
+  const element = document.createElement('div');
+  element.innerHTML = deletePopupHtml;
+  displayPopup(element);
+};
+
 window.onload = function () {
   setupCharCounter();
 };

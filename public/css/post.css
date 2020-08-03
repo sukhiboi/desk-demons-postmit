@@ -132,3 +132,37 @@
 .fill-blue {
   color: rgba(29, 161, 242, 1);
 }
+
+.action-btn {
+  justify-content: space-evenly;
+}
+
+.action-btn button {
+  background-color: rgb(230, 236, 240);
+  color: #333;
+}
+
+.delete-btn {
+  background-color: #e0245e !important;
+  color: #fff !important;
+}
+
+.delete-popup {
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: 10px;
+  width: 20vw;
+  text-align: center;
+  z-index: 3;
+}
+
+.delete-popup-heading {
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding-bottom: 1rem;
+}
+
+.delete-popup-message {
+  line-height: 24px;
+  padding-bottom: 2rem;
+}

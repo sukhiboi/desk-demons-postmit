@@ -149,16 +149,17 @@ const createDeletePopUp = function (postId, redirectToHome) {
   const popup = document.createElement('div');
   popup.innerHTML = `
   <div class="delete-popup">
-  <div class="delete-popup-heading">Delete Post?</div>
-  <div class="delete-popup-message">This can’t be undone and it will be 
-  removed from your profile, the timeline of any accounts that follow you.</div>
-  <div class="flex action-btn">
-    <button onclick="removeFilter()">Cancel</button>
-    <button
+    <div class="delete-popup-heading">Delete Post?</div>
+    <div class="delete-popup-message">This can’t be undone and it will be 
+    removed from your profile, 
+    the timeline of any accounts that follow you.</div>
+    <div class="flex action-btn">
+      <button onclick="removeFilter()">Cancel</button>
+      <button
       class="delete-btn"
       onclick="deletePost(${postId}, ${redirectToHome})">Delete</button>
+    </div>
   </div>
-</div>
   `;
   return popup;
 };
