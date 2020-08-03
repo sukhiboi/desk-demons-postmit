@@ -32,17 +32,15 @@ const usernameValidator = function (element, length) {
     return new Promise(resolve => resolve(lengthValidationResult));
   }
   return new Promise(resolve => {
-    sendPOSTRequest(
-      '/isUsernameAvailable',
-      { username: element.value },
-      ({ status }) => {
+    post('/isUsernameAvailable', { username: element.value })
+      .then(response => response.json())
+      .then(({ status }) => {
         let message = 'username is not available';
         if (status) {
           message = '';
         }
         resolve({ message, isValid: status });
-      }
-    );
+      });
   });
 };
 
@@ -90,11 +88,13 @@ const saveUser = async function (username) {
     return { ...fieldValues, [fieldId]: fieldValue };
   }, {});
   userDetails['githubUsername'] = username;
-  sendPOSTRequest('/save-user', userDetails, ({ status }) => {
-    if (status) {
-      window.location.href = '/home';
-    } else {
-      window.location.href = '/auth';
-    }
-  });
+  post('/save-user', userDetails)
+    .then(response => response.json())
+    .then(({ status }) => {
+      if (status) {
+        window.location.href = '/home';
+      } else {
+        window.location.href = '/auth';
+      }
+    });
 };

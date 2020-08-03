@@ -44,7 +44,7 @@ const toggleBookmark = function (postId) {
 };
 
 const deletePost = function (postId) {
-  post('/deletePost', { postId }).then(() => location.reload());
+  post('/deletePost', { postId }).then(reloadOnStatus);
 };
 
 const showDeletePostPopup = function (postId) {
