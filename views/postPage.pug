@@ -39,14 +39,14 @@ head
                  .username
                     a(href=`/user/${post.username}`)= `@${post.username}`
              .post-content
-                    each line in post.message.split(/\n/)
-                      - let urlRegEx= /(https?:\/\/[^\s]+)/g;
-                      - let replacedLine= line.replace(/</g,'&lt;').replace(/>/g,'&gt;')
-                      - replacedLine= post.mentions.reduce((line,user) => line.replace(new RegExp(user),`<a class="mention" href="/user/${user.slice(1)}">${user}</a>`),replacedLine) 
-                      - replacedLine= post.hashtags.reduce((line,hashtag) => line.replace(new RegExp(`#${hashtag}`),`<a class="mention" href="/hashtag/${hashtag}">#${hashtag}</a>`),replacedLine) 
-                      - replacedLine= replacedLine.replace(urlRegEx,(url)=>`<a class="mention" href="${url}">${url}</a>`)
-                      != replacedLine
-                      br
+                each line in post.message.split(/\n/)
+                  - let urlRegEx= /(https?:\/\/[^\s]+)/g;
+                  - let replacedLine= line.replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                  - replacedLine= post.mentions.reduce((line,user) => line.replace(new RegExp(`@\\b${user}\\b`),`<a class="mention" href="/user/${user}">@${user}</a>`),replacedLine) 
+                  - replacedLine= post.hashtags.reduce((line,hashtag) => line.replace(new RegExp(`#\\b${hashtag}\\b`),`<a class="mention" href="/hashtag/${hashtag}">#${hashtag}</a>`),replacedLine) 
+                  - replacedLine= replacedLine.replace(urlRegEx,(url)=>`<a class="mention" href="${url}">${url}</a>`)
+                  != replacedLine
+                  br
              - let likeCount=post.likedUsers.length
              a(href=`/post/${post.postId}/likes` class=`link ${likeCount>0?"likeDetails":"hideCount"}`) 
                 span(class="likeCount")= likeCount
@@ -77,7 +77,7 @@ head
   .search-panel
     .search-bar.flex
       .search-icon
-        img(src='/assets/search.svg' alt='Search')
+        i(class="fas fa-search icon")
       .search-input(onkeyup='search()')
        input(type='text' placeholder='Search')
     .search-output

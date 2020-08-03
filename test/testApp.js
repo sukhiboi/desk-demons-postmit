@@ -853,7 +853,7 @@ describe('#App', () => {
         getIdByUsername: getIdByUsernameStub,
       });
       assert.deepStrictEqual(await app.getValidMentions('hii @naveen'), [
-        '@naveen',
+        'naveen',
       ]);
       sinon.assert.calledOnceWithExactly(getIdByUsernameStub, 'naveen');
     });

@@ -25,8 +25,7 @@ html(lang='en')
                     button.popup-post-btn(onclick=`showPopup("${postPlaceholder}", 'addNewPost')`) Post
         .main-panel
             .header
-                span Profile
-            .profile
+                  span Profile
             .big-profile
                 .profile-box
                     .initials= initials
@@ -35,9 +34,13 @@ html(lang='en')
                     .name.username= `@${username}`
             .bio= bio
             .joined_date
-                img(src='/assets/calendar.svg' alt='Joined Date')
+                i(class="fas fa-birthday-cake")
                 div
-                    span Joined on #{joinedDate}
+                    span Born #{dob}
+            .joined_date
+                i(class="far fa-calendar-alt")
+                div
+                    span Joined #{joinedDate}
             .extra-details
                 div.flex
                     a(href=`/user/${username}/following` class="link") 
@@ -53,7 +56,7 @@ html(lang='en')
         .search-panel
             .search-bar.flex
               .search-icon
-                img(src='/assets/search.svg' alt='Search')
+                i(class="fas fa-search icon")
               .search-input(onkeyup='search()')
                input(type='text' placeholder='Search')
             .search-output

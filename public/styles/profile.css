@@ -45,12 +45,12 @@
 }
 
 .joined_date {
-  margin-top: 8px;
+  margin: 1rem 2rem 0 0;
   display: inline-flex;
 }
 
-.joined_date img {
-  width: 24px;
+.joined_date i {
+  color: #8898a6;
 }
 
 .joined_date > div {
