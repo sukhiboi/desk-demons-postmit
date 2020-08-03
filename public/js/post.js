@@ -66,3 +66,7 @@ const showDeletePostPopup = function (postId) {
   element.innerHTML = deletePopupHtml;
   displayPopup(element);
 };
+
+const expandPost = function (postId) {
+  window.location.href = `/post/${postId}`;
+};

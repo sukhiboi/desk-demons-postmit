@@ -1,5 +1,5 @@
 mixin post(post)
-  .post
+  .post(onclick=`expandPost(${post.postId})`)
     .row
       .user-info
         .profile-pic
