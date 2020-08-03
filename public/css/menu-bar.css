@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap');
+
+.menu-bar {
+  width: 20vw;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  margin-top: 5vh;
+  font-family: 'Source Sans Pro', sans-serif;
+  align-items: center;
+  color: #333;
+}
+
+.menu-bar div {
+  width: fit-content;
+  width: -moz-fit-content;
+}
+
+.pages {
+  display: flex;
+  flex-direction: column;
+}
+
+.page {
+  text-decoration: none;
+  padding: 12px 1.2rem;
+  width: fit-content;
+  width: -moz-fit-content;
+}
+
+.page i {
+  font-size: 1.6rem;
+  color: #333;
+}
+
+.page span {
+  padding-left: 10px;
+  color: #333;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.page:hover {
+  background-color: rgba(29, 161, 242, 0.2);
+  border-radius: 10rem;
+  cursor: pointer;
+}
+
+.page:hover i {
+  color: rgba(29, 161, 242, 1);
+}
+
+.page:hover span {
+  color: rgba(29, 161, 242, 1);
+}
+
+.app-name {
+  margin-bottom: 1rem;
+}
+
+.app-name span {
+  padding-left: 0;
+  font-weight: 700;
+  font-size: 2rem;
+}
+
+.app-name span:hover {
+  color: #333;
+}
+
+.app-name:hover {
+  background-color: transparent;
+}

@@ -19,7 +19,7 @@ html(lang='en')
                 .pages
                     a.page(href='/home') Home
                     a.page(href=`/user/${loggedUser}`) Profile
-                    a.page.active-page(href=`#`) Bookmarks
+                    a.page.active-page(href=`/user/bookmarks`) Bookmarks
                     a.page(href='/logout') Logout
                     - let postPlaceholder = "What's Happening"
                     button.popup-post-btn(onclick=`showPopup("${postPlaceholder}", 'addNewPost')`) Post

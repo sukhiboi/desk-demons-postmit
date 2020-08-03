@@ -1,0 +1,13 @@
+.menu-bar
+  .pages
+    .page.app-name
+      span POSTMIT
+    a(href='#').page.active-page
+      i.fas.fa-home
+      span Home
+    a(href=`/user/${loggedUser}`).page
+      i.fas.fa-user-alt
+      span Profile
+    a(href='/user/bookmarks').page
+      i.fas.fa-bookmark
+      span Bookmarks

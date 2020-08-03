@@ -1,0 +1,12 @@
+.main-panel {
+  width: 50vw;
+  margin-left: 20vw;
+  position: absolute;
+}
+
+.search-panel {
+  position: fixed;
+  width: 25vw;
+  margin-right: 5vw;
+  right: 0;
+}
