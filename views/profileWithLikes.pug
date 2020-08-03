@@ -2,8 +2,8 @@ extends components/profilePage.pug
 
 append posts
   .categories
-    a.category.active-category(href=`/user/${username}`) Posts
-    a.category(href='#') Likes
+    a.category(href=`/user/${username}`) Posts
+    a.category.active-category(href='#') Likes
   .feed
     .posts
         include components/post.pug
