@@ -63,10 +63,10 @@ head
                 - let placeholder = 'Post you Reply'
                 i(class="far fa-comment icon response-icon" onClick=`showPopup('${placeholder}', 'saveResponse',${post.postId})`)
               .action.bookmark
-                 - className="far fa-bookmark icon";
-                 if isBookmarked
-                  - className="fas fa-bookmark icon bookmarkColor"
-                 i(class=className onclick=`toggleBookmark(${post.postId})` id=`bookmark_${post.postId}`) 
+                - className="far fa-bookmark icon";
+                if post.isBookmarked
+                 - className="fas fa-bookmark icon bookmarkColor"
+                i(class=className onclick=`toggleBookmark(${post.postId})` id=`bookmark_${post.postId}`) 
             i(class='fas fa-heart fa-3x instagramLike' id=`heart_${post.postId}` ondblclick=`displayHeart(${post.postId})`) 
     .heading 
       span Responses

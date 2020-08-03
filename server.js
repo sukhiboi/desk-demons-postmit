@@ -1,7 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const axios = require('axios');
 
-const expressApp = require('./lib/expressApp');
+const expressApp = require('./lib/routes');
 const App = require('./lib/app');
 const Datastore = require('./lib/datastore');
 const Auth = require('./lib/auth');

@@ -1,6 +1,6 @@
 const request = require('supertest');
 const sinon = require('sinon');
-const expressApp = require('../lib/expressApp');
+const expressApp = require('../lib/routes');
 const App = require('../lib/app');
 const Auth = require('../lib/auth');
 
