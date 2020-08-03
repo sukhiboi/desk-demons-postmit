@@ -1,3 +1,7 @@
+const reloadOnStatus = function (response) {
+  response.status && setTimeout(() => location.reload(), 200);
+};
+
 const isInRange = function (limit, value) {
   return value > limit.min && value <= limit.max;
 };
@@ -20,7 +24,23 @@ const setupCharCounter = function () {
 
 const postMessage = function () {
   const message = document.getElementById('message').innerText;
-  post('/add-new-post', { message }).then(() => location.reload());
+  post('/add-new-post', { message })
+    .then(response => response.json())
+    .then(reloadOnStatus);
+};
+
+const toggleLikeUnlike = function (postId) {
+  event.stopPropagation();
+  post('/toggleLike', { postId })
+    .then(response => response.json())
+    .then(reloadOnStatus);
+};
+
+const toggleBookmark = function (postId) {
+  event.stopPropagation();
+  post('/toggleBookmark', { postId })
+    .then(response => response.json())
+    .then(reloadOnStatus);
 };
 
 window.onload = function () {
