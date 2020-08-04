@@ -9,4 +9,4 @@ mixin following(user)
         .username
           a.link(href=`/user/${user.username}`)= `@${user.username}`
     if user.username != loggedUser
-       button.primary-btn(onclick=`toggleFollowUnFollow('${username}')`)= isFollowing ? 'Unfollow' : 'Follow'
+       button.primary-btn(onclick=`toggleFollowUnFollow('${user.username}')`)= user.isFollowingMe ? 'Unfollow' : 'Follow'
