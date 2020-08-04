@@ -121,7 +121,7 @@ describe('#App', () => {
   });
 
   describe('getUserFeed()', () => {
-    it.skip('should resolve to the feeds posts of user', async () => {
+    it('should resolve to the feeds posts of user', async () => {
       const getFollowingStub = sinon.stub().resolves([{ userId: 2 }]);
       const getUserPostsStub = sinon.stub().resolves(createDummyPosts());
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
@@ -129,7 +129,9 @@ describe('#App', () => {
       const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const getAllResponsesStub = sinon.stub().resolves(responses);
+      const getReplyingToStub = sinon.stub().resolves();
       const app = createApp({
+        getReplyingTo: getReplyingToStub,
         getAllResponses: getAllResponsesStub,
         getFollowing: getFollowingStub,
         getUserPosts: getUserPostsStub,
@@ -139,46 +141,62 @@ describe('#App', () => {
         getBookmarks: getBookmarksStub,
       });
       const expected = {
+        imageUrl: 'url',
         initials: 'JS',
         loggedUser: 'john',
         posts: [
           {
-            responseCount: 1,
+            dob: '2020-08-03',
+            hashtags: ['html'],
+            imageUrl: 'url',
             initials: 'JS',
+            isBookmarked: false,
             isDeletable: true,
             isLiked: true,
-            likedUsers: [{ userId: 1 }],
+            joinedDate: '2020-08-03',
+            likedUsers: [
+              {
+                userId: 1,
+              },
+            ],
+            mentions: [],
             message: 'hi',
             name: 'john samuel',
             postId: 1,
             postedAt: 'a few seconds ago',
+            responseCount: 1,
             userId: 1,
             username: 'john',
-            isBookmarked: false,
-            hashtags: ['html'],
-            mentions: [],
           },
           {
+            dob: '2020-08-03',
+            hashtags: ['html'],
+            imageUrl: 'url',
             initials: 'JS',
+            isBookmarked: false,
             isDeletable: true,
             isLiked: true,
-            likedUsers: [{ userId: 1 }],
+            joinedDate: '2020-08-03',
+            likedUsers: [
+              {
+                userId: 1,
+              },
+            ],
+            mentions: [],
             message: 'hi',
             name: 'john samuel',
             postId: 1,
             postedAt: 'a few seconds ago',
+            responseCount: 1,
             userId: 1,
-            isBookmarked: false,
             username: 'john',
-            hashtags: ['html'],
-            mentions: [],
           },
         ],
       };
       const actual = await app.getUserFeed();
       assert.deepStrictEqual(actual, expected);
       sinon.assert.calledOnceWithExactly(getFollowingStub, userId);
-      sinon.assert.calledOnce(getBookmarksStub);
+      sinon.assert.calledTwice(getBookmarksStub);
       sinon.assert.calledTwice(getUserPostsStub);
       sinon.assert.calledTwice(getUserDetailsStub);
       sinon.assert.calledTwice(getAllPostLikersStub);
