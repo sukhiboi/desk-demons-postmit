@@ -85,6 +85,9 @@ const replyToPost = function (postId) {
   const [userInfo, message] = document.querySelectorAll(`#post-${postId} .row`);
   const replyPopupHtml = `
   <div class="post popup-create-post">
+  <div class="close-btn" onclick="removePopup()">
+    <i class="fas fa-times"></i>
+  </div>
   ${userInfo.outerHTML}
   ${message.outerHTML}
   <div class="row replying-to">
@@ -125,6 +128,9 @@ const showPostPopup = function (initials, imageUrl) {
   event.stopPropagation();
   const postPopupHtml = `
   <div class="post popup-create-post">
+  <div class="close-btn" onclick="removePopup()">
+    <i class="fas fa-times"></i>
+  </div>
   <div class="row">
   <div class="profile-pic">${profilePic} </div>
     <div

@@ -82,6 +82,18 @@ body {
   cursor: pointer;
 }
 
+.close-btn {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.close-btn:hover {
+  cursor: pointer;
+}
+
 .auth-btn {
   background-color: rgba(22, 191, 99, 1) !important;
   color: #fff !important;
