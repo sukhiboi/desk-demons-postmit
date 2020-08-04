@@ -3,7 +3,10 @@ mixin following(user)
     div
       .user-info
         .profile-pic
-            span.center= `${user.initials}`
+          if user.imageUrl
+            img(src=user.imageUrl)
+          else 
+            span.center= user.initials
         .user-details
           .name
             a.link(href=`/user/${user.username}`)= `${user.name}`

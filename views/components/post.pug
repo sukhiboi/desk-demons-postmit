@@ -3,7 +3,10 @@ mixin post(post)
     .row
       .user-info
         .profile-pic
-          span.center= post.initials
+          if post.imageUrl
+            img(src=post.imageUrl)
+          else 
+            span.center= post.initials
         .user-details
           .name
             a.link(href=`/user/${post.username}`)= post.name 

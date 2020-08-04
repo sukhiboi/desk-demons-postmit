@@ -1,10 +1,14 @@
 const getUserResultTemplate = function (user) {
+  let profilePic = `<span class="center">${user.initials}</span>`;
+  if (user.imageUrl) {
+    profilePic = `<img src="${user.imageUrl}">`;
+  }
   return `
   <a class="result" href="/user/${user.username}">
     <div>
       <div class="user-info">
         <div class="profile-pic">
-          <span class="center">${user.initials}</span>
+          ${profilePic}
         </div>
         <div class="user-details">
           <div class="name">${user.name}</div>

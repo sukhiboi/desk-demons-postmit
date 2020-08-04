@@ -1,7 +1,10 @@
 .post.create-post
   .row
     .profile-pic
-      span.center= initials
+      if imageUrl
+        img(src=imageUrl)
+      else 
+        span.center= initials
     .content#message( contenteditable data-placeholder="What's Happening?")
   .row.right-aligned
     .counter

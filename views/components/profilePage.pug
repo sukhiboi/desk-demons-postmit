@@ -24,7 +24,10 @@ html(lang='en')
                 .row
                     .user-info
                         .profile-pic.profile-pic-big
-                          span.center= initials
+                            if imageUrl
+                              img(src=imageUrl)
+                            else 
+                              span.center= initials
                         .user-details
                           .name.big-name
                             a(href=`/user/${username}`)= name 

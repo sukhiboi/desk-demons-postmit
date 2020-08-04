@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS users (
 	name VARCHAR(50),
 	bio VARCHAR(160),
 	dob DATE,
-	joinedDate DATE NOT NULL
+	joinedDate DATE NOT NULL,
+	imageUrl VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS posts (

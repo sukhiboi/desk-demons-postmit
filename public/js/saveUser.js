@@ -77,7 +77,7 @@ const validateForm = async function () {
   return invalidFields.length;
 };
 
-const saveUser = async function (username) {
+const saveUser = async function (username, imageUrl) {
   const invalidFieldsCount = await validateForm();
   if (invalidFieldsCount) {
     return;
@@ -88,6 +88,7 @@ const saveUser = async function (username) {
     return { ...fieldValues, [fieldId]: fieldValue };
   }, {});
   userDetails['githubUsername'] = username;
+  userDetails['imageUrl'] = imageUrl;
   post('/save-user', userDetails)
     .then(response => response.json())
     .then(({ status }) => {
