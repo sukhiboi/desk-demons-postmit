@@ -1,51 +1,40 @@
 doctype
-html(lang='en')
-    head
-        meta(charset='UTF-8')
-        meta(name='viewport' content='width=device-width, initial-scale=1.0')
-        link(href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css' rel='stylesheet')
-        link(rel='stylesheet' href='/styles/styles.css' type='text/css')
-        link(rel='stylesheet' href='/styles/profile.css' type='text/css')
-        script(src="/js/popup.js")
-        script(src="/js/request.js")
-        script(src="/js/index.js")
-        title Postmit
-    body
-    .root
-        .menu
-            div
-                .app-name POSTMIT
-                .pages
-                    a.page(href='/home') Home
-                    a.page(href=`/user/${loggedUser}`) Profile
-                    a.page(href=`/user/bookmarks`) Bookmarks
-                    a.page(href='/logout') Logout
-                    - let postPlaceholder = "What's Happening"
-                    button.popup-post-btn(onclick=`showPopup("${postPlaceholder}", 'addNewPost')`) Post
-        .main-panel
-            .header
-                a(href=`/user/${profile.username}`)
-                    i(class="fas fa-arrow-left fa-2x back-arrow")
-                .big-profile
-                  .details
-                    .name= profile.name
-                    .name.username= `@${profile.username}`
-            -let list = followingList || []
-            if followersList
-             - list = followersList
-            .user-activity
-              .activity-bar
-                a(class=`activity-title ${followersList ? 'activeTab' : ''}`  href=followersList ? '#' : `/user/${profile.username}/followers`) Followers
-                a(class=`activity-title ${followingList ? 'activeTab' : ''}`  href=followingList ? '#' : `/user/${profile.username}/following`) Following
-            .feed
-              .posts
-                    include components/following.pug
-                    each item in list
-                        +following(item)
-        .search-panel
-            .search-bar.flex
-              .search-icon
-                i(class="fas fa-search icon")
-              .search-input(onkeyup='search()')
-               input(type='text' placeholder='Search')
-            .search-output
+head
+    meta(charset='UTF-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
+    link(rel='stylesheet' href='/css/layout.css' type='text/css')
+    link(rel='stylesheet' href='/css/menu-bar.css' type='text/css')
+    link(rel='stylesheet' href='/css/search-panel.css' type='text/css')
+    link(rel='stylesheet' href='/css/post.css' type='text/css')
+    link(rel='stylesheet' href='/css/profile.css' type='text/css')
+    link(href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css' rel='stylesheet')
+    script(src="/js/request.js")
+    script(src="/js/popup.js")
+    script(src="/js/post.js")
+    script(src="/js/search.js")
+    script(src="/js/index.js")
+    title Postmit
+body
+    include components/menubar.pug
+    .main-panel
+        .header
+            a.icon(href=`/user/${profile.username}`)
+                i(class="fas fa-arrow-left")
+            .user-info
+                .user-details
+                    .name.big-name
+                      a(href=`/user/${profile.username}`)= profile.name 
+                    .username.big-username
+                      a(href=`/user/${profile.username}`)= `@${profile.username}`
+        -let list = followingList || []
+        if followersList
+         - list = followersList
+        .categories
+            a(class=`category ${followersList ? 'active-category' : ''}`  href=followersList ? '#' : `/user/${profile.username}/followers`) Followers
+            a(class=`category ${followingList ? 'active-category' : ''}`  href=followingList ? '#' : `/user/${profile.username}/following`) Following
+        .feed
+          .posts
+                include components/following.pug
+                each item in list
+                    +following(item)
+    include components/searchPanel.pug

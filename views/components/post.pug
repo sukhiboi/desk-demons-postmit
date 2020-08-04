@@ -1,19 +1,20 @@
 mixin post(post)
-  .card(onclick=`expandPost('${post.postId}')`)
-    .post(id=`post_${post.postId}`)
-      .delete
-        if post.isDeletable
-          i(class="fas fa-trash" onclick=`showDeletePopUp(${post.postId})`)
-      .flex
+  .post(id=`post-${post.postId}` onclick=`expandPost(${post.postId})`)
+    .row
+      .user-info
         .profile-pic
-          span= post.initials
+          span.center= post.initials
         .user-details
           .name
-            a(href=`/user/${post.username}`)= post.name 
+            a.link(href=`/user/${post.username}`)= post.name 
             a(class="timestamp")= ` ・ ${post.postedAt}`
           .username
-            a(href=`/user/${post.username}`)= `@${post.username}`
-      .post-content
+            a.link(href=`/user/${post.username}`)= `@${post.username}`
+      if post.isDeletable
+        .icon(onclick=`showDeletePostPopup(${post.postId})`)
+          i.fas.fa-trash.highlight-red
+    .row
+      .content
         each line in post.message.split(/\n/)
           - let urlRegEx= /(https?:\/\/[^\s]+)/g;
           - let replacedLine= line.replace(/</g,'&lt;').replace(/>/g,'&gt;')
@@ -22,22 +23,12 @@ mixin post(post)
           - replacedLine= replacedLine.replace(urlRegEx,(url)=>`<a class="mention" href="${url}">${url}</a>`)
           != replacedLine
           br
-      .actions.flex
-        .action.like
-          - let className="far fa-heart icon ";
-          - let countClass = ""
-          if post.isLiked
-           - className="fas fa-heart icon likeColor"
-           - countClass = "likeColor"
-          i(class=className onclick=`toggleLikeUnlike(${post.postId})` id=`like_${post.postId}`) 
-          span(class=`count ${countClass}`)= post.likedUsers.length?post.likedUsers.length:''
-        .action.respond
-          - let placeholder = 'Post you Reply'
-          i(class="far fa-comment icon response-icon" onClick=`showPopup('${placeholder}', 'saveResponse',${post.postId})`)
-          span.count= post.responseCount? post.responseCount: ''
-        .action.bookmark
-          - className="far fa-bookmark icon";
-          if post.isBookmarked
-           - className="fas fa-bookmark icon bookmarkColor"
-          i(class=className onclick=`toggleBookmark(${post.postId})` id=`bookmark_${post.postId}`) 
-    i(class='fas fa-heart fa-3x instagramLike' id=`heart_${post.postId}` ondblclick=`displayHeart(${post.postId})`) 
+    .row.actions
+      .action.icon.highlight-blue(onClick=`replyToPost(${post.postId})`)
+        i.far.fa-comment
+        span(class=`count ${post.responseCount ? '' : 'hide-count'}`)= post.responseCount
+      div(class=`action icon ${post.isLiked ? 'fill-red' : 'highlight-red'}` onclick=`toggleLikeUnlike(${post.postId})`)
+        i(class=`${post.isLiked ? 'fas' : 'far'} fa-heart`)
+        span(class=`count ${post.likedUsers.length ? '' : 'hide-count'}`)= post.likedUsers.length
+      div(class=`action icon ${post.isBookmarked ? 'fill-blue' : 'highlight-blue'}` onclick=`toggleBookmark(${post.postId})`)
+        i(class=`${post.isBookmarked ? 'fas' : 'far'} fa-bookmark`)

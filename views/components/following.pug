@@ -1,14 +1,14 @@
-mixin following(following)
-  .searchedUser
-    .flex
-      div.userDetails(onclick=`sendRequestForProfile('${following.username}')`)
+mixin following(user)
+  .result
+    div
+      .user-info
         .profile-pic
-          span= following.initials
-        .user-details.follow-name
+            span.center= `${user.initials}`
+        .user-details
           .name
-            span= following.name
+            a.link(href=`/user/${user.username}`)= `${user.name}`
           .username
-            span= `@${following.username}`
-      if following.username != loggedUser
-        div.follow-btn-wrapper
-          button.follow-btn.primary-btn(onclick=`toggleFollowUnfollow('${following.username}')`)= following.isFollowingMe ? 'Unfollow' : 'Follow'
+            a.link(href=`/user/${user.username}`)= `@${user.username}`
+      .bio= user.bio
+    if user.username != loggedUser
+       button.primary-btn(onclick=`toggleFollowUnFollow('${user.username}')`)= user.isFollowingMe ? 'Unfollow' : 'Follow'

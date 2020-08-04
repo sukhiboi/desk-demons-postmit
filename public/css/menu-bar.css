@@ -1,0 +1,65 @@
+.menu-bar div {
+  width: fit-content;
+  width: -moz-fit-content;
+}
+
+.pages {
+  display: flex;
+  flex-direction: column;
+}
+
+.page {
+  text-decoration: none;
+  padding: 8px 1.2rem;
+  margin: 10px 0;
+  width: fit-content;
+  width: -moz-fit-content;
+}
+
+.page i {
+  font-size: 1.6rem;
+  color: #333;
+}
+
+.page span {
+  padding-left: 10px;
+  color: #333;
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+.page:hover {
+  background-color: rgba(22, 191, 99, 0.1);
+  border-radius: 10rem;
+  cursor: pointer;
+}
+
+.page:hover i,
+.page:hover span {
+  color: rgba(22, 191, 99, 1);
+}
+
+.active-page i,
+.active-page span {
+  color: rgba(22, 191, 99, 1);
+  font-weight: 600;
+}
+
+.app-name {
+  margin-bottom: 1rem;
+}
+
+.app-name span {
+  padding-left: 0;
+  font-weight: 700;
+  font-size: 2rem;
+  color: #333 !important;
+}
+
+.app-name span:hover {
+  color: #333 !important;
+}
+
+.app-name:hover {
+  background-color: #fff !important;
+}

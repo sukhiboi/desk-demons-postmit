@@ -10,7 +10,13 @@ describe('#App', () => {
     { postId: 2, message: 'hi', postedAt: new Date(), userId },
   ];
 
-  const userDetails = { name: 'john samuel', username: 'john', userId };
+  const userDetails = {
+    name: 'john samuel',
+    username: 'john',
+    userId,
+    dob: '2020-08-03',
+    joinedDate: '2020-08-03',
+  };
 
   const createDummyPosts = function () {
     return [
@@ -76,17 +82,15 @@ describe('#App', () => {
       });
       const expected = [
         {
+          ...userDetails,
           initials: 'JS',
           isDeletable: true,
           isLiked: true,
           likedUsers: [{ userId: 1 }],
           message: 'hi',
-          name: 'john samuel',
           postId: 1,
           postedAt: 'a few seconds ago',
           isBookmarked: false,
-          userId: 1,
-          username: 'john',
           mentions: [],
           hashtags: ['html'],
           responseCount: 1,
@@ -405,36 +409,32 @@ describe('#App', () => {
       const expected = {
         likedPosts: [
           {
+            ...userDetails,
             initials: 'JS',
             isDeletable: true,
             isLiked: true,
             likedUsers: [{ userId: 1 }],
             responseCount: 1,
             message: 'hi',
-            name: 'john samuel',
             postId: 1,
             postedAt: 'a few seconds ago',
             isBookmarked: false,
-            userId: 1,
-            username: 'john',
             hashtags: ['html'],
             mentions: [],
           },
         ],
         posts: [
           {
+            ...userDetails,
             initials: 'JS',
             isDeletable: true,
             responseCount: 1,
             isLiked: true,
             likedUsers: [{ userId: 1 }],
             message: 'hi',
-            name: 'john samuel',
             postId: 1,
             postedAt: 'a few seconds ago',
             isBookmarked: false,
-            userId: 1,
-            username: 'john',
             hashtags: ['html'],
             mentions: [],
           },
@@ -502,9 +502,11 @@ describe('#App', () => {
         isFollowing: false,
         likedPosts: [],
         loggedUser: 'john',
-        name: 'john samuel',
         dob: 'Aug 3, 2020',
         joinedDate: 'Aug 3, 2020',
+        name: 'john samuel',
+        username: 'john',
+        userId,
         posts: [
           {
             responseCount: 1,
@@ -513,18 +515,18 @@ describe('#App', () => {
             isLiked: true,
             likedUsers: [{ userId: 1 }],
             message: 'hi',
-            name: 'john samuel',
             postId: 1,
             postedAt: 'a few seconds ago',
             isBookmarked: false,
-            userId: 1,
-            username: 'john',
             hashtags: ['html'],
             mentions: [],
+            name: 'john samuel',
+            username: 'john',
+            userId,
+            dob: '2020-08-03',
+            joinedDate: '2020-08-03',
           },
         ],
-        userId: 1,
-        username: 'john',
       };
       const username = userDetails.username;
       assert.deepStrictEqual(actual, expected);

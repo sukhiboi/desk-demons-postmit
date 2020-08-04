@@ -2,38 +2,24 @@ doctype html
 head
   meta(charset='UTF-8')
   meta(name='viewport' content='width=device-width, initial-scale=1.0')
-  link(rel='stylesheet' href='/styles/styles.css' type='text/css')
-  link(rel='stylesheet' href='/styles/deletePopUp.css' type='text/css')
+  link(rel='stylesheet' href='/css/layout.css' type='text/css')
+  link(rel='stylesheet' href='/css/menu-bar.css' type='text/css')
+  link(rel='stylesheet' href='/css/search-panel.css' type='text/css')
+  link(rel='stylesheet' href='/css/post.css' type='text/css')
   link(href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css' rel='stylesheet')
-  script(src="/js/popup.js")
   script(src="/js/request.js")
-  script(src="/js/index.js")
+  script(src="/js/popup.js")
+  script(src="/js/post.js")
+  script(src="/js/search.js")
   title Postmit
-body(onload="initializeHomePostInput()")
-  .menu
-    div
-      .app-name POSTMIT
-      .pages
-        a.page.active-page(href='#') Home
-        a.page(href=`/user/${loggedUser}`) Profile
-        a.page(href=`/user/bookmarks`) Bookmarks
-        a.page(href='/logout') Logout
-        - let postPlaceholder = "What's Happening"
-        button.popup-post-btn(onclick=`showPopup("${postPlaceholder}", 'addNewPost')`) Post
-  .root
-    .main-panel
-      .header
-        span Home
-      .feed
-        include components/newPost.pug
-        .posts#posts
-          include components/post.pug
-          each item in posts 
-            +post(item)
-    .search-panel
-      .search-bar.flex
-        .search-icon
-          i(class="fas fa-search icon")
-        .search-input(onkeyup='search()')
-         input(type='text' placeholder='Search')
-      .search-output
+body(onload="setupCharCounter('char-count', 'message', 'post-btn')")
+  include components/menubar.pug
+  .main-panel
+    .header
+      span Home
+    include components/newPost.pug
+    .feed
+      include components/post.pug
+      each item in posts 
+        +post(item)
+  include components/searchPanel.pug

@@ -1,9 +1,9 @@
-.create-new-post
-    .flex
-      .profile-pic
-        span= initials
-      .content
-        textarea#newPostMessage(placeholder="What's happening?" rows=3)
-    div.flex.action-bar
-      span.message-character-count#character-count 180
-      button.primary-btn#post-btn(onclick='addNewPost(\'newPostMessage\')') Post
+.post.create-post
+  .row
+    .profile-pic
+      span.center= initials
+    .content#message( contenteditable data-placeholder="What's Happening?")
+  .row.right-aligned
+    .counter
+      span#char-count 180
+    button.primary-btn.disable-primary-btn#post-btn(onclick='postMessage()') Post

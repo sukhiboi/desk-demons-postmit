@@ -2,27 +2,27 @@ doctype html
 head
   meta(charset='UTF-8')
   meta(name='viewport' content='width=device-width, initial-scale=1.0')
-  link(rel='stylesheet' href='/styles/styles.css')
-  link(rel='stylesheet' href='/styles/home.css')
-  link(rel='stylesheet' href='/styles/deletePopUp.css' type='text/css')
-  script(src="/js/request.js")
-  script(src="/js/saveUser.js")
+  link(rel='stylesheet' href='/css/layout.css')
+  link(rel='stylesheet' href='/css/post.css')
+  script(src="js/request.js")
+  script(src="js/saveUser.js")
   title More Details
-.app-name.simple-message POSTMIT
-.description Update your profile Details
-.form
-  p#errorMessage.disable-visibility ' '
-  .field
-    label(for="username") Username
-    input#username.input-bar(type='text')
-  .field
-    label(for="name") Name
-    input#name.input-bar(type='text')
-  .field
-    label(for="dob") Date Of Birth
-    input#dob.input-bar(type='date' placeholder='Date of Birth')
-  .field
-    label(for="bio") Bio
-    textarea#bio.input-bar.bio(cols='30' rows='4')
-  .simple-action
-    .primary-btn#continue(onclick=`saveUser('${username}')`) Continue
+body.index
+  .center.form
+    .app-name POSTMIT
+    .description Update your profile Details
+    .row.fields
+      p#errorMessage.disable-visibility= 'no error'
+      fieldset.field
+        legend.placeholder(for="username") Username
+        input#username.input-bar(type='text')
+      fieldset.field
+        legend.placeholder(for="name") Name
+        input#name.input-bar(type='text')
+      fieldset.field
+        legend.placeholder(for="dob") Date Of Birth
+        input#dob.input-bar(type='date' placeholder='Date of Birth')
+      fieldset.field
+        legend.placeholder(for="bio") Bio
+        textarea#bio.input-bar(rows='4')
+    button.primary-btn#continue(onclick=`saveUser('${username}')`) Continue

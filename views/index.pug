@@ -2,14 +2,15 @@ doctype html
 head
   meta(charset='UTF-8')
   meta(name='viewport' content='width=device-width, initial-scale=1.0')
-  link(rel='stylesheet' href='/styles/styles.css')
-  link(rel='stylesheet' href='/styles/home.css')
+  link(rel='stylesheet' href='/css/layout.css')
+  link(rel='stylesheet' href='/css/post.css')
   title Postmit
-.app-name POSTMIT
-.description
-  | Postmit is a Microblogging site, which makes it easier to communicate with
-  | audiences quickly rather than writing pages of text, it allows for quick
-  | and conversational connections with other people.
-  a.action(href="/auth")
-    .primary-btn 
-      span Get Started
+body.index
+  .center.form
+    .app-name POSTMIT
+    .description Postmit is a Microblogging site, which makes it easier to communicate with audiences quickly rather than writing pages of text, it allows for quick and conversational connections with other peoples.
+    .row.action-btn
+      a(href='/home')
+        button.primary-btn.auth-btn Login
+      a(href='/auth')
+        button.primary-btn.auth-btn Signup
