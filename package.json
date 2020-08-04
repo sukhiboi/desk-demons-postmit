@@ -8,7 +8,8 @@
     "start": "node server.js 8000",
     "test": "export NODE_ENV='test' && nyc mocha",
     "lint": "eslint --ignore-pattern 'node_modules/' . --ext .js",
-    "setup": "./bin/setup.sh"
+    "setup": "./bin/setup.sh",
+    "ci": "npm test && npm run lint"
   },
   "repository": {
     "type": "git",
