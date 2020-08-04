@@ -12,12 +12,18 @@ const setupCharCounter = function (counterId, messageId, postBtnId) {
   const postBtn = document.getElementById(postBtnId);
   const disablePrimaryBtnClass = 'disable-primary-btn';
   const charLimit = { min: 0, max: 180 };
+  const warningLimit = 10;
   contentBox.addEventListener('input', () => {
     const messageLength = document.getElementById(messageId).innerText.length;
-    counter.innerText = charLimit.max - messageLength;
+    const remainingChars = charLimit.max - messageLength;
+    counter.innerText = remainingChars;
     postBtn.classList.add(disablePrimaryBtnClass);
+    counter.closest('.counter').classList.remove('fill-red');
     if (isInRange(charLimit, messageLength)) {
       postBtn.classList.remove(disablePrimaryBtnClass);
+    }
+    if (remainingChars <= warningLimit) {
+      counter.closest('.counter').classList.add('fill-red');
     }
   });
 };
