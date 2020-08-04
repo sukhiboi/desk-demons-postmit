@@ -5,12 +5,13 @@
     a(class=`page ${activePage === 'home' && 'active-page'}` href=`${activePage === 'home' ? '#' : '/home'}`)
       i.fas.fa-home
       span Home
-    a(class=`page ${activePage === 'profile' && 'active-page'}` href=`${activePage === 'profile' ? '#' : `/user/${loggedUser}`}`)
-      i.far.fa-user
-      span Profile
     a(class=`page ${activePage === 'bookmarks' && 'active-page'}` href=`${activePage === 'bookmarks' ? '#' : '/user/bookmarks'}`)
       i.far.fa-bookmark
       span Bookmarks
+    a(class=`page ${activePage === 'profile' && 'active-page'}` href=`${activePage === 'profile' ? '#' : `/user/${loggedUser}`}`)
+      i.far.fa-user
+      span Profile
     a.page(href='/logout')
       i.fas.fa-sign-out-alt
       span Logout
+    button.primary-btn.full-width-btn(onclick='showPostPopup()') Post

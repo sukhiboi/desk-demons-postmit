@@ -28,8 +28,8 @@ const setupCharCounter = function (counterId, messageId, postBtnId) {
   });
 };
 
-const postMessage = function () {
-  const message = document.getElementById('message').innerText;
+const postMessage = function (textareaId = 'message') {
+  const message = document.getElementById(textareaId).innerText;
   post('/add-new-post', { message })
     .then(response => response.json())
     .then(reloadOnStatus);
@@ -115,6 +115,37 @@ const replyToPost = function (postId) {
   element.innerHTML = replyPopupHtml;
   displayPopup(element);
   setupCharCounter('popupCharCount', 'replyMessage', 'popupReplyBtn');
+};
+
+const showPostPopup = function () {
+  event.stopPropagation();
+  const postPopupHtml = `
+  <div class="post popup-create-post">
+  <div class="row">
+    <div
+      class="content"
+      id="popupPostMessage"
+      contenteditable=""
+      data-placeholder="What's Happening?"
+    ></div>
+    </div>
+      <div class="row right-aligned">
+    <div class="counter"><span id="popupCharCount">180</span></div>
+    <button
+      class="primary-btn disable-primary-btn"
+      id="popupPostBtn"
+      onclick="postMessage('popupPostMessage')"
+    >
+      Post
+    </button>
+  </div>
+  </div>
+  `;
+  const element = document.createElement('div');
+  element.classList.add('center');
+  element.innerHTML = postPopupHtml;
+  displayPopup(element);
+  setupCharCounter('popupCharCount', 'popupPostMessage', 'popupPostBtn');
 };
 
 const expandPost = function (postId) {
