@@ -73,7 +73,7 @@ body {
   align-self: center;
 }
 
-.full-width-btn{
+.full-width-btn {
   width: 100%;
   margin-top: 1rem;
 }
@@ -134,27 +134,30 @@ body {
 }
 
 .field {
-  padding: 0;
+  position: relative;
   box-sizing: border-box;
-  border-radius: 5px;
-  overflow: hidden;
-  margin-bottom: 10px;
+  margin-bottom: 1.4rem;
 }
 
 .placeholder {
+  position: absolute;
   margin-left: 10px;
-  font-size: 14px;
+  font-size: 13px;
+  background-color: #fff;
+  top: -10px;
+  padding: 0 4px;
 }
 
 .input-bar {
+  border-radius: 5px;
+  border: 1px solid #333;
   width: -webkit-fill-available;
-  border: none;
   outline: none;
-  padding: 5px 13px;
+  padding: 10px 13px;
   font-size: 1.1rem;
   font-family: 'Source Sans Pro', sans-serif;
-  font-weight: 600;
-  border-bottom: 2px solid #000000;
+  resize: none;
+  margin: 0;
 }
 
 .disable-visibility {
@@ -170,10 +173,10 @@ body {
 }
 
 .highlight {
-  border-bottom: 2px solid #e0245e;
+  border: 1px solid #e0245e;
 }
 
 #errorMessage {
-  margin: 0;
+  margin: 0 0 1rem;
   text-align: center;
 }

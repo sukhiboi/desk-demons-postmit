@@ -13,16 +13,16 @@ body.index
     .description Update your profile Details
     .row.fields
       p#errorMessage.disable-visibility= 'no error'
-      fieldset.field
-        legend.placeholder(for="username") Username
+      .field
+        span.placeholder(for="username") Username
         input#username.input-bar(type='text')
-      fieldset.field
-        legend.placeholder(for="name") Name
+      .field
+        span.placeholder(for="name") Name
         input#name.input-bar(type='text')
-      fieldset.field
-        legend.placeholder(for="dob") Date Of Birth
+      .field
+        span.placeholder(for="dob") Date of Birth
         input#dob.input-bar(type='date' placeholder='Date of Birth')
-      fieldset.field
-        legend.placeholder(for="bio") Bio
+      .field
+        span.placeholder(for="bio") Bio
         textarea#bio.input-bar(rows='4')
     button.primary-btn#continue(onclick=`saveUser('${username}')`) Continue
