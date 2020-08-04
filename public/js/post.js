@@ -92,7 +92,7 @@ const replyToPost = function (postId) {
   </div>
   <div class="row">
     <div
-      class="content"
+      class="content big-content"
       id="replyMessage"
       contenteditable=""
       data-placeholder="Post your Reply"
@@ -117,13 +117,18 @@ const replyToPost = function (postId) {
   setupCharCounter('popupCharCount', 'replyMessage', 'popupReplyBtn');
 };
 
-const showPostPopup = function () {
+const showPostPopup = function (initials, imageUrl) {
+  let profilePic = `<span class="center">${initials}</span>`;
+  if (imageUrl) {
+    profilePic = `<img src="${imageUrl}">`;
+  }
   event.stopPropagation();
   const postPopupHtml = `
   <div class="post popup-create-post">
   <div class="row">
+  <div class="profile-pic">${profilePic} </div>
     <div
-      class="content"
+      class="content big-content"
       id="popupPostMessage"
       contenteditable=""
       data-placeholder="What's Happening?"

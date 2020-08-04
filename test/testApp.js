@@ -16,6 +16,7 @@ describe('#App', () => {
     userId,
     dob: '2020-08-03',
     joinedDate: '2020-08-03',
+    imageUrl: 'url',
   };
 
   const createDummyPosts = function () {
@@ -25,6 +26,7 @@ describe('#App', () => {
         userId,
         postedAt: new Date().toISOString(),
         message: 'hi',
+        imageUrl: 'url',
       },
     ];
   };
@@ -34,6 +36,7 @@ describe('#App', () => {
     app.userId = userId;
     app.username = userDetails.username;
     app.fullName = userDetails.name;
+    app.imageUrl = 'url';
     return app;
   };
 
@@ -499,6 +502,7 @@ describe('#App', () => {
         followers: [],
         following: [],
         initials: 'JS',
+        imageUrl: 'url',
         isFollowing: false,
         likedPosts: [],
         loggedUser: 'john',
@@ -506,9 +510,11 @@ describe('#App', () => {
         joinedDate: 'Aug 3, 2020',
         name: 'john samuel',
         username: 'john',
+        profileUrl: 'url',
         userId,
         posts: [
           {
+            imageUrl: 'url',
             responseCount: 1,
             initials: 'JS',
             isDeletable: true,
@@ -591,6 +597,7 @@ describe('#App', () => {
           username: 'john',
           dob: 'Aug 3, 2020',
           joinedDate: 'Aug 3, 2020',
+          imageUrl: 'url',
         },
       ];
       assert.deepStrictEqual(actual, expected);
@@ -635,10 +642,14 @@ describe('#App', () => {
             username: 'john',
             dob: 'Aug 3, 2020',
             joinedDate: 'Aug 3, 2020',
+            imageUrl: 'url',
           },
         ],
+        imageUrl: 'url',
+        initials: 'JS',
         loggedUser: 'john',
         profile: {
+          imageUrl: 'url',
           initials: 'JS',
           isFollowingMe: false,
           name: 'john samuel',
@@ -686,12 +697,16 @@ describe('#App', () => {
             userId: 1,
             username: 'john',
             dob: 'Aug 3, 2020',
+            imageUrl: 'url',
             joinedDate: 'Aug 3, 2020',
           },
         ],
         loggedUser: 'john',
+        imageUrl: 'url',
+        initials: 'JS',
         profile: {
           initials: 'JS',
+          imageUrl: 'url',
           isFollowingMe: true,
           name: 'john samuel',
           userId: 1,
@@ -767,12 +782,15 @@ describe('#App', () => {
         getBookmarks: getBookmarksStub,
       });
       const expected = {
+        imageUrl: 'url',
+        initials: 'JS',
         loggedUser: 'john',
         post: {
           hashtags: ['html'],
           initials: 'JS',
           isBookmarked: false,
           isDeletable: true,
+          imageUrl: 'url',
           isFollowingMe: true,
           isLiked: false,
           likedUsers: [],
@@ -792,6 +810,7 @@ describe('#App', () => {
             hashtags: ['html'],
             initials: 'JS',
             isBookmarked: false,
+            imageUrl: 'url',
             isDeletable: true,
             isFollowingMe: true,
             isLiked: false,
@@ -842,7 +861,14 @@ describe('#App', () => {
       });
       const actual = await app.getPostLikers(postId);
       const expected = {
-        list: [{ ...userDetails, isFollowingMe: false }],
+        list: [
+          {
+            ...userDetails,
+            isFollowingMe: false,
+          },
+        ],
+        imageUrl: 'url',
+        initials: 'JS',
         loggedUser: userDetails.username,
         postId,
       };
@@ -928,10 +954,13 @@ describe('#App', () => {
             hashtags: ['html'],
             dob: 'Aug 3, 2020',
             joinedDate: 'Aug 3, 2020',
+            imageUrl: 'url',
           },
         ],
         loggedUser: userDetails.username,
         hashtag: 'html',
+        imageUrl: 'url',
+        initials: 'JS',
       };
       const actual = await app.getHashtagRelatedPosts('html');
       assert.deepStrictEqual(actual, expected);
@@ -958,8 +987,11 @@ describe('#App', () => {
       });
       const expected = {
         loggedUser: 'john',
+        imageUrl: 'url',
+        initials: 'JS',
         posts: [
           {
+            imageUrl: 'url',
             hashtags: ['html'],
             initials: 'JS',
             isDeletable: true,
@@ -995,7 +1027,12 @@ describe('#App', () => {
         getAllPostLikers: getAllPostLikersStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
       });
-      const expected = { posts: [], loggedUser: 'john' };
+      const expected = {
+        posts: [],
+        loggedUser: 'john',
+        imageUrl: 'url',
+        initials: 'JS',
+      };
       assert.deepStrictEqual(await app.getBookmarks(), expected);
       sinon.assert.calledOnce(getBookmarksStub);
     });

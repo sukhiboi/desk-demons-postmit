@@ -43,6 +43,10 @@
   padding-top: 6px;
 }
 
+.big-content {
+  height: 20vh;
+}
+
 .content:empty:before {
   content: attr(data-placeholder);
   color: rgb(145, 151, 163);
