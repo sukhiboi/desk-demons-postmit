@@ -69,6 +69,49 @@ describe('#App', () => {
     });
   });
 
+  describe('updatePostActions()', () => {
+    it('should give all the post related actions of the given post', async () => {
+      const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
+      const getAllResponsesStub = sinon.stub().resolves(responses);
+      const getBookmarksStub = sinon.stub().resolves([postId]);
+      const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
+      const app = createApp({
+        getHashtagsByPostId: getHashtagsByPostIdStub,
+        getAllPostLikers: getAllPostLikersStub,
+        getAllResponses: getAllResponsesStub,
+        getBookmarks: getBookmarksStub,
+      });
+      const expected = {
+        isBookmarked: false,
+        isDeletable: false,
+        isLiked: true,
+        likedUsers: [
+          {
+            userId: 1,
+          },
+        ],
+        postId: 1,
+        responseCount: 1,
+      };
+      const actual = await app.updatePostActions(userId, { postId });
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
+    });
+
+    it('should handle all the errors', async () => {
+      const getAllPostLikersStub = sinon.stub().rejects(expectedTableError);
+      const app = createApp({
+        getAllPostLikers: getAllPostLikersStub,
+      });
+      try {
+        await app.updatePostActions(userId, { postId });
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
+      }
+    });
+  });
+
   describe('updatePost()', () => {
     it('should update the given posts with required details', async () => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
