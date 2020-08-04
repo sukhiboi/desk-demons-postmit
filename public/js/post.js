@@ -75,8 +75,15 @@ const sendReply = function (postId) {
 };
 
 const replyToPost = function (postId) {
+  event.stopPropagation();
+  const [userInfo, message] = document.querySelectorAll(`#post-${postId} .row`);
   const replyPopupHtml = `
   <div class="post popup-create-post">
+  ${userInfo.outerHTML}
+  ${message.outerHTML}
+  <div class="row replying-to">
+    Replying to ${userInfo.querySelector('.username').outerHTML}
+  </div>
   <div class="row">
     <div
       class="content"

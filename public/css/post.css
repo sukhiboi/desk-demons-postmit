@@ -177,3 +177,12 @@
   width: 40vw;
   border-radius: 8px;
 }
+
+.popup-create-post .icon {
+  display: none;
+}
+
+.replying-to {
+  padding-left: 10px;
+  padding-bottom: 2rem;
+}
