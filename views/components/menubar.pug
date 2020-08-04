@@ -11,3 +11,6 @@
     a(class=`page ${activePage === 'bookmarks' && 'active-page'}` href=`${activePage === 'bookmarks' ? '#' : '/user/bookmarks'}`)
       i.far.fa-bookmark
       span Bookmarks
+    a.page(href='/logout')
+      i.fas.fa-sign-out-alt
+      span Logout

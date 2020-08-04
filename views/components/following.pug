@@ -1,12 +1,14 @@
 mixin following(user)
   .result
-    .user-info
-      .profile-pic
-          span.center= `${user.initials}`
-      .user-details
-        .name
-          a.link(href=`/user/${user.username}`)= `${user.name}`
-        .username
-          a.link(href=`/user/${user.username}`)= `@${user.username}`
+    div
+      .user-info
+        .profile-pic
+            span.center= `${user.initials}`
+        .user-details
+          .name
+            a.link(href=`/user/${user.username}`)= `${user.name}`
+          .username
+            a.link(href=`/user/${user.username}`)= `@${user.username}`
+      .bio= user.bio
     if user.username != loggedUser
        button.primary-btn(onclick=`toggleFollowUnFollow('${user.username}')`)= user.isFollowingMe ? 'Unfollow' : 'Follow'

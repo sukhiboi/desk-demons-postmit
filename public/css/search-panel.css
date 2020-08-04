@@ -38,7 +38,7 @@
   overflow-y: scroll;
 }
 
-.result > div {
+.result > div, .result .bio {
   padding: 10px;
 }
 
