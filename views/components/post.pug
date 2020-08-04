@@ -16,6 +16,9 @@ mixin post(post)
       if post.isDeletable
         .icon(onclick=`showDeletePostPopup(${post.postId})`)
           i.fas.fa-trash.highlight-red
+    if post.replyingTo&&post.replyingTo!=post.username
+      .row
+        .username!= `Replying to <a class="link" href="/user/${post.replyingTo}">@${post.replyingTo}</a>`
     .row
       .content
         each line in post.message.split(/\n/)

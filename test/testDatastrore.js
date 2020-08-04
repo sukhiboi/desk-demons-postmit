@@ -237,7 +237,7 @@ describe('#Datastore', () => {
       sinon.assert.calledOnce(runStub);
     });
 
-    it("should give error when follower table doesn't exists", async () => {
+    it('should give error when follower table doesn\'t exists', async () => {
       const errorToBeThrown = new Error('users table not found');
       const runStub = sinon.stub().yields(errorToBeThrown);
       const client = new Datastore({ run: runStub });
@@ -259,7 +259,7 @@ describe('#Datastore', () => {
       sinon.assert.calledOnce(runStub);
     });
 
-    it("should reject error when follower table doesn't exists", async () => {
+    it('should reject error when follower table doesn\'t exists', async () => {
       const errorToBeThrown = new Error('users table not found');
       const runStub = sinon.stub().yields(errorToBeThrown);
       const client = new Datastore({ run: runStub });
@@ -546,7 +546,7 @@ describe('#Datastore', () => {
       sinon.assert.calledOnce(allStub);
     });
 
-    it("should give error when hashtags table doesn't exists", async () => {
+    it('should give error when hashtags table doesn\'t exists', async () => {
       const allStub = sinon.stub().yields(expectedTableError, null);
       const client = new Datastore({ all: allStub });
       try {
@@ -580,23 +580,47 @@ describe('#Datastore', () => {
     });
   });
 
-  describe('addResponse()', () => {});
-  const responseId = 2;
-  it('should add response into responses table', async () => {
-    const runStub = sinon.stub().yields(null);
-    const client = new Datastore({ run: runStub });
-    assert.isUndefined(await client.addResponse(postId, responseId));
-    sinon.assert.calledOnce(runStub);
+  describe('addResponse()', () => {
+    const responseId = 2;
+    it('should add response into responses table', async () => {
+      const runStub = sinon.stub().yields(null);
+      const client = new Datastore({ run: runStub });
+      assert.isUndefined(await client.addResponse(postId, responseId));
+      sinon.assert.calledOnce(runStub);
+    });
+
+    it('should give error when responses table not found', async () => {
+      const runStub = sinon.stub().yields(expectedTableError);
+      const client = new Datastore({ run: runStub });
+      try {
+        await client.addResponse(postId, responseId);
+      } catch (err) {
+        assert.strictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(runStub);
+      }
+    });
   });
 
-  it('should give error when responses table not found', async () => {
-    const runStub = sinon.stub().yields(expectedTableError);
-    const client = new Datastore({ run: runStub });
-    try {
-      await client.addResponse(postId, responseId);
-    } catch (err) {
-      assert.strictEqual(err, expectedTableError);
-      sinon.assert.calledOnce(runStub);
-    }
+  describe('getReplyinhTo()', () => {
+    it('should give me the username if the given postId is a reply', async () => {
+      const expected = { username: 'ram' };
+      const getStub = sinon.stub().yields(null, expected);
+      const client = new Datastore({ get: getStub });
+      assert.deepStrictEqual(await client.getReplyingTo(postId), expected);
+    });
+    it('should not give me the username if the given postId is not a reply', async () => {
+      const getStub = sinon.stub().yields(null);
+      const client = new Datastore({ get: getStub });
+      assert.isUndefined(await client.getReplyingTo(postId));
+    });
+    it('should reject any error', async () => {
+      const getStub = sinon.stub().yields(expectedTableError);
+      const client = new Datastore({ get: getStub });
+      try {
+        await client.getReplyingTo(postId);
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+      }
+    });
   });
 });
