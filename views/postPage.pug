@@ -19,6 +19,10 @@ body
       span Post
     .feed
       .post(id=`post-${post.postId}`  onclick=`expandPost(${post.postId})`)
+        if post.repostedBy
+         - let name = post.repostedBy===loggedUser ? 'me' : post.repostedBy;
+         .row
+           .username!= `Reposted by <a class="link" href="/user/${name}">@${name}</a>`
         .row
           .user-info
             .profile-pic
