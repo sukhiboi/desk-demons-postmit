@@ -63,3 +63,29 @@
 .app-name:hover {
   background-color: #fff !important;
 }
+
+.profile-box {
+  width: 100%;
+  padding: 10px;
+  border-radius: 1rem;
+  display: flex;
+  background-color: rgba(195, 195, 195, 0.2);
+}
+
+.profile-box .profile-pic {
+  margin: 0 !important;
+}
+
+.profile-box a {
+  font-size: 1.2rem;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-decoration: none;
+  padding-left: 10px;
+}
+
+.logout-profile-pic {
+  width: 3rem !important;
+}

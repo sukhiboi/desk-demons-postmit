@@ -40,6 +40,7 @@ describe('#App', () => {
     app.username = userDetails.username;
     app.fullName = userDetails.name;
     app.imageUrl = 'url';
+    app.initials = 'JS';
     return app;
   };
 
@@ -202,6 +203,7 @@ describe('#App', () => {
         imageUrl: 'url',
         initials: 'JS',
         loggedUser: 'john',
+        fullName: userDetails.name,
         posts: [
           {
             repostCount: 0,
@@ -643,6 +645,7 @@ describe('#App', () => {
         isFollowing: false,
         likedPosts: [],
         loggedUser: 'john',
+        fullName: userDetails.name,
         dob: '2020-08-03',
         joinedDate: '2020-08-03',
         name: 'john samuel',
@@ -788,6 +791,7 @@ describe('#App', () => {
         imageUrl: 'url',
         initials: 'JS',
         loggedUser: 'john',
+        fullName: userDetails.name,
         profile: {
           imageUrl: 'url',
           initials: 'JS',
@@ -844,6 +848,7 @@ describe('#App', () => {
         loggedUser: 'john',
         imageUrl: 'url',
         initials: 'JS',
+        fullName: userDetails.name,
         profile: {
           initials: 'JS',
           imageUrl: 'url',
@@ -929,6 +934,7 @@ describe('#App', () => {
         imageUrl: 'url',
         initials: 'JS',
         loggedUser: 'john',
+        fullName: userDetails.name,
         post: {
           repostCount: 0,
           hashtags: ['html'],
@@ -1018,6 +1024,7 @@ describe('#App', () => {
         imageUrl: 'url',
         initials: 'JS',
         loggedUser: userDetails.username,
+        fullName: userDetails.name,
         postId,
       };
       assert.deepStrictEqual(actual, expected);
@@ -1115,6 +1122,7 @@ describe('#App', () => {
         hashtag: 'html',
         imageUrl: 'url',
         initials: 'JS',
+        fullName: userDetails.name,
       };
       const actual = await app.getHashtagRelatedPosts('html');
       assert.deepStrictEqual(actual, expected);
@@ -1147,6 +1155,7 @@ describe('#App', () => {
         loggedUser: 'john',
         imageUrl: 'url',
         initials: 'JS',
+        fullName: userDetails.name,
         posts: [
           {
             repostCount: 0,
@@ -1192,6 +1201,7 @@ describe('#App', () => {
         loggedUser: 'john',
         imageUrl: 'url',
         initials: 'JS',
+        fullName: userDetails.name,
       };
       assert.deepStrictEqual(await app.getBookmarks(), expected);
       sinon.assert.calledOnce(getBookmarksStub);
@@ -1536,6 +1546,7 @@ describe('#App', () => {
         initials: 'JS',
         loggedUser: userDetails.username,
         postId,
+        fullName: userDetails.name,
       };
       assert.deepStrictEqual(actual, expected);
       sinon.assert.calledOnceWithExactly(getFollowersStub, userId);

@@ -35,6 +35,10 @@ body {
   display: flex;
 }
 
+.header .user-details {
+  padding-left: 10px;
+}
+
 .header span {
   padding-left: 10px;
 }
@@ -47,6 +51,8 @@ body {
   margin-top: 5vh;
   align-items: center;
   color: #333;
+  height: 90vh;
+  justify-content: space-between;
 }
 
 .search-panel {

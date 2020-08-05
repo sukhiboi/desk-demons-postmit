@@ -11,7 +11,5 @@
     a(class=`page ${activePage === 'profile' && 'active-page'}` href=`${activePage === 'profile' ? '#' : `/user/${loggedUser}`}`)
       i.far.fa-user
       span Profile
-    a.page(href='/logout')
-      i.fas.fa-sign-out-alt
-      span Logout
     button.primary-btn.full-width-btn(onclick=`showPostPopup('${initials}','${imageUrl}')`) Post
+  include logout.pug

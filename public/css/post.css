@@ -34,7 +34,7 @@
   width: 3rem;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 50%;
-  margin-right: 4px;
+  margin-right: 10px;
   overflow: hidden;
 }
 
@@ -95,7 +95,6 @@
 }
 
 .user-details {
-  margin-left: 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;

@@ -1,0 +1,14 @@
+.profile-box
+    .user-info
+        .profile-pic.logout-profile-pic
+          if imageUrl
+            img(src=imageUrl)
+          else 
+            span.center= initials
+        .user-details
+          .name
+            a.link(href=`/user/${loggedUser}`)= fullName 
+          .username
+            a.link(href=`/user/${loggedUser}`)= `@${loggedUser}`
+    a(href='/logout')
+      i.fas.fa-sign-out-alt
