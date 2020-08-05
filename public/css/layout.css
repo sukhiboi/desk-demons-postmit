@@ -14,8 +14,8 @@ body {
   transform: translate(-50%, -50%);
 }
 
-.index {
-  background-color: rgba(22, 191, 99, 1);
+.index-page-background {
+  background-color: rgba(22, 191, 99, 0.6);
 }
 
 .main-panel {

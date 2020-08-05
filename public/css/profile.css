@@ -23,6 +23,7 @@
 
 .bio {
   font-size: 1.1rem !important;
+  padding-left: 6px !important;
 }
 
 .small-detail {
@@ -36,8 +37,9 @@
   font-size: 1.1rem;
 }
 
-.small-detail span {
-  padding-left: 10px;
+.small-detail span,
+.small-detail .icon {
+  padding-left: 4px;
   font-size: 1.1rem;
 }
 

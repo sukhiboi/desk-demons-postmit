@@ -4,8 +4,11 @@ mixin post(post)
      - let name = post.repostedBy===loggedUser ? 'You' : post.repostedBy;
      - let username = post.repostedBy===loggedUser ? loggedUser : post.repostedBy
      .row
+       .small-icon
+         a.link(href=`/user/${username}`) 
+          i.fas.fa-retweet.icon
        .username!= `<a class="link" href="/user/${username}">${name} Reposted</a>`
-    .row
+    .row.user-row
       .user-info
         .profile-pic
           if post.imageUrl
@@ -41,7 +44,7 @@ mixin post(post)
       div(class=`action icon ${post.isLiked ? 'fill-red' : 'highlight-red'}` onclick=`toggleLikeUnlike(${post.postId})`)
         i(class=`${post.isLiked ? 'fas' : 'far'} fa-heart`)
         span(class=`count ${post.likedUsers.length ? '' : 'hide-count'}`)= post.likedUsers.length
-      div(class=`action icon highlight-blue ${post.isReposted ? 'fill-blue' : 'highlight-blue'}` onclick=`toggleRepost(${post.postId})`)
+      div(class=`action icon highlight-green ${post.isReposted ? 'fill-green' : 'highlight-green'}` onclick=`toggleRepost(${post.postId})`)
         i(class=`fas fa-retweet`)
         span(class=`count ${post.repostCount ? '' : 'hide-count'}`)= post.repostCount
       div(class=`action icon ${post.isBookmarked ? 'fill-blue' : 'highlight-blue'}` onclick=`toggleBookmark(${post.postId})`)

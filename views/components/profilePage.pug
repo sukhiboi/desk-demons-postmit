@@ -23,7 +23,7 @@ html(lang='en')
             .header
                 span Profile
             .profile
-                .row
+                .row.space-between
                     .user-info
                         .profile-pic.profile-pic-big
                             if profileUrl
@@ -41,16 +41,15 @@ html(lang='en')
                         button.primary-btn(onclick=`toggleFollowUnFollow('${username}')`)= isFollowing ? 'Unfollow' : 'Follow'
                 .row
                     .content.bio= bio
-                .row.space-between
-                    .row
-                        .small-detail
-                            .icon
-                                i.fas.fa-birthday-cake
-                            span.dob= dob
-                        .small-detail
-                            .icon
-                                i.fas.fa-calendar-alt
-                            span.joinedDate= joinedDate
+                .row
+                    .small-detail
+                        .icon
+                            i.fas.fa-birthday-cake
+                        span.dob= dob
+                    .small-detail
+                        .icon
+                            i.fas.fa-calendar-alt
+                        span.joinedDate= joinedDate
                 .row
                     .small-detail
                         a.link(href=`/user/${username}/following`)

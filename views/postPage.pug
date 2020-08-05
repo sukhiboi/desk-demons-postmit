@@ -24,7 +24,7 @@ body
          - let name = post.repostedBy===loggedUser ? 'me' : post.repostedBy;
          .row
            .username!= `Reposted by <a class="link" href="/user/${name}">@${name}</a>`
-        .row
+        .row.user-row
           .user-info
             .profile-pic
               if post.imageUrl
@@ -55,12 +55,11 @@ body
               br
         .row
           - let likeCount=post.likedUsers.length
-          a.link(href=`/post/${post.postId}/likes` class=`count ${likeCount > 0 ? '' : 'hide-count'}`) 
+          a.link(href=`/post/${post.postId}/likes` class=`detail count${likeCount > 0 ? '' : ' hide-detail'}`) 
             span= likeCount
             span= `${likeCount>1 ? ' Likes':' Like'}`
           - let repostCount=post.repostCount;
-        .row
-          a.link(href=`/post/${post.postId}/reposts` class=`count ${repostCount > 0 ? '' : 'hide-count'}`) 
+          a.link(href=`/post/${post.postId}/reposts` class=`detail count${repostCount > 0 ? '' : ' hide-detail'}`) 
             span= repostCount
             span= `${repostCount>1 ? ' Reposts':' Repost'}`
         .row.actions
@@ -68,7 +67,7 @@ body
             i.far.fa-comment
           div(class=`action icon ${post.isLiked ? 'fill-red' : 'highlight-red'}` onclick=`toggleLikeUnlike(${post.postId})`)
             i(class=`${post.isLiked ? 'fas' : 'far'} fa-heart`)
-          div(class=`action icon highlight-blue ${post.isReposted ? 'fill-blue' : 'highlight-blue'}` onclick=`toggleRepost(${post.postId})`)
+          div(class=`action icon highlight-green ${post.isReposted ? 'fill-green' : 'highlight-green'}` onclick=`toggleRepost(${post.postId})`)
             i(class=`fas fa-retweet`)
           div(class=`action icon ${post.isBookmarked ? 'fill-blue' : 'highlight-blue'}` onclick=`toggleBookmark(${post.postId})`)
             i(class=`${post.isBookmarked ? 'fas' : 'far'} fa-bookmark`)
