@@ -1357,4 +1357,42 @@ describe('#App', () => {
       }
     });
   });
+
+  describe('updateUserDetails()', () => {
+    const updateDetails = {
+      name: 'newName',
+      username: 'newUsername',
+      dob: new Date(),
+      bio: 'newBio',
+    };
+    it('should update user details', async () => {
+      const updateUserDetailsStub = sinon.stub().resolves();
+      const app = createApp({
+        updateUserDetails: updateUserDetailsStub,
+      });
+      assert.isUndefined(await app.updateUserDetails(updateDetails));
+      sinon.assert.calledOnceWithExactly(
+        updateUserDetailsStub,
+        userId,
+        updateDetails
+      );
+    });
+
+    it('should reject any error', async () => {
+      const updateUserDetailsStub = sinon.stub().rejects(expectedTableError);
+      const app = createApp({
+        updateUserDetails: updateUserDetailsStub,
+      });
+      try {
+        await app.updateUserDetails(updateDetails);
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnceWithExactly(
+          updateUserDetailsStub,
+          userId,
+          updateDetails
+        );
+      }
+    });
+  });
 });
