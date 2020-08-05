@@ -20,7 +20,7 @@ const updatePostTime = function () {
   });
 };
 
-const interval = 5000;
+const interval = 10000;
 updatePostTime();
 updateProfileDates();
 setInterval(updatePostTime, interval);

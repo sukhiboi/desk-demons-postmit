@@ -109,6 +109,26 @@ describe('#Datastore', () => {
     });
   });
 
+  describe('repost()', () => {
+    it('should add repost to reposts table', async () => {
+      const runStub = sinon.stub().yields(null);
+      const client = new Datastore({ run: runStub });
+      assert.isUndefined(await client.repost(userId, postId));
+      sinon.assert.calledOnce(runStub);
+    });
+
+    it('should give error when reposts table not found', async () => {
+      const runStub = sinon.stub().yields(expectedTableError);
+      const client = new Datastore({ run: runStub });
+      try {
+        await client.repost(userId, postId);
+      } catch (err) {
+        assert.strictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(runStub);
+      }
+    });
+  });
+
   describe('unlikePost()', () => {
     it('should remove like from likes table', async () => {
       const runStub = sinon.stub().yields(null);
@@ -122,6 +142,26 @@ describe('#Datastore', () => {
       const client = new Datastore({ run: runStub });
       try {
         await client.unlikePost(postId, userId);
+      } catch (err) {
+        assert.strictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(runStub);
+      }
+    });
+  });
+
+  describe('undoRepost()', () => {
+    it('should remove repost from reposts table', async () => {
+      const runStub = sinon.stub().yields(null);
+      const client = new Datastore({ run: runStub });
+      assert.isUndefined(await client.undoRepost(postId, userId));
+      sinon.assert.calledOnce(runStub);
+    });
+
+    it('should give error when reposts table not found', async () => {
+      const runStub = sinon.stub().yields(expectedTableError);
+      const client = new Datastore({ run: runStub });
+      try {
+        await client.undoRepost(postId, userId);
       } catch (err) {
         assert.strictEqual(err, expectedTableError);
         sinon.assert.calledOnce(runStub);

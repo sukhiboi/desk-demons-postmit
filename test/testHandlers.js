@@ -931,4 +931,28 @@ describe('#Handlers', () => {
         .expect({ status: true }, done);
     });
   });
+
+  describe('POST /update-user()', () => {
+    it('should update the user details', done => {
+      const getAllRepostsStub = sinon.stub().resolves([]);
+      const undoRepostStub = sinon.stub().resolves();
+      const repostStub = sinon.stub().resolves();
+      const updateUserDetailsStub = sinon.stub().resolves();
+      expressApp.locals.app = createApp({
+        updateUserDetails: updateUserDetailsStub,
+        getAllReposts: getAllRepostsStub,
+        undoRepost: undoRepostStub,
+        repost: repostStub,
+      });
+      request(expressApp)
+        .post('/toggleRepost')
+        .send({ postId })
+        .set('Cookie', ['userId=1'])
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledWithExactly(getAllRepostsStub, postId);
+        })
+        .expect({ status: true }, done);
+    });
+  });
 });

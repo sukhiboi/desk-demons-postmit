@@ -15,8 +15,8 @@ describe('#App', () => {
     username: 'john',
     userId,
     dob: '2020-08-03',
-    joinedDate: '2020-08-03',
     imageUrl: 'url',
+    joinedDate: '2020-08-03',
   };
 
   const reposts = [
@@ -1482,6 +1482,36 @@ describe('#App', () => {
           updateDetails
         );
       }
+    });
+  });
+
+  describe('toggleRepost()', () => {
+    it('should add the repost to reposts table when the user is not reposted that', async () => {
+      const getAllRepostsStub = sinon.stub().resolves([]);
+      const undoRepostStub = sinon.stub().resolves();
+      const repostStub = sinon.stub().resolves();
+      const app = createApp({
+        getAllReposts: getAllRepostsStub,
+        undoRepost: undoRepostStub,
+        repost: repostStub,
+      });
+      assert.isUndefined(await app.toggleRepost(postId));
+      sinon.assert.calledOnceWithExactly(getAllRepostsStub, postId);
+      sinon.assert.calledOnceWithExactly(repostStub, postId, userId);
+    });
+
+    it('should remove the repost from reposts table when the user is  reposted that', async () => {
+      const getAllRepostsStub = sinon.stub().resolves([{ userId, postId }]);
+      const undoRepostStub = sinon.stub().resolves();
+      const repostStub = sinon.stub().resolves();
+      const app = createApp({
+        getAllReposts: getAllRepostsStub,
+        undoRepost: undoRepostStub,
+        repost: repostStub,
+      });
+      assert.isUndefined(await app.toggleRepost(postId));
+      sinon.assert.calledOnceWithExactly(getAllRepostsStub, postId);
+      sinon.assert.calledOnceWithExactly(undoRepostStub, postId, userId);
     });
   });
 });
