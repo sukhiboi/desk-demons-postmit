@@ -58,14 +58,18 @@ body
           a.link(href=`/post/${post.postId}/likes` class=`count ${likeCount > 0 ? '' : 'hide-count'}`) 
             span= likeCount
             span= `${likeCount>1 ? ' Likes':' Like'}`
+          - let repostCount=post.repostCount;
+        .row
+          a.link(href=`/post/${post.postId}/reposts` class=`count ${repostCount > 0 ? '' : 'hide-count'}`) 
+            span= repostCount
+            span= `${repostCount>1 ? ' Reposts':' Repost'}`
         .row.actions
           .action.icon.highlight-blue(onClick=`replyToPost(${post.postId})`)
             i.far.fa-comment
           div(class=`action icon ${post.isLiked ? 'fill-red' : 'highlight-red'}` onclick=`toggleLikeUnlike(${post.postId})`)
             i(class=`${post.isLiked ? 'fas' : 'far'} fa-heart`)
-          div(class=`action icon highlight-blue` onclick=`toggleRepost(${post.postId})`)
-            i(class="fas fa-retweet")
-            span(class=`count ${post.repostCount ? '' : 'hide-count'}`)= post.repostCount
+          div(class=`action icon highlight-blue ${post.isReposted ? 'fill-blue' : 'highlight-blue'}` onclick=`toggleRepost(${post.postId})`)
+            i(class=`fas fa-retweet`)
           div(class=`action icon ${post.isBookmarked ? 'fill-blue' : 'highlight-blue'}` onclick=`toggleBookmark(${post.postId})`)
             i(class=`${post.isBookmarked ? 'fas' : 'far'} fa-bookmark`)
     .header

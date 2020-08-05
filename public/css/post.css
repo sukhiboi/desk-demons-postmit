@@ -22,11 +22,12 @@
 .row {
   padding-bottom: 10px;
   display: flex;
-}
-
-.row:first-child {
   justify-content: space-between;
 }
+
+/* .row:first-child {
+  justify-content: space-between;
+} */
 
 .profile-pic {
   position: relative;

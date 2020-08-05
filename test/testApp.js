@@ -91,6 +91,7 @@ describe('#App', () => {
         isBookmarked: false,
         isDeletable: false,
         isLiked: true,
+        isReposted: false,
         likedUsers: [
           {
             userId: 1,
@@ -153,6 +154,7 @@ describe('#App', () => {
           hashtags: ['html'],
           replyingTo: 'ram',
           responseCount: 1,
+          isReposted: false,
         },
       ];
       const actual = await app.updatePost(userId, createDummyPosts());
@@ -220,9 +222,11 @@ describe('#App', () => {
             postedAt: '2020-08-03',
             responseCount: 1,
             userId: 1,
+            isReposted: false,
             username: 'john',
           },
           {
+            isReposted: false,
             repostCount: 0,
             dob: '2020-08-03',
             hashtags: ['html'],
@@ -244,6 +248,7 @@ describe('#App', () => {
             username: 'john',
           },
           {
+            isReposted: false,
             dob: '2020-08-03',
             repostCount: 0,
             hashtags: ['html'],
@@ -264,6 +269,7 @@ describe('#App', () => {
             username: 'john',
           },
           {
+            isReposted: false,
             dob: '2020-08-03',
             hashtags: ['html'],
             repostCount: 0,
@@ -544,6 +550,7 @@ describe('#App', () => {
             isBookmarked: false,
             hashtags: ['html'],
             mentions: [],
+            isReposted: false,
           },
         ],
         posts: [
@@ -561,6 +568,7 @@ describe('#App', () => {
             isBookmarked: false,
             hashtags: ['html'],
             mentions: [],
+            isReposted: false,
           },
         ],
         responsePosts: [],
@@ -663,6 +671,7 @@ describe('#App', () => {
             userId,
             dob: '2020-08-03',
             joinedDate: '2020-08-03',
+            isReposted: false,
           },
         ],
       };
@@ -939,6 +948,7 @@ describe('#App', () => {
           responseCount: 1,
           userId: 1,
           username: 'john',
+          isReposted: false,
           dob: '2020-08-03',
           joinedDate: '2020-08-03',
         },
@@ -963,6 +973,7 @@ describe('#App', () => {
             username: 'john',
             dob: '2020-08-03',
             joinedDate: '2020-08-03',
+            isReposted: false,
           },
         ],
       };
@@ -1098,6 +1109,7 @@ describe('#App', () => {
             dob: '2020-08-03',
             joinedDate: '2020-08-03',
             imageUrl: 'url',
+            isReposted: false,
           },
         ],
         loggedUser: userDetails.username,
@@ -1157,6 +1169,7 @@ describe('#App', () => {
             username: 'john',
             dob: '2020-08-03',
             joinedDate: '2020-08-03',
+            isReposted: false,
           },
         ],
       };
@@ -1358,6 +1371,7 @@ describe('#App', () => {
           responseCount: 1,
           userId: 1,
           username: 'john',
+          isReposted: false,
         },
         {
           repostCount: 0,
@@ -1382,6 +1396,7 @@ describe('#App', () => {
           responseCount: 1,
           userId: 1,
           username: 'john',
+          isReposted: false,
         },
         {
           repostCount: 0,
@@ -1406,6 +1421,7 @@ describe('#App', () => {
           responseCount: 1,
           userId: 1,
           username: 'john',
+          isReposted: false,
         },
       ];
       const actual = await app.getUserResponsesWithPosts(userId);

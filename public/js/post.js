@@ -49,6 +49,13 @@ const toggleBookmark = function (postId) {
     .then(reloadOnStatus);
 };
 
+const toggleRepost = function (postId) {
+  event.stopPropagation();
+  post('/toggleRepost', { postId })
+    .then(response => response.json())
+    .then(reloadOnStatus);
+};
+
 const deletePost = function (postId) {
   post('/deletePost', { postId }).then(reloadOnStatus);
 };
