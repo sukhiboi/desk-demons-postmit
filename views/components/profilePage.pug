@@ -9,6 +9,7 @@ html(lang='en')
         link(rel='stylesheet' href='/css/profile.css' type='text/css')
         link(rel='stylesheet' href='/css/post.css' type='text/css')
         link(href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css' rel='stylesheet')
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js")
         script(src="/js/request.js")
         script(src="/js/popup.js")
         script(src="/js/post.js")
@@ -45,11 +46,11 @@ html(lang='en')
                         .small-detail
                             .icon
                                 i.fas.fa-birthday-cake
-                            span.dob= `Born ${dob}`
+                            span.dob= dob
                         .small-detail
                             .icon
                                 i.fas.fa-calendar-alt
-                            span.joinedDate= `Joined ${joinedDate}`
+                            span.joinedDate= joinedDate
                 .row
                     .small-detail
                         a.link(href=`/user/${username}/following`)
@@ -61,3 +62,4 @@ html(lang='en')
                             span Followers
             block posts
         include searchPanel.pug
+script(src="/js/time.js")

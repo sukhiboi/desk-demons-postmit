@@ -556,13 +556,23 @@ describe('#Handlers', () => {
         .expect(OK_STATUS_CODE)
         .expect({ status: true }, done);
     });
-    it('should respond with false if the username is not available', done => {
-      const getIdByUsernameStub = sinon.stub().resolves({ userId: userId });
+    it('should respond with true if the same username is asked for', done => {
+      const getIdByUsernameStub = sinon.stub().resolves({ userId });
       const app = createApp({ getIdByUsername: getIdByUsernameStub });
       expressApp.locals.app = app;
       request(expressApp)
         .post('/isUsernameAvailable')
         .send({ username: 'john' })
+        .expect(OK_STATUS_CODE)
+        .expect({ status: true }, done);
+    });
+    it('should respond with false if the username is not available', done => {
+      const getIdByUsernameStub = sinon.stub().resolves({ userId });
+      const app = createApp({ getIdByUsername: getIdByUsernameStub });
+      expressApp.locals.app = app;
+      request(expressApp)
+        .post('/isUsernameAvailable')
+        .send({ username: 'sukhiboi' })
         .expect(OK_STATUS_CODE)
         .expect({ status: false }, done);
     });

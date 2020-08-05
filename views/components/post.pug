@@ -14,7 +14,7 @@ mixin post(post)
         .user-details
           .name
             a.link(href=`/user/${post.username}`)= post.name 
-            a(class="timestamp")= ` ・ ${post.postedAt}`
+            a(class="timestamp" data-time=post.postedAt)= ` ・ ${post.postedAt}`
           .username
             a.link(href=`/user/${post.username}`)= `@${post.username}`
       if post.isDeletable

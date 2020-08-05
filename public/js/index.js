@@ -2,16 +2,11 @@ const toggleFollowUnFollow = function (username) {
   post('/toggleFollow', { username }).then(() => location.reload());
 };
 
-const pad = number => number.toString().padStart(2, '0');
-
 const displayEditProfile = function () {
   const username = document.querySelector('.username a').innerText;
   const name = document.querySelector('.name a').innerText;
   const dob = new Date(document.querySelector('.dob').innerText);
   const bio = document.querySelector('.bio').innerText;
-  const birthdate = `${dob.getFullYear()}-${pad(dob.getMonth())}-${pad(
-    dob.getDate()
-  )}`;
   const html = `
   <div class="description">Update your profile Details</div>
   <div class="row fields">
@@ -29,7 +24,7 @@ const displayEditProfile = function () {
         <span class="placeholder" for="dob">Date of Birth</span>
         <input class="input-bar" id="dob" type="date"
            placeholder="Date of Birth"
-           value="${birthdate}"/>
+           value="${moment(dob).format('YYYY-MM-DD')}"/>
       </div>
       <div class="field">
         <span class="placeholder" for="bio">Bio</span>

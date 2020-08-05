@@ -7,6 +7,7 @@ head
   link(rel='stylesheet' href='/css/search-panel.css' type='text/css')
   link(rel='stylesheet' href='/css/post.css' type='text/css')
   link(href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css' rel='stylesheet')
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js")
   script(src="/js/request.js")
   script(src="/js/popup.js")
   script(src="/js/post.js")
@@ -33,7 +34,7 @@ body
             .user-details
               .name
                 a.link(href=`/user/${post.username}`)= post.name 
-                a(class="timestamp")= ` ・ ${post.postedAt}`
+                a(class="timestamp" data-time=post.postedAt)= ` ・ ${post.postedAt}`
               .username
                 a.link(href=`/user/${post.username}`)= `@${post.username}`
           if post.isDeletable
@@ -74,3 +75,4 @@ body
       each item in responses 
         +post(item)
   include components/searchPanel.pug
+script(src="/js/time.js")
