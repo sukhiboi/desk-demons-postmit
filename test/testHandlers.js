@@ -859,4 +859,32 @@ describe('#Handlers', () => {
         .expect({ status: true }, done);
     });
   });
+
+  describe('POST /update-user()', () => {
+    const updateDetails = {
+      name: 'newName',
+      username: 'newUsername',
+      dob: new Date().toJSON(),
+      bio: 'newBio',
+    };
+    it('should update the user details', done => {
+      const updateUserDetailsStub = sinon.stub().resolves();
+      expressApp.locals.app = createApp({
+        updateUserDetails: updateUserDetailsStub,
+      });
+      request(expressApp)
+        .post('/edit-profile')
+        .send(updateDetails)
+        .set('Cookie', ['userId=1'])
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledWithExactly(
+            updateUserDetailsStub,
+            userId,
+            updateDetails
+          );
+        })
+        .expect({ status: true }, done);
+    });
+  });
 });
