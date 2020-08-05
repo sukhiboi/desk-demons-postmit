@@ -219,7 +219,9 @@ describe('#Handlers', () => {
       const getAllResponsesStub = sinon.stub().resolves(responses);
       const getReplyingToStub = sinon.stub().resolves();
       const getUserResponsesStub = sinon.stub().resolves([]);
+      const getRepostsByUserIdStub = sinon.stub().resolves([]);
       expressApp.locals.app = createApp({
+        getRepostsByUserId: getRepostsByUserIdStub,
         getUserResponses: getUserResponsesStub,
         getReplyingTo: getReplyingToStub,
         getAllResponses: getAllResponsesStub,
@@ -260,7 +262,9 @@ describe('#Handlers', () => {
       const getAllResponsesStub = sinon.stub().resolves(responses);
       const getReplyingToStub = sinon.stub().resolves();
       const getUserResponsesStub = sinon.stub().resolves([]);
+      const getRepostsByUserIdStub = sinon.stub().resolves([]);
       expressApp.locals.app = createApp({
+        getRepostsByUserId: getRepostsByUserIdStub,
         getUserResponses: getUserResponsesStub,
         getReplyingTo: getReplyingToStub,
         getAllResponses: getAllResponsesStub,
@@ -299,7 +303,8 @@ describe('#Handlers', () => {
       getAllResponsesStub,
       getHashtagsByPostIdStub,
       getReplyingToStub,
-      getUserResponsesStub;
+      getUserResponsesStub,
+      getRepostsByUserIdStub;
     beforeEach(() => {
       getUserResponsesStub = sinon.stub().resolves([]);
       getIdByUsernameStub = sinon.stub().resolves({ userId });
@@ -312,6 +317,7 @@ describe('#Handlers', () => {
       getAllResponsesStub = sinon.stub().resolves(responses);
       getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       getReplyingToStub = sinon.stub().resolves();
+      getRepostsByUserIdStub = sinon.stub().resolves([]);
     });
     it('should serve the Profile Page of searched user with liked posts', done => {
       const userId = 2;
@@ -319,6 +325,7 @@ describe('#Handlers', () => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       expressApp.locals.app = createApp({
         getUserResponses: getUserResponsesStub,
+        getRepostsByUserId: getRepostsByUserIdStub,
         getReplyingTo: getReplyingToStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
         getAllResponses: getAllResponsesStub,
@@ -345,6 +352,7 @@ describe('#Handlers', () => {
     it('should serve the Profile Page of searched user with liked posts', done => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       expressApp.locals.app = createApp({
+        getRepostsByUserId: getRepostsByUserIdStub,
         getUserResponses: getUserResponsesStub,
         getReplyingTo: getReplyingToStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
@@ -386,7 +394,8 @@ describe('#Handlers', () => {
       getHashtagsByPostIdStub,
       getReplyingToStub,
       getUserResponsesStub,
-      getPostStub;
+      getPostStub,
+      getRepostsByUserIdStub;
     beforeEach(() => {
       getUserResponsesStub = sinon.stub().resolves([{ postId, responseId: 2 }]);
       getIdByUsernameStub = sinon.stub().resolves({ userId });
@@ -400,14 +409,16 @@ describe('#Handlers', () => {
       getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       getReplyingToStub = sinon.stub().resolves();
       getPostStub = sinon.stub().resolves(dummyPost);
+      getRepostsByUserIdStub = sinon.stub().resolves([]);
     });
     it('should serve the Profile Page of searched user with replied posts', done => {
       const userId = 2;
       const userDetails = { username: 'jani', name: 'jani', userId };
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       expressApp.locals.app = createApp({
-        getPost: getPostStub,
         getUserResponses: getUserResponsesStub,
+        getPost: getPostStub,
+        getRepostsByUserId: getRepostsByUserIdStub,
         getReplyingTo: getReplyingToStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
         getAllResponses: getAllResponsesStub,
@@ -447,6 +458,7 @@ describe('#Handlers', () => {
         getFollowers: getFollowersStub,
         getLikedPosts: getLikedPostsStub,
         getBookmarks: getBookmarksStub,
+        getRepostsByUserId: getRepostsByUserIdStub,
       });
       request(expressApp)
         .get('/user/john/replies')

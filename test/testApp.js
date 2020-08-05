@@ -514,6 +514,7 @@ describe('#App', () => {
       const getReplyingToStub = sinon.stub().resolves();
       const getAllResponsesStub = sinon.stub().resolves(responses);
       const getUserResponsesStub = sinon.stub().resolves([]);
+      const getRepostsByUserIdStub = sinon.stub().resolves([]);
       const app = createApp({
         getUserResponses: getUserResponsesStub,
         getUserDetails: getUserDetailsStub,
@@ -524,6 +525,7 @@ describe('#App', () => {
         getHashtagsByPostId: getHashtagsByPostIdStub,
         getBookmarks: getBookmarksStub,
         getReplyingTo: getReplyingToStub,
+        getRepostsByUserId: getRepostsByUserIdStub,
       });
       const actual = await app.getProfilePosts({ userId });
       const expected = {
@@ -605,7 +607,9 @@ describe('#App', () => {
       const getReplyingToStub = sinon.stub().resolves();
       const getAllResponsesStub = sinon.stub().resolves(responses);
       const getUserResponsesStub = sinon.stub().resolves([]);
+      const getRepostsByUserIdStub = sinon.stub().resolves([]);
       const app = createApp({
+        getRepostsByUserId: getRepostsByUserIdStub,
         getUserResponses: getUserResponsesStub,
         getReplyingTo: getReplyingToStub,
         getAllResponses: getAllResponsesStub,
