@@ -464,7 +464,9 @@ describe('#App', () => {
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const getReplyingToStub = sinon.stub().resolves();
       const getAllResponsesStub = sinon.stub().resolves(responses);
+      const getUserResponsesStub = sinon.stub().resolves([]);
       const app = createApp({
+        getUserResponses: getUserResponsesStub,
         getUserDetails: getUserDetailsStub,
         getAllResponses: getAllResponsesStub,
         getAllPostLikers: getAllPostLikersStub,
@@ -508,6 +510,7 @@ describe('#App', () => {
             mentions: [],
           },
         ],
+        responsePosts: [],
       };
       assert.deepStrictEqual(actual, expected);
       sinon.assert.calledOnceWithExactly(getUserPostsStub, userId);
@@ -552,7 +555,9 @@ describe('#App', () => {
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const getReplyingToStub = sinon.stub().resolves();
       const getAllResponsesStub = sinon.stub().resolves(responses);
+      const getUserResponsesStub = sinon.stub().resolves([]);
       const app = createApp({
+        getUserResponses: getUserResponsesStub,
         getReplyingTo: getReplyingToStub,
         getAllResponses: getAllResponsesStub,
         getUserDetails: getUserDetailsStub,
@@ -580,6 +585,7 @@ describe('#App', () => {
         username: 'john',
         profileUrl: 'url',
         userId,
+        responsePosts: [],
         posts: [
           {
             imageUrl: 'url',
@@ -1230,6 +1236,124 @@ describe('#App', () => {
       } catch (err) {
         sinon.assert.calledOnce(savePostStub);
         assert.deepStrictEqual(err, expectedTableError);
+      }
+    });
+  });
+
+  describe('getUserResponsesWithPosts()', () => {
+    it('should give me all the responses and posts in order', async () => {
+      const [dummyPost] = createDummyPosts();
+      const getUserResponsesStub = sinon.stub().resolves([
+        { postId, responseId: 2 },
+        { postId, responseId: 3 },
+      ]);
+      const getPostStub = sinon.stub().resolves(dummyPost);
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getBookmarksStub = sinon.stub().resolves([]);
+      const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
+      const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
+      const getAllResponsesStub = sinon.stub().resolves(responses);
+      const getReplyingToStub = sinon.stub().resolves({ username: 'ram' });
+      const app = createApp({
+        getUserDetails: getUserDetailsStub,
+        getAllPostLikers: getAllPostLikersStub,
+        getHashtagsByPostId: getHashtagsByPostIdStub,
+        getBookmarks: getBookmarksStub,
+        getAllResponses: getAllResponsesStub,
+        getReplyingTo: getReplyingToStub,
+        getUserResponses: getUserResponsesStub,
+        getPost: getPostStub,
+      });
+      const expected = [
+        {
+          childPost: true,
+          dob: 'Aug 3, 2020',
+          hashtags: ['html'],
+          imageUrl: 'url',
+          initials: 'JS',
+          isBookmarked: false,
+          isDeletable: true,
+          isFollowingMe: false,
+          isLiked: true,
+          joinedDate: 'Aug 3, 2020',
+          likedUsers: [{ userId: 1 }],
+          mentions: [],
+          message: 'hi',
+          name: 'john samuel',
+          parentPost: true,
+          postId: 1,
+          postedAt: 'a few seconds ago',
+          replyingTo: 'ram',
+          responseCount: 1,
+          userId: 1,
+          username: 'john',
+        },
+        {
+          childPost: true,
+          dob: 'Aug 3, 2020',
+          hashtags: ['html'],
+          imageUrl: 'url',
+          initials: 'JS',
+          isBookmarked: false,
+          isDeletable: true,
+          isFollowingMe: false,
+          isLiked: true,
+          joinedDate: 'Aug 3, 2020',
+          likedUsers: [{ userId: 1 }],
+          mentions: [],
+          message: 'hi',
+          name: 'john samuel',
+          parentPost: true,
+          postId: 1,
+          postedAt: 'a few seconds ago',
+          replyingTo: 'ram',
+          responseCount: 1,
+          userId: 1,
+          username: 'john',
+        },
+        {
+          childPost: true,
+          dob: 'Aug 3, 2020',
+          hashtags: ['html'],
+          imageUrl: 'url',
+          initials: 'JS',
+          isBookmarked: false,
+          isDeletable: true,
+          isFollowingMe: false,
+          isLiked: true,
+          joinedDate: 'Aug 3, 2020',
+          likedUsers: [{ userId: 1 }],
+          mentions: [],
+          message: 'hi',
+          name: 'john samuel',
+          parentPost: true,
+          postId: 1,
+          postedAt: 'a few seconds ago',
+          replyingTo: 'ram',
+          responseCount: 1,
+          userId: 1,
+          username: 'john',
+        },
+      ];
+      const actual = await app.getUserResponsesWithPosts(userId);
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledOnce(getUserResponsesStub);
+      sinon.assert.calledThrice(getUserDetailsStub);
+      sinon.assert.calledThrice(getAllPostLikersStub);
+      sinon.assert.calledThrice(getReplyingToStub);
+      sinon.assert.calledThrice(getHashtagsByPostIdStub);
+      sinon.assert.calledThrice(getBookmarksStub);
+      sinon.assert.calledThrice(getReplyingToStub);
+      sinon.assert.callCount(getPostStub, 4);
+    });
+    it('should reject any error', async () => {
+      const getUserResponsesStub = sinon.stub().rejects(expectedTableError);
+      const app = createApp({ getUserResponses: getUserResponsesStub });
+      try {
+        await app.getUserResponsesWithPosts(userId);
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnceWithExactly(getUserResponsesStub, userId);
       }
     });
   });

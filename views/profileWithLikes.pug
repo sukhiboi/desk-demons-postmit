@@ -3,6 +3,7 @@ extends components/profilePage.pug
 append posts
   .categories
     a.category(href=`/user/${username}`) Posts
+    a.category(href=`/user/${username}/replies`) Posts & Replies
     a.category.active-category(href='#') Likes
   .feed
     .posts

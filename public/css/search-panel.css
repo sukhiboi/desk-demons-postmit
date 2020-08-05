@@ -52,6 +52,7 @@
   padding-right: 10px;
 }
 
+.feed .post:hover,
 .result:hover {
   background-color: rgba(195, 195, 195, 0.1);
   cursor: pointer;

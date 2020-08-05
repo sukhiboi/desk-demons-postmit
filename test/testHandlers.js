@@ -216,7 +216,9 @@ describe('#Handlers', () => {
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const getAllResponsesStub = sinon.stub().resolves(responses);
       const getReplyingToStub = sinon.stub().resolves();
+      const getUserResponsesStub = sinon.stub().resolves([]);
       expressApp.locals.app = createApp({
+        getUserResponses: getUserResponsesStub,
         getReplyingTo: getReplyingToStub,
         getAllResponses: getAllResponsesStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
@@ -255,7 +257,9 @@ describe('#Handlers', () => {
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const getAllResponsesStub = sinon.stub().resolves(responses);
       const getReplyingToStub = sinon.stub().resolves();
+      const getUserResponsesStub = sinon.stub().resolves([]);
       expressApp.locals.app = createApp({
+        getUserResponses: getUserResponsesStub,
         getReplyingTo: getReplyingToStub,
         getAllResponses: getAllResponsesStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
@@ -292,8 +296,10 @@ describe('#Handlers', () => {
       getLikedPostsStub,
       getAllResponsesStub,
       getHashtagsByPostIdStub,
-      getReplyingToStub;
+      getReplyingToStub,
+      getUserResponsesStub;
     beforeEach(() => {
+      getUserResponsesStub = sinon.stub().resolves([]);
       getIdByUsernameStub = sinon.stub().resolves({ userId });
       getBookmarksStub = sinon.stub().resolves([]);
       getAllPostLikersStub = sinon.stub().resolves([]);
@@ -310,6 +316,7 @@ describe('#Handlers', () => {
       const userDetails = { username: 'jani', name: 'jani', userId };
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       expressApp.locals.app = createApp({
+        getUserResponses: getUserResponsesStub,
         getReplyingTo: getReplyingToStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
         getAllResponses: getAllResponsesStub,
@@ -336,6 +343,7 @@ describe('#Handlers', () => {
     it('should serve the Profile Page of searched user with liked posts', done => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       expressApp.locals.app = createApp({
+        getUserResponses: getUserResponsesStub,
         getReplyingTo: getReplyingToStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
         getAllResponses: getAllResponsesStub,
@@ -349,7 +357,7 @@ describe('#Handlers', () => {
         getBookmarks: getBookmarksStub,
       });
       request(expressApp)
-        .get('/user/jani/likes')
+        .get('/user/john/likes')
         .set('Cookie', ['userId=1'])
         .expect(OK_STATUS_CODE)
         .expect(() => {
@@ -357,6 +365,95 @@ describe('#Handlers', () => {
           sinon.assert.calledThrice(getUserDetailsStub);
           sinon.assert.calledOnce(getUserPostsStub);
           sinon.assert.calledWith(getUserDetailsStub, userId);
+          sinon.assert.calledOnceWithExactly(getUserPostsStub, userId);
+        })
+        .expect(/john/, done);
+    });
+  });
+
+  describe('GET /user/:username/replies', () => {
+    const [dummyPost] = createDummyPosts();
+    let getIdByUsernameStub,
+      getBookmarksStub,
+      getAllPostLikersStub,
+      getUserPostsStub,
+      getFollowingStub,
+      getFollowersStub,
+      getLikedPostsStub,
+      getAllResponsesStub,
+      getHashtagsByPostIdStub,
+      getReplyingToStub,
+      getUserResponsesStub,
+      getPostStub;
+    beforeEach(() => {
+      getUserResponsesStub = sinon.stub().resolves([{ postId, responseId: 2 }]);
+      getIdByUsernameStub = sinon.stub().resolves({ userId });
+      getBookmarksStub = sinon.stub().resolves([]);
+      getAllPostLikersStub = sinon.stub().resolves([]);
+      getUserPostsStub = sinon.stub().resolves([]);
+      getFollowingStub = sinon.stub().resolves([]);
+      getFollowersStub = sinon.stub().resolves([]);
+      getLikedPostsStub = sinon.stub().resolves([]);
+      getAllResponsesStub = sinon.stub().resolves(responses);
+      getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
+      getReplyingToStub = sinon.stub().resolves();
+      getPostStub = sinon.stub().resolves(dummyPost);
+    });
+    it('should serve the Profile Page of searched user with replied posts', done => {
+      const userId = 2;
+      const userDetails = { username: 'jani', name: 'jani', userId };
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      expressApp.locals.app = createApp({
+        getPost: getPostStub,
+        getUserResponses: getUserResponsesStub,
+        getReplyingTo: getReplyingToStub,
+        getHashtagsByPostId: getHashtagsByPostIdStub,
+        getAllResponses: getAllResponsesStub,
+        getIdByUsername: getIdByUsernameStub,
+        getUserDetails: getUserDetailsStub,
+        getUserPosts: getUserPostsStub,
+        getAllPostLikers: getAllPostLikersStub,
+        getFollowing: getFollowingStub,
+        getFollowers: getFollowersStub,
+        getLikedPosts: getLikedPostsStub,
+        getBookmarks: getBookmarksStub,
+      });
+      request(expressApp)
+        .get('/user/jani/replies')
+        .set('Cookie', ['userId=1'])
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnce(getIdByUsernameStub);
+          sinon.assert.callCount(getUserDetailsStub, 4);
+          sinon.assert.calledOnce(getUserPostsStub);
+        })
+        .expect(/jani/, done);
+    });
+    it('should serve the Profile Page of searched user with replied posts', done => {
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      expressApp.locals.app = createApp({
+        getPost: getPostStub,
+        getUserResponses: getUserResponsesStub,
+        getReplyingTo: getReplyingToStub,
+        getHashtagsByPostId: getHashtagsByPostIdStub,
+        getAllResponses: getAllResponsesStub,
+        getIdByUsername: getIdByUsernameStub,
+        getUserDetails: getUserDetailsStub,
+        getUserPosts: getUserPostsStub,
+        getAllPostLikers: getAllPostLikersStub,
+        getFollowing: getFollowingStub,
+        getFollowers: getFollowersStub,
+        getLikedPosts: getLikedPostsStub,
+        getBookmarks: getBookmarksStub,
+      });
+      request(expressApp)
+        .get('/user/john/replies')
+        .set('Cookie', ['userId=1'])
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnce(getIdByUsernameStub);
+          sinon.assert.callCount(getUserDetailsStub, 4);
+          sinon.assert.calledOnce(getUserPostsStub);
           sinon.assert.calledOnceWithExactly(getUserPostsStub, userId);
         })
         .expect(/john/, done);

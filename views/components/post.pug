@@ -1,5 +1,5 @@
 mixin post(post)
-  .post(id=`post-${post.postId}` onclick=`expandPost(${post.postId})`)
+  div(class=`post ${post.parentPost ? 'parent-response' : post.childPost ? 'response' : ''}` id=`post-${post.postId}` onclick=`expandPost(${post.postId})`)
     .row
       .user-info
         .profile-pic

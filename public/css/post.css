@@ -1,6 +1,18 @@
 .post {
   padding: 14px 10px 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.post:last-child {
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.parent-response {
+  background-color: rgba(195, 195, 195, 0.2);
+}
+
+.response {
+  border: none;
 }
 
 .create-post {
