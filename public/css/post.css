@@ -164,7 +164,7 @@
   justify-content: space-evenly;
 }
 
-.action-btn button {
+.action-btn button:first-child {
   background-color: rgb(230, 236, 240);
   color: #333;
 }

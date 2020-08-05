@@ -51,16 +51,13 @@ const dateValidator = function (element) {
   if (Number(date)) {
     message = '';
   }
+  if (new Date().getTime() - date.getTime() < 0) {
+    message = 'Date of Birth can\'t be in future';
+  }
   return { message, isValid: message === '' };
 };
 
-const validateForm = async function () {
-  const fields = [
-    { id: 'bio', length: 160, validator: lengthValidator },
-    { id: 'dob', validator: dateValidator },
-    { id: 'name', length: 50, validator: lengthValidator },
-    { id: 'username', length: 15, validator: usernameValidator },
-  ];
+const validateForm = async function (fields) {
   fields.forEach(field => {
     const element = document.getElementById(field.id);
     displayValidField(element);
@@ -74,28 +71,60 @@ const validateForm = async function () {
       displayInvalidField(element, message);
     }
   }
-  return invalidFields.length;
+  return invalidFields;
 };
 
-const saveUser = async function (username, imageUrl) {
-  const invalidFieldsCount = await validateForm();
-  if (invalidFieldsCount) {
-    return;
+const validateFieldsAndGenerateData = async function (fields) {
+  const invalidFields = await validateForm(fields);
+  if (invalidFields.length) {
+    return Promise.reject('Invalid Fields');
   }
-  const fields = ['username', 'name', 'dob', 'bio'];
-  const userDetails = fields.reduce((fieldValues, fieldId) => {
-    const fieldValue = document.getElementById(fieldId).value;
-    return { ...fieldValues, [fieldId]: fieldValue };
+  const userDetails = fields.reduce((fieldValues, { id }) => {
+    const fieldValue = document.getElementById(id).value;
+    return { ...fieldValues, [id]: fieldValue };
   }, {});
-  userDetails['githubUsername'] = username;
-  userDetails['imageUrl'] = imageUrl;
-  post('/save-user', userDetails)
-    .then(response => response.json())
-    .then(({ status }) => {
-      if (status) {
-        window.location.href = '/home';
-      } else {
-        window.location.href = '/auth';
-      }
-    });
+  return userDetails;
+};
+
+const fields = [
+  { id: 'bio', length: 160, validator: lengthValidator },
+  { id: 'dob', validator: dateValidator },
+  { id: 'name', length: 50, validator: lengthValidator },
+  { id: 'username', length: 15, validator: usernameValidator },
+];
+
+const saveUser = async function (username, imageUrl) {
+  try {
+    const userDetails = await validateFieldsAndGenerateData(fields);
+    userDetails.githubUsername = username;
+    userDetails.imageUrl = imageUrl;
+    post('/save-user', userDetails)
+      .then(response => response.json())
+      .then(({ status }) => {
+        if (status) {
+          window.location.href = '/home';
+        } else {
+          window.location.href = '/auth';
+        }
+      });
+  } catch (err) {
+    return err;
+  }
+};
+
+const editProfile = async function () {
+  try {
+    const userDetails = await validateFieldsAndGenerateData(fields);
+    post('/edit-profile', userDetails)
+      .then(response => response.json())
+      .then(({ status }) => {
+        if (status) {
+          window.location.href = `/user/${userDetails.username}`;
+        } else {
+          location.reload();
+        }
+      });
+  } catch (err) {
+    return err;
+  }
 };

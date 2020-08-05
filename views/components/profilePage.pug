@@ -11,9 +11,10 @@ html(lang='en')
         link(href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css' rel='stylesheet')
         script(src="/js/request.js")
         script(src="/js/popup.js")
-        script(src="/js/index.js")
         script(src="/js/post.js")
         script(src="/js/search.js")
+        script(src="/js/index.js")
+        script(src="/js/saveUser.js")
         title Postmit
     body
         include menubar.pug
@@ -33,6 +34,10 @@ html(lang='en')
                             a(href=`/user/${username}`)= name 
                           .username.big-username
                             a(href=`/user/${username}`)= `@${username}`
+                    if isMyProfile
+                        button.primary-btn(onclick="displayEditProfile()") Edit Profile
+                    else
+                        button.primary-btn(onclick=`toggleFollowUnFollow('${username}')`)= isFollowing ? 'Unfollow' : 'Follow'
                 .row
                     .content.bio= bio
                 .row.space-between
@@ -40,13 +45,11 @@ html(lang='en')
                         .small-detail
                             .icon
                                 i.fas.fa-birthday-cake
-                            span= `Born ${dob}`
+                            span.dob= `Born ${dob}`
                         .small-detail
                             .icon
                                 i.fas.fa-calendar-alt
-                            span= `Joined ${joinedDate}`
-                    if !isMyProfile
-                        button.primary-btn(onclick=`toggleFollowUnFollow('${username}')`)= isFollowing ? 'Unfollow' : 'Follow'
+                            span.joinedDate= `Joined ${joinedDate}`
                 .row
                     .small-detail
                         a.link(href=`/user/${username}/following`)
