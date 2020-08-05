@@ -29,8 +29,8 @@ mixin post(post)
         each line in post.message.split(/\n/)
           - let urlRegEx= /(https?:\/\/[^\s]+)/g;
           - let replacedLine= line.replace(/</g,'&lt;').replace(/>/g,'&gt;')
-          - replacedLine= post.mentions.reduce((line,user) => line.replace(new RegExp(`@\\b${user}\\b`),`<a class="highlight-link" href="/user/${user}">@${user}</a>`),replacedLine) 
-          - replacedLine= post.hashtags.reduce((line,hashtag) => line.replace(new RegExp(`#\\b${hashtag}\\b`),`<a class="highlight-link" href="/hashtag/${hashtag}">#${hashtag}</a>`),replacedLine) 
+          - replacedLine= post.mentions.reduce((line,user) => line.replace(new RegExp(`@\\b${user}\\b`,'g'),`<a class="highlight-link" href="/user/${user}">@${user}</a>`),replacedLine) 
+          - replacedLine= post.hashtags.reduce((line,hashtag) => line.replace(new RegExp(`#\\b${hashtag}\\b`,'g'),`<a class="highlight-link" href="/hashtag/${hashtag}">#${hashtag}</a>`),replacedLine) 
           - replacedLine= replacedLine.replace(urlRegEx,(url)=>`<a class="highlight-link" href="${url}">${url}</a>`)
           != replacedLine
           br
