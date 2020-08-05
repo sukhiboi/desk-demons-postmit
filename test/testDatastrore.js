@@ -237,7 +237,7 @@ describe('#Datastore', () => {
       sinon.assert.calledOnce(runStub);
     });
 
-    it('should give error when follower table doesn\'t exists', async () => {
+    it("should give error when follower table doesn't exists", async () => {
       const errorToBeThrown = new Error('users table not found');
       const runStub = sinon.stub().yields(errorToBeThrown);
       const client = new Datastore({ run: runStub });
@@ -259,7 +259,7 @@ describe('#Datastore', () => {
       sinon.assert.calledOnce(runStub);
     });
 
-    it('should reject error when follower table doesn\'t exists', async () => {
+    it("should reject error when follower table doesn't exists", async () => {
       const errorToBeThrown = new Error('users table not found');
       const runStub = sinon.stub().yields(errorToBeThrown);
       const client = new Datastore({ run: runStub });
@@ -546,7 +546,7 @@ describe('#Datastore', () => {
       sinon.assert.calledOnce(allStub);
     });
 
-    it('should give error when hashtags table doesn\'t exists', async () => {
+    it("should give error when hashtags table doesn't exists", async () => {
       const allStub = sinon.stub().yields(expectedTableError, null);
       const client = new Datastore({ all: allStub });
       try {
@@ -642,6 +642,31 @@ describe('#Datastore', () => {
       } catch (err) {
         assert.deepStrictEqual(err, expectedTableError);
         sinon.assert.calledOnce(allStub);
+      }
+    });
+  });
+
+  describe('updateUserDetails()', () => {
+    const updateDetails = {
+      name: 'newName',
+      username: 'newUsername',
+      dob: new Date(),
+      bio: 'newBio',
+    };
+    it('should update the details of the user', async () => {
+      const runStub = sinon.stub().yields(null);
+      const client = new Datastore({ run: runStub });
+      assert.isUndefined(await client.updateUserDetails(userId, updateDetails));
+      sinon.assert.calledOnce(runStub);
+    });
+    it('should reject any error', async () => {
+      const runStub = sinon.stub().yields(expectedTableError);
+      const client = new Datastore({ run: runStub });
+      try {
+        await client.updateUserDetails(userId, updateDetails);
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(runStub);
       }
     });
   });
