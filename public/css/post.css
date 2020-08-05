@@ -213,6 +213,7 @@
 .delete-popup-message {
   line-height: 24px;
   padding-bottom: 2rem;
+  justify-content: center;
 }
 
 .popup-create-post {

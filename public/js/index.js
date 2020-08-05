@@ -2,6 +2,22 @@ const toggleFollowUnFollow = function (username) {
   post('/toggleFollow', { username }).then(() => location.reload());
 };
 
+const displayLogoutPopup = function () {
+  const popup = `<div class="delete-popup center">
+    <div class="delete-popup-heading">Logout</div>
+    <div class="row delete-popup-message">Are you sure you want to logout</div>
+    <div class="row action-btn">
+      <button class="primary-btn" onclick="removePopup()">Cancel</button>
+      <a href="/logout"><button
+      class="primary-btn delete-btn" >Logout</button></a>
+    </div>
+  </div>
+  `;
+  const element = document.createElement('div');
+  element.innerHTML = popup;
+  displayPopup(element);
+};
+
 const displayEditProfile = function () {
   const username = document.querySelector('.username a').innerText;
   const name = document.querySelector('.name a').innerText;
