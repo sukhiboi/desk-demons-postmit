@@ -64,13 +64,13 @@ body
             span= repostCount
             span= `${repostCount>1 ? ' Reposts':' Repost'}`
         .row.actions
-          .action.icon.highlight-blue(onClick=`replyToPost(${post.postId})`)
+          .action.icon.highlight-green(onClick=`replyToPost(${post.postId})`)
             i.far.fa-comment
           div(class=`action icon ${post.isLiked ? 'fill-red' : 'highlight-red'}` onclick=`toggleLikeUnlike(${post.postId})`)
             i(class=`${post.isLiked ? 'fas' : 'far'} fa-heart`)
           div(class=`action icon highlight-green ${post.isReposted ? 'fill-green' : 'highlight-green'}` onclick=`toggleRepost(${post.postId})`)
             i(class=`fas fa-retweet`)
-          div(class=`action icon ${post.isBookmarked ? 'fill-blue' : 'highlight-blue'}` onclick=`toggleBookmark(${post.postId})`)
+          div(class=`action icon ${post.isBookmarked ? 'fill-green' : 'highlight-green'}` onclick=`toggleBookmark(${post.postId})`)
             i(class=`${post.isBookmarked ? 'fas' : 'far'} fa-bookmark`)
     .header
       span Responses

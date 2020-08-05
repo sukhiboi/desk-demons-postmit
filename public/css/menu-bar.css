@@ -29,19 +29,19 @@
 }
 
 .page:hover {
-  background-color: rgba(22, 191, 99, 0.1);
+  background-color: rgba(20, 177, 171, 0.1);
   border-radius: 10rem;
   cursor: pointer;
 }
 
 .page:hover i,
 .page:hover span {
-  color: rgba(22, 191, 99, 1);
+  color: rgba(20, 177, 171, 1);
 }
 
 .active-page i,
 .active-page span {
-  color: rgba(22, 191, 99, 1);
+  color: rgba(20, 177, 171, 1);
   font-weight: 600;
 }
 
@@ -88,4 +88,12 @@
 
 .logout-profile-pic {
   width: 3rem !important;
+}
+
+.logout-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 10px;
+  font-size: 1.2rem;
 }

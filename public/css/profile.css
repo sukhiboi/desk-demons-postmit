@@ -66,12 +66,12 @@
 }
 
 .category:hover {
-  background-color: rgba(22, 191, 99, 0.2);
+  background-color: rgba(20, 177, 171, 0.2);
   cursor: pointer;
 }
 
 .active-category {
   font-weight: 600;
-  color: rgba(22, 191, 99, 1);
-  border-bottom: 2px solid rgba(22, 191, 99, 1);
+  color: rgba(20, 177, 171, 1);
+  border-bottom: 2px solid rgba(20, 177, 171, 1);
 }

@@ -83,7 +83,7 @@
 }
 
 .highlight-link {
-  color: rgb(29, 161, 242);
+  color: rgba(20, 177, 171, 1);
 }
 
 .highlight-link:hover {
@@ -170,14 +170,7 @@
 .highlight-green:hover span,
 .fill-green i,
 .fill-green span {
-  color: rgba(22, 191, 99, 1);
-}
-
-.highlight-blue:hover i,
-.highlight-blue:hover span,
-.fill-blue i,
-.fill-blue span {
-  color: rgb(29, 161, 242);
+  color: rgba(20, 177, 171, 1);
 }
 
 .action-btn {

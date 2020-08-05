@@ -10,5 +10,5 @@
             a.link(href=`/user/${loggedUser}`)= fullName 
           .username
             a.link(href=`/user/${loggedUser}`)= `@${loggedUser}`
-    div(onclick=`displayLogoutPopup()`)
+    .logout-btn(onclick=`displayLogoutPopup()`)
         i.fas.fa-sign-out-alt
