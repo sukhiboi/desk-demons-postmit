@@ -173,6 +173,9 @@ describe('#App', () => {
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const getAllResponsesStub = sinon.stub().resolves(responses);
       const getReplyingToStub = sinon.stub().resolves();
+      const getRepostsByUserIdStub = sinon
+        .stub()
+        .resolves([{ userId, postId, message: 'hi' }]);
       const app = createApp({
         getReplyingTo: getReplyingToStub,
         getAllResponses: getAllResponsesStub,
@@ -182,6 +185,7 @@ describe('#App', () => {
         getAllPostLikers: getAllPostLikersStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
         getBookmarks: getBookmarksStub,
+        getRepostsByUserId: getRepostsByUserIdStub,
       });
       const expected = {
         imageUrl: 'url',
@@ -230,6 +234,54 @@ describe('#App', () => {
             name: 'john samuel',
             postId: 1,
             postedAt: 'a few seconds ago',
+            repostedBy: 'john',
+            responseCount: 1,
+            userId: 1,
+            username: 'john',
+          },
+          {
+            dob: '2020-08-03',
+            hashtags: ['html'],
+            imageUrl: 'url',
+            initials: 'JS',
+            isBookmarked: false,
+            isDeletable: true,
+            isLiked: true,
+            joinedDate: '2020-08-03',
+            likedUsers: [
+              {
+                userId: 1,
+              },
+            ],
+            mentions: [],
+            message: 'hi',
+            name: 'john samuel',
+            postId: 1,
+            postedAt: 'a few seconds ago',
+            responseCount: 1,
+            userId: 1,
+            username: 'john',
+          },
+          {
+            dob: '2020-08-03',
+            hashtags: ['html'],
+            imageUrl: 'url',
+            initials: 'JS',
+            isBookmarked: false,
+            isDeletable: true,
+            isLiked: true,
+            joinedDate: '2020-08-03',
+            likedUsers: [
+              {
+                userId: 1,
+              },
+            ],
+            mentions: [],
+            message: 'hi',
+            name: 'john samuel',
+            postId: 1,
+            postedAt: 'a few seconds ago',
+            repostedBy: 'john',
             responseCount: 1,
             userId: 1,
             username: 'john',
@@ -239,10 +291,7 @@ describe('#App', () => {
       const actual = await app.getUserFeed();
       assert.deepStrictEqual(actual, expected);
       sinon.assert.calledOnceWithExactly(getFollowingStub, userId);
-      sinon.assert.calledTwice(getBookmarksStub);
       sinon.assert.calledTwice(getUserPostsStub);
-      sinon.assert.calledTwice(getUserDetailsStub);
-      sinon.assert.calledTwice(getAllPostLikersStub);
     });
 
     it('should reject any error', async () => {

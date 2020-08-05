@@ -670,4 +670,27 @@ describe('#Datastore', () => {
       }
     });
   });
+  describe('getRepostsByUserId()', () => {
+    it('should give all the resposts of the given user', async () => {
+      const expectedResponses = [
+        { postId, userId, message: 'hi', postedAt: new Date() },
+      ];
+      const allStub = sinon.stub().yields(null, expectedResponses);
+      const client = new Datastore({ all: allStub });
+      const responses = await client.getRepostsByUserId(userId);
+      assert.deepStrictEqual(responses, expectedResponses);
+      sinon.assert.calledOnce(allStub);
+    });
+
+    it('should reject any error', async () => {
+      const allStub = sinon.stub().yields(expectedTableError, null);
+      const client = new Datastore({ all: allStub });
+      try {
+        await client.getRepostsByUserId(postId);
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(allStub);
+      }
+    });
+  });
 });

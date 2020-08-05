@@ -57,8 +57,10 @@ describe('#Handlers', () => {
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const getReplyingToStub = sinon.stub().resolves();
       const getAllResponsesStub = sinon.stub().resolves(responses);
+      const getRepostsByUserIdStub = sinon.stub().resolves([]);
       const app = createApp({
         getReplyingTo: getReplyingToStub,
+        getRepostsByUserId: getRepostsByUserIdStub,
         getAllResponses: getAllResponsesStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
         getUserDetails: getUserDetailsStub,
