@@ -5,7 +5,7 @@ const toggleFollowUnFollow = function (username) {
 const displayLogoutPopup = function () {
   const popup = `<div class="delete-popup center">
     <div class="delete-popup-heading">Logout</div>
-    <div class="row delete-popup-message">Are you sure you want to logout</div>
+    <div class="row delete-popup-message">Are you sure you want to logout?</div>
     <div class="row action-btn">
       <button class="primary-btn" onclick="removePopup()">Cancel</button>
       <a href="/logout"><button
