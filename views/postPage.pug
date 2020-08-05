@@ -62,6 +62,9 @@ body
             i.far.fa-comment
           div(class=`action icon ${post.isLiked ? 'fill-red' : 'highlight-red'}` onclick=`toggleLikeUnlike(${post.postId})`)
             i(class=`${post.isLiked ? 'fas' : 'far'} fa-heart`)
+          div(class=`action icon highlight-blue` onclick=`toggleRepost(${post.postId})`)
+            i(class="fas fa-retweet")
+            span(class=`count ${post.repostCount ? '' : 'hide-count'}`)= post.repostCount
           div(class=`action icon ${post.isBookmarked ? 'fill-blue' : 'highlight-blue'}` onclick=`toggleBookmark(${post.postId})`)
             i(class=`${post.isBookmarked ? 'fas' : 'far'} fa-bookmark`)
     .header

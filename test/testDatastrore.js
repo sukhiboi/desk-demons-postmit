@@ -693,4 +693,26 @@ describe('#Datastore', () => {
       }
     });
   });
+
+  describe('getAllReposts()', () => {
+    it('should give all the reposts of the given post', async () => {
+      const expectedResponses = [{ postId, userId }];
+      const allStub = sinon.stub().yields(null, expectedResponses);
+      const client = new Datastore({ all: allStub });
+      const responses = await client.getAllReposts(postId);
+      assert.deepStrictEqual(responses, expectedResponses);
+      sinon.assert.calledOnce(allStub);
+    });
+
+    it('should reject any error', async () => {
+      const allStub = sinon.stub().yields(expectedTableError, null);
+      const client = new Datastore({ all: allStub });
+      try {
+        await client.getAllReposts(postId);
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnce(allStub);
+      }
+    });
+  });
 });
