@@ -932,7 +932,7 @@ describe('#Handlers', () => {
     });
   });
 
-  describe('POST /update-user()', () => {
+  describe('POST /toggleRepost()', () => {
     it('should update the user details', done => {
       const getAllRepostsStub = sinon.stub().resolves([]);
       const undoRepostStub = sinon.stub().resolves();
@@ -953,6 +953,27 @@ describe('#Handlers', () => {
           sinon.assert.calledWithExactly(getAllRepostsStub, postId);
         })
         .expect({ status: true }, done);
+    });
+  });
+
+  describe('POST /post/:postId/reposts', () => {
+    it('should update the user details', done => {
+      const getAllRepostsStub = sinon.stub().resolves([{ userId }]);
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getFollowersStub = sinon.stub().resolves([]);
+      expressApp.locals.app = createApp({
+        getAllReposts: getAllRepostsStub,
+        getUserDetails: getUserDetailsStub,
+        getFollowers: getFollowersStub,
+      });
+      request(expressApp)
+        .get('/post/1/reposts')
+        .set('Cookie', ['userId=1'])
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnceWithExactly(getAllRepostsStub, '1');
+        })
+        .expect(/john/, done);
     });
   });
 });

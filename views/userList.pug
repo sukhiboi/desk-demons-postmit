@@ -20,7 +20,13 @@ body
         .header
             a.icon(href=`/post/${postId}`)
                 i(class="fas fa-arrow-left")
-            span Liked By
+            span= likers ? 'Liked By':'Reposted By'
+        -let list = likers || []
+        if repostedUsers
+         - list = repostedUsers
+        .categories
+            a(class=`category ${likers ? 'active-category' : ''}`  href=likers ? '#' : `/post/${postId}/likes`) LikedBy
+            a(class=`category ${repostedUsers ? 'active-category' : ''}`  href=repostedUsers ? '#' : `/post/${postId}/reposts`) Reposted By
         .feed
             include components/following.pug
             each item in list

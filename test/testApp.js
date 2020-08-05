@@ -34,7 +34,6 @@ describe('#App', () => {
       },
     ];
   };
-
   const createApp = function (datastore) {
     const app = new App(datastore);
     app.userId = userId;
@@ -1010,7 +1009,7 @@ describe('#App', () => {
       });
       const actual = await app.getPostLikers(postId);
       const expected = {
-        list: [
+        likers: [
           {
             ...userDetails,
             isFollowingMe: false,
@@ -1512,6 +1511,47 @@ describe('#App', () => {
       assert.isUndefined(await app.toggleRepost(postId));
       sinon.assert.calledOnceWithExactly(getAllRepostsStub, postId);
       sinon.assert.calledOnceWithExactly(undoRepostStub, postId, userId);
+    });
+  });
+
+  describe('getRepostedUsers()', () => {
+    it('should give users who liked a post based on postId', async () => {
+      const getAllRepostsStub = sinon.stub().resolves([{ userId }]);
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const getFollowersStub = sinon.stub().resolves([]);
+      const app = createApp({
+        getAllReposts: getAllRepostsStub,
+        getUserDetails: getUserDetailsStub,
+        getFollowers: getFollowersStub,
+      });
+      const actual = await app.getRepostedUsers(postId);
+      const expected = {
+        repostedUsers: [
+          {
+            ...userDetails,
+            isFollowingMe: false,
+          },
+        ],
+        imageUrl: 'url',
+        initials: 'JS',
+        loggedUser: userDetails.username,
+        postId,
+      };
+      assert.deepStrictEqual(actual, expected);
+      sinon.assert.calledOnceWithExactly(getFollowersStub, userId);
+      sinon.assert.calledOnceWithExactly(getUserDetailsStub, userId);
+      sinon.assert.calledOnceWithExactly(getAllRepostsStub, postId);
+    });
+
+    it('should give error when posts table not found', async () => {
+      const getAllRepostsStub = sinon.stub().rejects(expectedTableError);
+      const app = createApp({ getAllPostLikers: getAllRepostsStub });
+      try {
+        await app.getPostLikers(postId);
+      } catch (err) {
+        assert.deepStrictEqual(err, expectedTableError);
+        sinon.assert.calledOnceWithExactly(getAllRepostsStub, postId);
+      }
     });
   });
 });
