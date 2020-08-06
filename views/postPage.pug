@@ -1,64 +1,14 @@
 extends components/postmitPage.pug
+include components/post.pug
 
 append mainPanel
   .header
     span Post
-  .feed
-    .post(id=`post-${post.postId}`  onclick=`expandPost(${post.postId})`)
-      if post.repostedBy
-       - let name = post.repostedBy===loggedUser ? 'me' : post.repostedBy;
-       .row
-         .username!= `Reposted by <a class="link" href="/user/${name}">@${name}</a>`
-      .row.user-row
-        .user-info
-          .profile-pic
-            if post.imageUrl
-              img(src=post.imageUrl)
-            else 
-              span.center= post.initials
-          .user-details
-            .name
-              a.link(href=`/user/${post.username}`)= post.name 
-              a(class="timestamp" data-time=post.postedAt)= ` ・ ${post.postedAt}`
-            .username
-              a.link(href=`/user/${post.username}`)= `@${post.username}`
-        if post.isDeletable
-          .icon(onclick=`showDeletePostPopup(${post.postId})`)
-            i.fas.fa-trash.highlight-red
-      if post.replyingTo&&post.replyingTo!=post.username
-        .row
-          .username!= `Replying to <a class="link" href="/user/${post.replyingTo}">@${post.replyingTo}</a>`
-      .row
-        .content
-          each line in post.message.split(/\n/)
-            - let urlRegEx= /(https?:\/\/[^\s]+)/g;
-            - let replacedLine= line.replace(/</g,'&lt;').replace(/>/g,'&gt;')
-            - replacedLine= post.mentions.reduce((line,user) => line.replace(new RegExp(`@\\b${user}\\b`,'g'),`<a class="highlight-link" href="/user/${user}">@${user}</a>`),replacedLine) 
-            - replacedLine= post.hashtags.reduce((line,hashtag) => line.replace(new RegExp(`#\\b${hashtag}\\b`,'g'),`<a class="highlight-link" href="/hashtag/${hashtag}">#${hashtag}</a>`),replacedLine) 
-            - replacedLine= replacedLine.replace(urlRegEx,(url)=>`<a class="highlight-link" href="${url}">${url}</a>`)
-            != replacedLine
-            br
-      .row
-        - let likeCount=post.likedUsers.length
-        a.link(href=`/post/${post.postId}/likes` class=`detail count${likeCount > 0 ? '' : ' hide-detail'}`) 
-          span= likeCount
-          span= `${likeCount>1 ? ' Likes':' Like'}`
-        - let repostCount=post.repostCount;
-        a.link(href=`/post/${post.postId}/reposts` class=`detail count${repostCount > 0 ? '' : ' hide-detail'}`) 
-          span= repostCount
-          span= `${repostCount>1 ? ' Reposts':' Repost'}`
-      .row.actions
-        .action.icon.highlight-green(onClick=`replyToPost(${post.postId})`)
-          i.far.fa-comment
-        div(class=`action icon ${post.isLiked ? 'fill-red' : 'highlight-red'}` onclick=`toggleLikeUnlike(${post.postId})`)
-          i(class=`${post.isLiked ? 'fas' : 'far'} fa-heart`)
-        div(class=`action icon highlight-green ${post.isReposted ? 'fill-green' : 'highlight-green'}` onclick=`toggleRepost(${post.postId})`)
-          i(class=`fas fa-retweet`)
-        div(class=`action icon ${post.isBookmarked ? 'fill-green' : 'highlight-green'}` onclick=`toggleBookmark(${post.postId})`)
-          i(class=`${post.isBookmarked ? 'fas' : 'far'} fa-bookmark`)
+  .feed#post
+    +post(post,true)
   .header
     span Responses
-  .posts
-    include components/post.pug
-    each item in responses 
-      +post(item)
+  .feed#responses
+    .posts
+      each item in responses 
+        +post(item)

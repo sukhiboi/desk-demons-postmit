@@ -1,4 +1,4 @@
-mixin post(post)
+mixin post(post,isExpandPost)
   div(class=`post ${post.parentPost ? 'parent-response' : post.childPost ? 'response' : ''}` id=`post-${post.postId}` onclick=`expandPost(${post.postId})`)
     if post.repostedBy
      - let name = post.repostedBy===loggedUser ? 'You' : post.repostedBy;
@@ -37,15 +37,28 @@ mixin post(post)
           - replacedLine= replacedLine.replace(urlRegEx,(url)=>`<a class="highlight-link" href="${url}">${url}</a>`)
           != replacedLine
           br
+    if isExpandPost
+      .row
+        - let likeCount=post.likedUsers.length
+        a.link(href=`/post/${post.postId}/likes` class=`detail count${likeCount > 0 ? '' : ' hide-detail'}`) 
+          span= likeCount
+          span= `${likeCount>1 ? ' Likes':' Like'}`
+        - let repostCount=post.repostCount;
+        a.link(href=`/post/${post.postId}/reposts` class=`detail count${repostCount > 0 ? '' : ' hide-detail'}`) 
+          span= repostCount
+          span= `${repostCount>1 ? ' Reposts':' Repost'}`
     .row.actions
       .action.icon.highlight-green(onClick=`replyToPost(${post.postId})`)
         i.far.fa-comment
-        span(class=`count ${post.responseCount ? '' : 'hide-count'}`)= post.responseCount
+        if !isExpandPost
+          span(class=`count ${post.responseCount ? '' : 'hide-count'}`)= post.responseCount
       div(class=`action icon ${post.isLiked ? 'fill-red' : 'highlight-red'}` onclick=`toggleLikeUnlike(${post.postId})`)
         i(class=`${post.isLiked ? 'fas' : 'far'} fa-heart`)
-        span(class=`count ${post.likedUsers.length ? '' : 'hide-count'}`)= post.likedUsers.length
+        if !isExpandPost
+          span(class=`count ${post.likedUsers.length ? '' : 'hide-count'}`)= post.likedUsers.length
       div(class=`action icon highlight-green ${post.isReposted ? 'fill-green' : 'highlight-green'}` onclick=`toggleRepost(${post.postId})`)
         i(class=`fas fa-retweet`)
-        span(class=`count ${post.repostCount ? '' : 'hide-count'}`)= post.repostCount
+        if !isExpandPost
+          span(class=`count ${post.repostCount ? '' : 'hide-count'}`)= post.repostCount
       div(class=`action icon ${post.isBookmarked ? 'fill-green' : 'highlight-green'}` onclick=`toggleBookmark(${post.postId})`)
         i(class=`${post.isBookmarked ? 'fas' : 'far'} fa-bookmark`)
