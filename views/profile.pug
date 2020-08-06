@@ -1,12 +1,18 @@
 extends components/profilePage.pug
 
-append posts
+append profilePosts
+  - let list = posts || []
+  case activeTab
+    when 'replies' 
+      - list= responsePosts || []
+    when 'likes' 
+      - list= likedPosts || []
   .categories
-    a.category.active-category(href='#') Posts
-    a.category(href=`/user/${username}/replies`) Posts & Replies
-    a.category(href=`/user/${username}/likes`) Likes
+    a(class=`category ${activeTab == 'posts' ? 'active-category' : ''}` href=`${activeTab == 'posts' ? '#' : `/user/${username}`}`) Posts
+    a(class=`category ${activeTab == 'replies' ? 'active-category' : ''}` href=`${activeTab == 'replies' ? '#' : `/user/${username}/replies`}`) Posts & Replies
+    a(class=`category ${activeTab == 'likes' ? 'active-category' : ''}` href=`${activeTab == 'likes' ? '#' : `/user/${username}/likes`}`) Likes
   .feed
     .posts
         include components/post.pug
-        each item in posts 
+        each item in list 
             +post(item)
