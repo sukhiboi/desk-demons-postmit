@@ -13,6 +13,9 @@ const setupCharCounter = function (counterId, messageId, postBtnId) {
   const disablePrimaryBtnClass = 'disable-primary-btn';
   const charLimit = { min: 0, max: 180 };
   const warningLimit = 10;
+  if (!counter || !contentBox || !postBtn) {
+    return;
+  }
   contentBox.addEventListener('input', () => {
     const messageLength = document.getElementById(messageId).innerText.length;
     const remainingChars = charLimit.max - messageLength;
@@ -170,3 +173,5 @@ const expandPost = function (postId) {
   event.stopPropagation();
   window.location.href = `/post/${postId}`;
 };
+
+window.onload = () => setupCharCounter('char-count', 'message', 'post-btn');

@@ -1,34 +1,17 @@
-doctype
-head
-    meta(charset='UTF-8')
-    meta(name='viewport' content='width=device-width, initial-scale=1.0')
-    link(rel='stylesheet' href='/css/layout.css' type='text/css')
-    link(rel='stylesheet' href='/css/menu-bar.css' type='text/css')
-    link(rel='stylesheet' href='/css/search-panel.css' type='text/css')
-    link(rel='stylesheet' href='/css/post.css' type='text/css')
-    link(rel='stylesheet' href='/css/profile.css' type='text/css')
-    link(href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css' rel='stylesheet')
-    script(src="/js/request.js")
-    script(src="/js/popup.js")
-    script(src="/js/post.js")
-    script(src="/js/search.js")
-    script(src="/js/index.js")
-    title Postmit
-body
-    include components/menubar.pug
-    .main-panel 
-        .header
-            a.icon(href=`/post/${postId}`)
-                i(class="fas fa-arrow-left")
-            span= likers ? 'Liked By':'Reposted By'
-        -let list = likers || []
-        if repostedUsers
-         - list = repostedUsers
-        .categories
-            a(class=`category ${likers ? 'active-category' : ''}`  href=likers ? '#' : `/post/${postId}/likes`) LikedBy
-            a(class=`category ${repostedUsers ? 'active-category' : ''}`  href=repostedUsers ? '#' : `/post/${postId}/reposts`) Reposted By
-        .feed
-            include components/following.pug
-            each item in list
-                +following(item)
-    include components/searchPanel.pug
+extends components/postmitPage.pug
+
+append mainPanel
+    .header
+        a.icon(href=`/post/${postId}`)
+            i(class="fas fa-arrow-left")
+        span= likers ? 'Liked By':'Reposted By'
+    - let list = likers || []
+    if repostedUsers
+     - list = repostedUsers
+    .categories
+        a(class=`category ${likers ? 'active-category' : ''}`  href=likers ? '#' : `/post/${postId}/likes`) LikedBy
+        a(class=`category ${repostedUsers ? 'active-category' : ''}`  href=repostedUsers ? '#' : `/post/${postId}/reposts`) Reposted By
+    .feed
+        include components/profileCard.pug
+        each item in list
+            +following(item)

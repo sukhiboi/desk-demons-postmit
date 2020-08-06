@@ -1,27 +1,10 @@
-doctype html
-head
-  meta(charset='UTF-8')
-  meta(name='viewport' content='width=device-width, initial-scale=1.0')
-  link(rel='stylesheet' href='/css/layout.css' type='text/css')
-  link(rel='stylesheet' href='/css/menu-bar.css' type='text/css')
-  link(rel='stylesheet' href='/css/search-panel.css' type='text/css')
-  link(rel='stylesheet' href='/css/post.css' type='text/css')
-  link(href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css' rel='stylesheet')
-  script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js")
-  script(src="/js/request.js")
-  script(src="/js/popup.js")
-  script(src="/js/post.js")
-  script(src="/js/search.js")
-  script(src="/js/index.js")
-  title Postmit
-body
-  include components/menubar.pug
-  .main-panel
-    .header
-      span= `#${hashtag}`
-    .feed
-      include components/post.pug
-      each item in posts 
-        +post(item)
+extends components/postmitPage.pug
+
+append mainPanel
+  .header
+    span= `#${hashtag}`
+  .feed
+    include components/post.pug
+    each item in posts 
+      +post(item)
   include components/searchPanel.pug
-script(src="/js/time.js")
