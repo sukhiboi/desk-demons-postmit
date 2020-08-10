@@ -1,0 +1,21 @@
+extends layout.pug
+
+append mainPanel
+    .header
+      block header
+    .categories
+      block categories
+    .feed
+      .posts
+        - let list =  []
+        if followersList
+        - list = followersList
+        if followingList
+         - list = followingList
+        if repostedUsers
+         - list = repostedUsers
+        if likers
+         - list = likers
+        include profileCard.pug
+        each item in list
+            +profileCard(item)

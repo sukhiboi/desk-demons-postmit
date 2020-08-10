@@ -1,23 +1,14 @@
-extends components/layout.pug
+extends components/list.pug
 
-append mainPanel
-    .header
-        a.icon(href=`/user/${profile.username}`)
-            i(class="fas fa-arrow-left")
-        .user-info
-            .user-details
-                .name.big-name
-                  a(href=`/user/${profile.username}`)= profile.name 
-                .username.big-username
-                  a(href=`/user/${profile.username}`)= `@${profile.username}`
-    - let list = followingList || []
-    if followersList
-     - list = followersList
-    .categories
-        a(class=`category ${followersList ? 'active-category' : ''}`  href=followersList ? '#' : `/user/${profile.username}/followers`) Followers
-        a(class=`category ${followingList ? 'active-category' : ''}`  href=followingList ? '#' : `/user/${profile.username}/following`) Following
-    .feed
-      .posts
-            include components/profileCard.pug
-            each item in list
-                +following(item)
+append header
+    a.icon(href=`/user/${profile.username}`)
+        i(class="fas fa-arrow-left")
+    .user-info
+        .user-details
+            .name.big-name
+              a(href=`/user/${profile.username}`)= profile.name 
+            .username.big-username
+              a(href=`/user/${profile.username}`)= `@${profile.username}`
+append categories
+    a(class=`category ${followersList ? 'active-category' : ''}`  href=followersList ? '#' : `/user/${profile.username}/followers`) Followers
+    a(class=`category ${followingList ? 'active-category' : ''}`  href=followingList ? '#' : `/user/${profile.username}/following`) Following

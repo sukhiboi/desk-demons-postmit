@@ -1,17 +1,10 @@
-extends components/layout.pug
+extends components/list.pug
 
-append mainPanel
-    .header
+append header
         a.icon(href=`/post/${postId}`)
             i(class="fas fa-arrow-left")
         span= likers ? 'Liked By':'Reposted By'
-    - let list = likers || []
-    if repostedUsers
-     - list = repostedUsers
-    .categories
-        a(class=`category ${likers ? 'active-category' : ''}`  href=likers ? '#' : `/post/${postId}/likes`) LikedBy
-        a(class=`category ${repostedUsers ? 'active-category' : ''}`  href=repostedUsers ? '#' : `/post/${postId}/reposts`) Reposted By
-    .feed
-        include components/profileCard.pug
-        each item in list
-            +following(item)
+
+append categories
+    a(class=`category ${likers ? 'active-category' : ''}`  href=likers ? '#' : `/post/${postId}/likes`) LikedBy
+    a(class=`category ${repostedUsers ? 'active-category' : ''}`  href=repostedUsers ? '#' : `/post/${postId}/reposts`) Reposted By
