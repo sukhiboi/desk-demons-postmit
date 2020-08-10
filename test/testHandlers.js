@@ -529,7 +529,7 @@ describe('#Handlers', () => {
         .expect(FOUND_STATUS_CODE)
         .expect(/Found. Redirecting to \//, done);
     });
-    it('should render moreDetails page if iam a new user', done => {
+    it('should render extraUserDetails page if iam a new user', done => {
       const getUserIdByGithubUsernameStub = sinon.stub().resolves();
       const app = createApp({
         getUserIdByGithubUsername: getUserIdByGithubUsernameStub,

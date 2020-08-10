@@ -1,18 +1,57 @@
-extends components/profilePage.pug
+extends components/layout.pug
 
-append profilePosts
-  - let list = posts || []
-  case activeTab
-    when 'replies' 
-      - list= responsePosts || []
-    when 'likes' 
-      - list= likedPosts || []
-  .categories
-    a(class=`category ${activeTab == 'posts' ? 'active-category' : ''}` href=`${activeTab == 'posts' ? '#' : `/user/${username}`}`) Posts
-    a(class=`category ${activeTab == 'replies' ? 'active-category' : ''}` href=`${activeTab == 'replies' ? '#' : `/user/${username}/replies`}`) Posts & Replies
-    a(class=`category ${activeTab == 'likes' ? 'active-category' : ''}` href=`${activeTab == 'likes' ? '#' : `/user/${username}/likes`}`) Likes
-  .feed
-    .posts
-        include components/post.pug
-        each item in list 
-            +post(item)
+append mainPanel
+    .header
+        span Profile
+    .profile
+        .row.space-between
+            .user-info
+                .profile-pic.profile-pic-big
+                    if profileUrl
+                      img(src=profileUrl)
+                    else 
+                      span.center= initials
+                .user-details
+                  .name.big-name
+                    a(href=`/user/${username}`)= name 
+                  .username.big-username
+                    a(href=`/user/${username}`)= `@${username}`
+            if isMyProfile
+                button.primary-btn(onclick="displayEditProfile()") Edit Profile
+            else
+                button.primary-btn(onclick=`toggleFollowUnFollow('${username}')`)= isFollowing ? 'Unfollow' : 'Follow'
+        .row
+            .content.bio= bio
+        .row
+            .small-detail
+                .icon
+                    i.fas.fa-birthday-cake
+                span.dob= dob
+            .small-detail
+                .icon
+                    i.fas.fa-calendar-alt
+                span.joinedDate= joinedDate
+        .row
+            .small-detail
+                a.link(href=`/user/${username}/following`)
+                    span.count= following.length
+                    span Following
+            .small-detail
+                a.link(href=`/user/${username}/followers`)
+                    span.count= followers.length
+                    span Followers
+    - let list = posts || []
+    case activeTab
+      when 'replies' 
+        - list= responsePosts || []
+      when 'likes' 
+        - list= likedPosts || []
+    .categories
+      a(class=`category ${activeTab == 'posts' ? 'active-category' : ''}` href=`${activeTab == 'posts' ? '#' : `/user/${username}`}`) Posts
+      a(class=`category ${activeTab == 'replies' ? 'active-category' : ''}` href=`${activeTab == 'replies' ? '#' : `/user/${username}/replies`}`) Posts &     Replies
+      a(class=`category ${activeTab == 'likes' ? 'active-category' : ''}` href=`${activeTab == 'likes' ? '#' : `/user/${username}/likes`}`) Likes
+    .feed
+      .posts
+          include components/post.pug
+          each item in list 
+              +post(item)
