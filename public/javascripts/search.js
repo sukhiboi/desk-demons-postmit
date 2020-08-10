@@ -1,32 +1,3 @@
-const getUserResultTemplate = function (user) {
-  let profilePic = `<span class="center">${user.initials}</span>`;
-  if (user.imageUrl) {
-    profilePic = `<img src="${user.imageUrl}">`;
-  }
-  return `
-  <a class="result" href="/user/${user.username}">
-    <div>
-      <div class="user-info">
-        <div class="profile-pic">
-          ${profilePic}
-        </div>
-        <div class="user-details">
-          <div class="name">${user.name}</div>
-          <div class="username">@${user.username}</div>
-        </div>
-      </div>
-    </div>
-  </a>`;
-};
-
-const getHashtagResultTemplate = function (hashtag) {
-  const hashtagTemplate = `
-<a class="result" href="/hashtag/${hashtag}">
-    <div class="name"><span class="hashtag">#${hashtag}</span></div>
-</a>`;
-  return hashtagTemplate;
-};
-
 const displayResults = function (results, searchInput) {
   const templateCreator = {
     '#': getHashtagResultTemplate,

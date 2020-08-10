@@ -56,22 +56,8 @@ const deletePost = function (postId) {
 };
 
 const showDeletePostPopup = function (postId) {
-  const deletePopupHtml = `
-  <div class="delete-popup center">
-    <div class="delete-popup-heading">Delete Post?</div>
-    <div class="row delete-popup-message">This can’t be undone and it will be 
-    removed from your profile, 
-    the timeline of any accounts that follow you.</div>
-    <div class="row action-btn">
-      <button class="primary-btn" onclick="removePopup()">Cancel</button>
-      <button
-      class="primary-btn delete-btn"
-      onclick="deletePost(${postId})">Delete</button>
-    </div>
-  </div>
-  `;
   const element = document.createElement('div');
-  element.innerHTML = deletePopupHtml;
+  element.innerHTML = createDeletePostPopup(postId);
   displayPopup(element);
 };
 
@@ -83,39 +69,8 @@ const sendReply = function (postId) {
 const replyToPost = function (postId) {
   event.stopPropagation();
   const [userInfo, message] = document.querySelectorAll(`#post-${postId} .row`);
-  const replyPopupHtml = `
-  <div class="post popup-create-post">
-  <div class="close-btn" onclick="removePopup()">
-    <i class="fas fa-times"></i>
-  </div>
-  ${userInfo.outerHTML}
-  ${message.outerHTML}
-  <div class="row replying-to">
-    Replying to ${userInfo.querySelector('.username').outerHTML}
-  </div>
-  <div class="row">
-    <div
-      class="content big-content"
-      id="replyMessage"
-      contenteditable=""
-      data-placeholder="Post your Reply"
-    ></div>
-    </div>
-      <div class="row right-aligned">
-    <div class="counter"><span id="popupCharCount">180</span></div>
-    <button
-      class="primary-btn disable-primary-btn"
-      id="popupReplyBtn"
-      onclick="sendReply(${postId})"
-    >
-      Reply
-    </button>
-  </div>
-  </div>
-  `;
   const element = document.createElement('div');
-  element.classList.add('center');
-  element.innerHTML = replyPopupHtml;
+  element.innerHTML = replyToPostPopup(userInfo, message, postId);
   displayPopup(element);
   setupCharCounter('popupCharCount', 'replyMessage', 'popupReplyBtn');
 };
@@ -126,35 +81,9 @@ const showPostPopup = function (initials, imageUrl) {
     profilePic = `<img src="${imageUrl}">`;
   }
   event.stopPropagation();
-  const postPopupHtml = `
-  <div class="post popup-create-post">
-  <div class="close-btn" onclick="removePopup()">
-    <i class="fas fa-times"></i>
-  </div>
-  <div class="row">
-  <div class="profile-pic">${profilePic} </div>
-    <div
-      class="content big-content"
-      id="popupPostMessage"
-      contenteditable=""
-      data-placeholder="What's Happening?"
-    ></div>
-    </div>
-      <div class="row right-aligned">
-    <div class="counter"><span id="popupCharCount">180</span></div>
-    <button
-      class="primary-btn disable-primary-btn"
-      id="popupPostBtn"
-      onclick="postMessage('popupPostMessage')"
-    >
-      Post
-    </button>
-  </div>
-  </div>
-  `;
   const element = document.createElement('div');
   element.classList.add('center');
-  element.innerHTML = postPopupHtml;
+  element.innerHTML = createPostPopup(profilePic);
   displayPopup(element);
   setupCharCounter('popupCharCount', 'popupPostMessage', 'popupPostBtn');
 };
