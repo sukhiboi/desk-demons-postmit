@@ -75,15 +75,11 @@ const replyToPost = function (postId) {
   setupCharCounter('popupCharCount', 'replyMessage', 'popupReplyBtn');
 };
 
-const showPostPopup = function (initials, imageUrl) {
-  let profilePic = `<span class="center">${initials}</span>`;
-  if (imageUrl) {
-    profilePic = `<img src="${imageUrl}">`;
-  }
+const showPostPopup = function () {
   event.stopPropagation();
   const element = document.createElement('div');
   element.classList.add('center');
-  element.innerHTML = createPostPopup(profilePic);
+  element.innerHTML = createPostPopup();
   displayPopup(element);
   setupCharCounter('popupCharCount', 'popupPostMessage', 'popupPostBtn');
 };

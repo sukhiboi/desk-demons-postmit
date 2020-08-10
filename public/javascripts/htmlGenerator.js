@@ -100,7 +100,8 @@ const replyToPostPopup = function (userInfo, message, postId) {
   `;
 };
 
-const createPostPopup = function (profilePic) {
+const createPostPopup = function () {
+  const profilePic = document.querySelector('.logout-profile-pic').innerHTML;
   return `
   <div class="post popup-create-post">
   <div class="close-btn" onclick="removePopup()">
@@ -156,4 +157,17 @@ const getHashtagResultTemplate = function (hashtag) {
     <div class="name"><span class="hashtag">#${hashtag}</span></div>
 </a>`;
   return hashtagTemplate;
+};
+
+const createSearchResults = function (results, searchInput) {
+  const templateCreator = {
+    '#': getHashtagResultTemplate,
+    '@': getUserResultTemplate,
+  };
+  const firstChar = searchInput[0];
+  const creator = templateCreator[firstChar];
+  const html = results.reduce((html, result) => html + creator(result), '');
+  const searchTitle = `
+    <div class="search-info">Searching for "${searchInput}"</div>`;
+  return searchTitle + html;
 };
