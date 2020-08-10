@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "setup-db": "./bin/setup-db.sh",
-    "start": "node server.js 8000",
-    "test": "export NODE_ENV='test' && nyc mocha",
+    "start": "export CONFIG_PATH='./.env' && node server.js",
+    "test": "export CONFIG_PATH='./.test.env' && nyc mocha",
     "lint": "eslint --ignore-pattern 'node_modules/' . --ext .js",
     "setup": "./bin/setup.sh",
     "ci": "npm test && npm run lint"

@@ -7,12 +7,10 @@ const expressApp = require('./lib/routes');
 const App = require('./lib/app');
 const Datastore = require('./lib/datastore');
 const Auth = require('./lib/auth');
+const { CLIENT_ID, CLIENT_SECRET, DB_PATH, PORT } = require('./config');
 
-const clientId = process.env.CLIENT_ID;
-const clientSecret = process.env.CLIENT_SECRET;
-const db = new sqlite3.Database(process.env.DB_PATH);
+const db = new sqlite3.Database(DB_PATH);
 expressApp.locals.app = new App(new Datastore(db));
-expressApp.locals.auth = new Auth(clientId, clientSecret, axios);
+expressApp.locals.auth = new Auth(CLIENT_ID, CLIENT_SECRET, axios);
 
-const [, , PORT] = process.argv;
 expressApp.listen(PORT, () => process.stdout.write(`listening on ${PORT}\n`));
