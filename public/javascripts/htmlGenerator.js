@@ -1,31 +1,37 @@
-const createLogoutPopup = function () {
-  return `<div class="delete-popup center">
-    <div class="delete-popup-heading">Logout</div>
-    <div class="row delete-popup-message">Are you sure you want to logout?</div>
+const createConfirmationPopup = function (details) {
+  const { heading, message, actionBtnHTML } = details;
+  return `
+  <div class="delete-popup center">
+    <div class="delete-popup-heading">${heading}</div>
+    <div class="row delete-popup-message">${message}</div>
     <div class="row action-btn">
       <button class="primary-btn" onclick="removePopup()">Cancel</button>
-      <a href="/logout"><button
-      class="primary-btn delete-btn" >Logout</button></a>
+      ${actionBtnHTML}
     </div>
   </div>
   `;
 };
 
+const createLogoutPopup = function () {
+  const details = {
+    heading: 'Logout?',
+    message: 'Are you sure you want to logout?',
+    actionBtnHTML: `<a href="/logout"><button
+      class="primary-btn delete-btn" >Logout</button></a>`,
+  };
+  return createConfirmationPopup(details);
+};
+
 const createDeletePostPopup = function (postId) {
-  return `
-  <div class="delete-popup center">
-    <div class="delete-popup-heading">Delete Post?</div>
-    <div class="row delete-popup-message">This can’t be undone and it will be 
-    removed from your profile, 
-    the timeline of any accounts that follow you.</div>
-    <div class="row action-btn">
-      <button class="primary-btn" onclick="removePopup()">Cancel</button>
-      <button
+  const details = {
+    heading: 'Delete Post?',
+    message: `This can’t be undone and it will be removed from your profile, 
+              the timeline of any accounts that follow you.`,
+    actionBtnHTML: `<button
       class="primary-btn delete-btn"
-      onclick="deletePost(${postId})">Delete</button>
-    </div>
-  </div>
-  `;
+      onclick="deletePost(${postId})">Delete</button>`,
+  };
+  return createConfirmationPopup(details);
 };
 
 const createEditProfilePopup = function (user) {
