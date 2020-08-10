@@ -1,5 +1,5 @@
 const toggleFollowUnFollow = function (username) {
-  post('/toggleFollow', { username }).then(() => location.reload());
+  post('/toggleFollow', { username }, () => location.reload());
 };
 
 const displayLogoutPopup = function () {

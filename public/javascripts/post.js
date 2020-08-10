@@ -33,34 +33,26 @@ const setupCharCounter = function (counterId, messageId, postBtnId) {
 
 const postMessage = function (textareaId = 'message') {
   const message = document.getElementById(textareaId).innerText;
-  post('/add-new-post', { message })
-    .then(response => response.json())
-    .then(reloadOnStatus);
+  post('/add-new-post', { message }, reloadOnStatus);
 };
 
 const toggleLikeUnlike = function (postId) {
   event.stopPropagation();
-  post('/toggleLike', { postId })
-    .then(response => response.json())
-    .then(reloadOnStatus);
+  post('/toggleLike', { postId }, reloadOnStatus);
 };
 
 const toggleBookmark = function (postId) {
   event.stopPropagation();
-  post('/toggleBookmark', { postId })
-    .then(response => response.json())
-    .then(reloadOnStatus);
+  post('/toggleBookmark', { postId }, reloadOnStatus);
 };
 
 const toggleRepost = function (postId) {
   event.stopPropagation();
-  post('/toggleRepost', { postId })
-    .then(response => response.json())
-    .then(reloadOnStatus);
+  post('/toggleRepost', { postId }, reloadOnStatus);
 };
 
 const deletePost = function (postId) {
-  post('/deletePost', { postId }).then(reloadOnStatus);
+  post('/deletePost', { postId }, reloadOnStatus);
 };
 
 const showDeletePostPopup = function (postId) {
@@ -85,9 +77,7 @@ const showDeletePostPopup = function (postId) {
 
 const sendReply = function (postId) {
   const message = document.getElementById('replyMessage').innerText;
-  post('/saveResponse', { postId, message })
-    .then(response => response.json())
-    .then(reloadOnStatus);
+  post('/saveResponse', { postId, message }, reloadOnStatus);
 };
 
 const replyToPost = function (postId) {

@@ -47,7 +47,7 @@ const search = function (searchInput) {
     searchResults.innerHTML = '';
     return;
   }
-  post('/search', { searchInput })
-    .then(response => response.json())
-    .then(results => displayResults(results, searchInput));
+  post('/search', { searchInput }, results =>
+    displayResults(results, searchInput)
+  );
 };

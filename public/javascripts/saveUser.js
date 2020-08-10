@@ -32,15 +32,13 @@ const usernameValidator = function (element, length) {
     return new Promise(resolve => resolve(lengthValidationResult));
   }
   return new Promise(resolve => {
-    post('/isUsernameAvailable', { username: element.value })
-      .then(response => response.json())
-      .then(({ status }) => {
-        let message = 'username is not available';
-        if (status) {
-          message = '';
-        }
-        resolve({ message, isValid: status });
-      });
+    post('/isUsernameAvailable', { username: element.value }, ({ status }) => {
+      let message = 'username is not available';
+      if (status) {
+        message = '';
+      }
+      resolve({ message, isValid: status });
+    });
   });
 };
 
@@ -52,7 +50,7 @@ const dateValidator = function (element) {
     message = '';
   }
   if (new Date().getTime() - date.getTime() < 0) {
-    message = 'Date of Birth can\'t be in future';
+    message = "Date of Birth can't be in future";
   }
   return { message, isValid: message === '' };
 };
@@ -98,15 +96,13 @@ const saveUser = async function (username, imageUrl) {
     const userDetails = await validateFieldsAndGenerateData(fields);
     userDetails.githubUsername = username;
     userDetails.imageUrl = imageUrl;
-    post('/save-user', userDetails)
-      .then(response => response.json())
-      .then(({ status }) => {
-        if (status) {
-          window.location.href = '/home';
-        } else {
-          window.location.href = '/auth';
-        }
-      });
+    post('/save-user', userDetails, ({ status }) => {
+      if (status) {
+        window.location.href = '/home';
+      } else {
+        window.location.href = '/auth';
+      }
+    });
   } catch (err) {
     return err;
   }
@@ -115,15 +111,13 @@ const saveUser = async function (username, imageUrl) {
 const editProfile = async function () {
   try {
     const userDetails = await validateFieldsAndGenerateData(fields);
-    post('/edit-profile', userDetails)
-      .then(response => response.json())
-      .then(({ status }) => {
-        if (status) {
-          window.location.href = `/user/${userDetails.username}`;
-        } else {
-          location.reload();
-        }
-      });
+    post('/edit-profile', userDetails, ({ status }) => {
+      if (status) {
+        window.location.href = `/user/${userDetails.username}`;
+      } else {
+        location.reload();
+      }
+    });
   } catch (err) {
     return err;
   }
