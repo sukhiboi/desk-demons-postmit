@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 const sinon = require('sinon');
-const Auth = require('../lib/auth');
+const Auth = require('../src/auth');
 
 describe('#Auth ', () => {
   const clientId = 12345;

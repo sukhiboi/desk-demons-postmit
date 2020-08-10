@@ -1,4 +1,4 @@
-const { extractInitials } = require('./../lib/helperFunctions');
+const { extractInitials } = require('./../src/helperFunctions');
 const { assert } = require('chai');
 
 describe('#Helper Functions', () => {

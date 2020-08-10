@@ -1,8 +1,8 @@
 const request = require('supertest');
 const sinon = require('sinon');
-const expressApp = require('../lib/routes');
-const App = require('../lib/app');
-const Auth = require('../lib/auth');
+const expressApp = require('../src/routes');
+const App = require('../src/app');
+const Auth = require('../src/auth');
 
 const OK_STATUS_CODE = 200;
 const FOUND_STATUS_CODE = 302;

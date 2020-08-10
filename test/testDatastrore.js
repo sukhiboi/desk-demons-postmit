@@ -1,6 +1,6 @@
 const sinon = require('sinon');
 const { assert } = require('chai');
-const Datastore = require('../lib/datastore');
+const Datastore = require('../src/datastore');
 
 describe('#Datastore', () => {
   const expectedTableError = new Error('Error: table not found');

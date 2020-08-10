@@ -3,10 +3,10 @@ require('dotenv').config();
 const sqlite3 = require('sqlite3').verbose();
 const axios = require('axios');
 
-const expressApp = require('./lib/routes');
-const App = require('./lib/app');
-const Datastore = require('./lib/datastore');
-const Auth = require('./lib/auth');
+const expressApp = require('./src/routes');
+const App = require('./src/app');
+const Datastore = require('./src/datastore');
+const Auth = require('./src/auth');
 const { CLIENT_ID, CLIENT_SECRET, DB_PATH, PORT } = require('./config');
 
 const db = new sqlite3.Database(DB_PATH);

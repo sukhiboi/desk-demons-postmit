@@ -1,6 +1,6 @@
 const sinon = require('sinon');
 const { assert } = require('chai');
-const App = require('../lib/app');
+const App = require('../src/app');
 
 describe('#App', () => {
   const userId = 1;
