@@ -10,13 +10,13 @@ const queries = {
   select: select,
   insert: insert,
   getPost:
-    'SELECT * FROM posts join users on users.userId=posts.userId WHERE posts.postId=?',
+    'SELECT * FROM posts JOIN users ON users.userId=posts.userId WHERE posts.postId=?',
   userPosts:
-    'select * from posts join users on posts.userId=users.userId where posts.userId=? ORDER BY posts.postedAt DESC;',
+    'SELECT * FROM posts JOIN users ON posts.userId=users.userId WHERE posts.userId=? ORDER BY posts.postedAt DESC;',
   following:
-    'select users.* from followers join users on followers.followerId=users.userId where followers.userId=?;',
+    'SELECT users.* FROM followers JOIN users ON followers.followerId=users.userId WHERE followers.userId=?;',
   followers:
-    'select users.* from followers join users on followers.userId=users.userId where followers.followerId=?;',
+    'SELECT users.* FROM followers JOIN users ON followers.userId=users.userId WHERE followers.followerId=?;',
   savePost:
     "INSERT INTO posts(postId, userId, message, postedAt) VALUES(?, ?, ?, datetime('now','localtime'));",
   unlikePost: 'DELETE FROM likes WHERE postId=? AND userId=?',
@@ -28,30 +28,30 @@ const queries = {
   saveUser:
     "INSERT INTO users(username, githubUsername, name, bio, dob, joinedDate, imageUrl) VALUES(?, ?, ?, ?, ?, date('now'), ?) ",
   likedPosts:
-    'SELECT posts.*,users.* FROM posts JOIN likes ON posts.postId=likes.postId JOIN users on users.userId=posts.userId WHERE likes.userId=? ORDER BY posts.postedAt DESC',
+    'SELECT posts.*,users.* FROM posts JOIN likes ON posts.postId=likes.postId JOIN users ON users.userId=posts.userId WHERE likes.userId=? ORDER BY posts.postedAt DESC',
   matchingUsers:
-    'SELECT name,username,imageUrl from users where name like ? or username like ?;',
+    'SELECT name,username,imageUrl FROM users WHERE name like ? or username like ?;',
   bookmarks:
     'SELECT posts.*,users.* FROM bookmarks JOIN posts ON bookmarks.postId=posts.postId JOIN users ON users.userId=posts.userId WHERE bookmarks.userId=? ORDER BY posts.postedAt DESC',
   postsByHashtag:
-    'SELECT posts.*,users.* FROM posts JOIN hashtags ON posts.postId=hashtags.postId JOIN users on users.userId=posts.userId WHERE hashtags.hashtag=? ORDER BY posts.postedAt DESC',
+    'SELECT posts.*,users.* FROM posts JOIN hashtags ON posts.postId=hashtags.postId JOIN users ON users.userId=posts.userId WHERE hashtags.hashtag=? ORDER BY posts.postedAt DESC',
   removeBookmark: 'DELETE FROM bookmarks WHERE postId=? AND userId=?;',
   matchingHashtags:
-    'SELECT DISTINCT hashtag from hashtags where hashtag like ?;',
+    'SELECT DISTINCT hashtag FROM hashtags WHERE hashtag like ?;',
   responses:
-    'SELECT posts.*,users.* FROM posts JOIN responses ON posts.postId=responses.responseId JOIN users on users.userId=posts.userId WHERE responses.postId=? ORDER BY posts.postedAt DESC',
+    'SELECT posts.*,users.* FROM posts JOIN responses ON posts.postId=responses.responseId JOIN users ON users.userId=posts.userId WHERE responses.postId=? ORDER BY posts.postedAt DESC',
   replyingTo:
-    'select users.username from users join posts on users.userId=posts.userId join responses on responses.postId=posts.postId where responses.responseId=?;',
+    'SELECT users.username FROM users JOIN posts ON users.userId=posts.userId JOIN responses ON responses.postId=posts.postId WHERE responses.responseId=?;',
   userResponses:
-    'select t1.postId,t1.responseId from responses t1 join posts t2 on t1.responseId=t2.postId where t2.userId=? order by t2.postedAt DESC;',
+    'SELECT t1.postId,t1.responseId FROM responses t1 JOIN posts t2 ON t1.responseId=t2.postId WHERE t2.userId=? order by t2.postedAt DESC;',
   updateUser:
     'UPDATE users SET username=?, name=?, bio=?, dob=? WHERE userId=?',
   reposts:
-    'select posts.*,users.* from posts JOIN reposts ON posts.postId=reposts.postId JOIN users on users.userId=posts.userId where reposts.userId=?',
+    'SELECT posts.*,users.* FROM posts JOIN reposts ON posts.postId=reposts.postId JOIN users ON users.userId=posts.userId WHERE reposts.userId=?',
   allReposts:
-    'select  users.* from reposts join users on reposts.userId=users.userId  where reposts.postId=?;',
+    'SELECT  users.* FROM reposts JOIN users ON reposts.userId=users.userId  WHERE reposts.postId=?;',
   postLikers:
-    'select  users.* from likes join users on likes.userId=users.userId  where likes.postId=?;',
+    'SELECT  users.* FROM likes JOIN users ON likes.userId=users.userId  WHERE likes.postId=?;',
 };
 
 module.exports = queries;
