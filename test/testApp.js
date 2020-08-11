@@ -120,7 +120,7 @@ describe('#App', () => {
     });
   });
 
-  describe('updatePost()', () => {
+  describe('updatePosts()', () => {
     it('should update the given posts with required details', async () => {
       const getBookmarksStub = sinon.stub().resolves([]);
       const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
@@ -155,7 +155,7 @@ describe('#App', () => {
           isReposted: false,
         },
       ];
-      const actual = await app.updatePost(userId, createDummyPosts());
+      const actual = await app.updatePosts(userId, createDummyPosts());
       assert.deepStrictEqual(actual, expected);
       sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
     });
@@ -164,7 +164,7 @@ describe('#App', () => {
       const getAllPostLikersStub = sinon.stub().rejects(expectedTableError);
       const app = createApp({ getAllPostLikers: getAllPostLikersStub });
       try {
-        await app.updatePost(userId, createDummyPosts());
+        await app.updatePosts(userId, createDummyPosts());
       } catch (err) {
         assert.deepStrictEqual(err, expectedTableError);
         sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);

@@ -59,7 +59,7 @@ class App {
     return updatedPost;
   }
 
-  async updatePost(userId, posts) {
+  async updatePosts(userId, posts) {
     const updatedPosts = posts.map(async post => {
       const updatedPost = await this.updatePostActions(userId, post);
       updatedPost.initials = extractInitials(post.name);
@@ -78,9 +78,9 @@ class App {
 
   async getPostDetails(postId) {
     const post = await this.datastore.getPost(postId);
-    const [postDetails] = await this.updatePost(this.userId, [post]);
+    const [postDetails] = await this.updatePosts(this.userId, [post]);
     const responseIds = await this.datastore.getAllResponses(postId);
-    const responses = await this.updatePost(this.userId, responseIds);
+    const responses = await this.updatePosts(this.userId, responseIds);
     return {
       fullName: this.fullName,
       post: postDetails,
@@ -100,7 +100,7 @@ class App {
     });
     const posts = await Promise.all(postIds);
     const sortedPosts = sortByDate(posts.flat());
-    const updatedPosts = await this.updatePost(this.userId, sortedPosts);
+    const updatedPosts = await this.updatePosts(this.userId, sortedPosts);
     return {
       fullName: this.fullName,
       loggedUser: this.username,
@@ -183,7 +183,7 @@ class App {
         responses.push([{ ...postData, parentPost: true }, responseData]);
       }
     }
-    const promises = responses.map(post => this.updatePost(this.userId, post));
+    const promises = responses.map(post => this.updatePosts(this.userId, post));
     const responsesValues = await Promise.all(promises);
     return responsesValues.flat();
   }
@@ -192,11 +192,11 @@ class App {
     const userPosts = await this.datastore.getUserPosts(user.userId);
     const reposts = await this.getReposts(user.userId, user.username);
     const rawLikedPosts = await this.datastore.getLikedPosts(user.userId);
-    const likedPosts = await this.updatePost(this.userId, rawLikedPosts);
+    const likedPosts = await this.updatePosts(this.userId, rawLikedPosts);
     const responsePosts = await this.getUserResponsesWithPosts(user.userId);
     userPosts.push(...reposts);
     const sortedPosts = sortByDate(userPosts);
-    const posts = await this.updatePost(this.userId, sortedPosts);
+    const posts = await this.updatePosts(this.userId, sortedPosts);
     return { posts, likedPosts, responsePosts };
   }
 
@@ -317,7 +317,7 @@ class App {
   async getHashtagRelatedPosts(hashtag) {
     const posts = await this.datastore.getPostsByHashtag(hashtag);
     return {
-      posts: await this.updatePost(this.userId, posts),
+      posts: await this.updatePosts(this.userId, posts),
       fullName: this.fullName,
       loggedUser: this.username,
       hashtag,
@@ -341,7 +341,7 @@ class App {
 
   async getBookmarks() {
     const bookmarks = await this.datastore.getBookmarks(this.userId);
-    const posts = await this.updatePost(this.userId, bookmarks);
+    const posts = await this.updatePosts(this.userId, bookmarks);
     return {
       posts,
       loggedUser: this.username,
