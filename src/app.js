@@ -41,10 +41,7 @@ class App {
 
   async getReposts(userId, username) {
     const reposts = await this.datastore.getRepostsByUserId(userId);
-    reposts.forEach(repost => {
-      repost.repostedBy = username;
-    });
-    return reposts;
+    return reposts.map(repost => ({ ...repost, repostedBy: username }));
   }
 
   // eslint-disable-next-line max-statements
@@ -63,11 +60,9 @@ class App {
   }
 
   async updatePost(userId, posts) {
-    // eslint-disable-next-line max-statements
     const updatedPosts = posts.map(async post => {
-      const user = await this.datastore.getUserDetails(post.userId);
       const updatedPost = await this.updatePostActions(userId, post);
-      updatedPost.initials = extractInitials(user.name);
+      updatedPost.initials = extractInitials(post.name);
       updatedPost.postedAt = post.postedAt;
       updatedPost.mentions = await this.getValidMentions(post.message);
       const hashtags = await this.datastore.getHashtagsByPostId(post.postId);
@@ -76,7 +71,7 @@ class App {
       if (replyingTo) {
         updatedPost.replyingTo = replyingTo.username;
       }
-      return { ...user, ...updatedPost };
+      return updatedPost;
     });
     return await Promise.all(updatedPosts);
   }
@@ -98,11 +93,10 @@ class App {
 
   async getUserFeed() {
     const followings = await this.datastore.getFollowing(this.userId);
-    const usersIds = [{ userId: this.userId }, ...followings];
-    const postIds = usersIds.map(async user => {
-      const { username } = await this.datastore.getUserDetails(user.userId);
+    followings.push({ userId: this.userId, username: this.username });
+    const postIds = followings.map(async user => {
       const posts = await this.datastore.getUserPosts(user.userId);
-      return posts.concat(await this.getReposts(user.userId, username));
+      return posts.concat(await this.getReposts(user.userId, user.username));
     });
     const posts = await Promise.all(postIds);
     const sortedPosts = sortByDate(posts.flat());

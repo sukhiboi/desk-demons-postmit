@@ -9,8 +9,12 @@ const insert = function (table) {
 const queries = {
   select: select,
   insert: insert,
-  userPosts: 'SELECT * FROM posts WHERE userId=? ORDER BY postedAt DESC',
-  following: 'SELECT followerId as userId FROM followers WHERE userId=?',
+  getPost:
+    'SELECT * FROM posts join users on users.userId=posts.userId WHERE posts.postId=?',
+  userPosts:
+    'select * from posts join users on posts.userId=users.userId where posts.userId=? ORDER BY posts.postedAt DESC;',
+  following:
+    'select users.* from followers join users on followers.followerId=users.userId where followers.userId=?;',
   savePost:
     "INSERT INTO posts(postId, userId, message, postedAt) VALUES(?, ?, ?, datetime('now','localtime'));",
   unlikePost: 'DELETE FROM likes WHERE postId=? AND userId=?',
@@ -22,26 +26,27 @@ const queries = {
   saveUser:
     "INSERT INTO users(username, githubUsername, name, bio, dob, joinedDate, imageUrl) VALUES(?, ?, ?, ?, ?, date('now'), ?) ",
   likedPosts:
-    'SELECT t1.postId,t1.userId,t1.message,t1.postedAt FROM posts t1 JOIN likes t2 ON t1.postId=t2.postId WHERE t2.userId=? ORDER BY t1.postedAt DESC',
+    'SELECT posts.*,users.* FROM posts JOIN likes ON posts.postId=likes.postId JOIN users on users.userId=posts.userId WHERE likes.userId=? ORDER BY posts.postedAt DESC',
   matchingUsers:
     'SELECT name,username,imageUrl from users where name like ? or username like ?;',
   bookmarks:
-    'SELECT t2.postId,t2.userId,t2.message,t2.postedAt FROM bookmarks t1 JOIN posts t2 ON t1.postId=t2.postId WHERE t1.userId=? ORDER BY t2.postedAt DESC',
+    'SELECT posts.*,users.* FROM bookmarks JOIN posts ON bookmarks.postId=posts.postId JOIN users ON users.userId=posts.userId WHERE bookmarks.userId=? ORDER BY posts.postedAt DESC',
   postsByHashtag:
-    'SELECT t1.postId,t1.userId,t1.message,t1.postedAt FROM posts t1 JOIN hashtags t2 ON t1.postId=t2.postId WHERE t2.hashtag=? ORDER BY t1.postedAt DESC',
+    'SELECT posts.*,users.* FROM posts JOIN hashtags ON posts.postId=hashtags.postId JOIN users on users.userId=posts.userId WHERE hashtags.hashtag=? ORDER BY posts.postedAt DESC',
   removeBookmark: 'DELETE FROM bookmarks WHERE postId=? AND userId=?;',
   matchingHashtags:
     'SELECT DISTINCT hashtag from hashtags where hashtag like ?;',
   responses:
-    'SELECT t2.responseId as postId, t1.message, t1.postedAt, t1.userId FROM posts t1 JOIN responses t2 ON t1.postId=t2.responseId WHERE t2.postId=? ORDER BY t1.postedAt DESC',
+    'SELECT posts.*,users.* FROM posts JOIN responses ON posts.postId=responses.responseId JOIN users on users.userId=posts.userId WHERE responses.postId=? ORDER BY posts.postedAt DESC',
   replyingTo:
     'select users.username from users join posts on users.userId=posts.userId join responses on responses.postId=posts.postId where responses.responseId=?;',
   userResponses:
     'select t1.postId,t1.responseId from responses t1 join posts t2 on t1.responseId=t2.postId where t2.userId=? order by t2.postedAt DESC;',
   updateUser:
     'UPDATE users SET username=?, name=?, bio=?, dob=? WHERE userId=?',
-  reposts: `select t1.postId, t1.userId, t1.message, t1.postedAt from posts t1 JOIN reposts t2 ON t1.postId=t2.postId where t2.userId=?`,
-  allReposts: `select * from reposts where postId=?`,
+  reposts:
+    'select posts.*,users.* from posts JOIN reposts ON posts.postId=reposts.postId JOIN users on users.userId=posts.userId where reposts.userId=?',
+  allReposts: 'select * from reposts where postId=?',
 };
 
 module.exports = queries;

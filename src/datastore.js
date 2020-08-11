@@ -131,7 +131,7 @@ class Datastore {
   }
 
   getPost(postId) {
-    return this.get(queries.select('posts', 'postId', '*'), [postId]);
+    return this.get(queries.getPost, [postId]);
   }
 
   getHashtagsByPostId(postId) {

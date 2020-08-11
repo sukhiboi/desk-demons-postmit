@@ -11,15 +11,16 @@ describe('#Handlers', () => {
   const userId = 1;
   const postId = 1;
   const hashtags = [{ hashtag: 'html' }];
-  const responses = [
-    { postId: 2, message: 'hi', postedAt: new Date(), userId },
-  ];
 
   const userDetails = {
     name: 'john samuel',
     username: 'john',
     userId: userId,
   };
+
+  const responses = [
+    { postId: 2, message: 'hi', postedAt: new Date(), ...userDetails },
+  ];
 
   const createApp = function (datastore) {
     const app = new App(datastore);
@@ -31,7 +32,7 @@ describe('#Handlers', () => {
 
   const createDummyPosts = function () {
     return [
-      { postId: postId, userId: userId, postedAt: new Date(), message: 'hi' },
+      { postId: postId, ...userDetails, postedAt: new Date(), message: 'hi' },
     ];
   };
 
@@ -245,7 +246,7 @@ describe('#Handlers', () => {
         .expect(OK_STATUS_CODE)
         .expect(() => {
           sinon.assert.calledOnce(getIdByUsernameStub);
-          sinon.assert.calledThrice(getUserDetailsStub);
+          sinon.assert.calledTwice(getUserDetailsStub);
           sinon.assert.calledOnce(getUserPostsStub);
           sinon.assert.calledWith(getUserDetailsStub, 2);
           sinon.assert.calledOnceWithExactly(getUserPostsStub, 2);
@@ -289,7 +290,7 @@ describe('#Handlers', () => {
         .set('Cookie', ['userId=1'])
         .expect(OK_STATUS_CODE)
         .expect(() => {
-          sinon.assert.calledThrice(getUserDetailsStub);
+          sinon.assert.calledTwice(getUserDetailsStub);
           sinon.assert.calledOnce(getUserPostsStub);
           sinon.assert.calledWith(getUserDetailsStub, userId);
           sinon.assert.calledOnceWithExactly(getUserPostsStub, userId);
@@ -353,7 +354,7 @@ describe('#Handlers', () => {
         .expect(OK_STATUS_CODE)
         .expect(() => {
           sinon.assert.calledOnce(getIdByUsernameStub);
-          sinon.assert.calledThrice(getUserDetailsStub);
+          sinon.assert.calledTwice(getUserDetailsStub);
           sinon.assert.calledOnce(getUserPostsStub);
         })
         .expect(/jani/, done);
@@ -382,7 +383,7 @@ describe('#Handlers', () => {
         .expect(OK_STATUS_CODE)
         .expect(() => {
           sinon.assert.calledOnce(getIdByUsernameStub);
-          sinon.assert.calledThrice(getUserDetailsStub);
+          sinon.assert.calledTwice(getUserDetailsStub);
           sinon.assert.calledOnce(getUserPostsStub);
           sinon.assert.calledWith(getUserDetailsStub, userId);
           sinon.assert.calledOnceWithExactly(getUserPostsStub, userId);
@@ -450,7 +451,7 @@ describe('#Handlers', () => {
         .expect(OK_STATUS_CODE)
         .expect(() => {
           sinon.assert.calledOnce(getIdByUsernameStub);
-          sinon.assert.callCount(getUserDetailsStub, 4);
+          sinon.assert.calledTwice(getUserDetailsStub);
           sinon.assert.calledOnce(getUserPostsStub);
         })
         .expect(/jani/, done);
@@ -480,7 +481,7 @@ describe('#Handlers', () => {
         .expect(OK_STATUS_CODE)
         .expect(() => {
           sinon.assert.calledOnce(getIdByUsernameStub);
-          sinon.assert.callCount(getUserDetailsStub, 4);
+          sinon.assert.calledTwice(getUserDetailsStub);
           sinon.assert.calledOnce(getUserPostsStub);
           sinon.assert.calledOnceWithExactly(getUserPostsStub, userId);
         })
@@ -687,8 +688,8 @@ describe('#Handlers', () => {
   describe('GET /post/:postId', () => {
     it('should response back with postDetails', done => {
       const expectedPost = {
+        ...userDetails,
         postId,
-        userId,
         postedAt: new Date(),
         message: 'hello',
       };
@@ -716,7 +717,7 @@ describe('#Handlers', () => {
         .set('Cookie', ['userId=1'])
         .expect(() => {
           sinon.assert.calledOnceWithExactly(getPostStub, postId);
-          sinon.assert.calledThrice(getUserDetailsStub);
+          sinon.assert.calledOnceWithExactly(getUserDetailsStub, userId);
           sinon.assert.calledTwice(getAllPostLikersStub);
         })
         .expect(/hello/, done);
@@ -725,7 +726,7 @@ describe('#Handlers', () => {
 
   describe('GET /post/:postId/likes', () => {
     it('should response back with user who like that post', done => {
-      const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
+      const getAllPostLikersStub = sinon.stub().resolves([userDetails]);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getFollowersStub = sinon.stub().resolves([]);
       const app = createApp({
@@ -751,8 +752,8 @@ describe('#Handlers', () => {
       const post = {
         postId,
         postedAt: new Date(),
-        userId,
         message: 'hi #html',
+        ...userDetails,
       };
       const getPostsByHashtagStub = sinon.stub().resolves([post]);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
@@ -778,7 +779,7 @@ describe('#Handlers', () => {
         .set('Cookie', ['userId=1'])
         .expect(() => {
           sinon.assert.calledOnceWithExactly(getPostsByHashtagStub, 'html');
-          sinon.assert.calledTwice(getUserDetailsStub);
+          sinon.assert.calledOnceWithExactly(getUserDetailsStub, userId);
           sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
           sinon.assert.calledOnceWithExactly(getHashtagsByPostIdStub, postId);
         })
@@ -811,7 +812,7 @@ describe('#Handlers', () => {
         .expect(OK_STATUS_CODE)
         .expect(() => {
           sinon.assert.calledTwice(getBookmarksStub);
-          sinon.assert.calledTwice(getUserDetailsStub);
+          sinon.assert.calledOnceWithExactly(getUserDetailsStub, userId);
           sinon.assert.calledOnce(getAllPostLikersStub);
           sinon.assert.calledOnce(getHashtagsByPostIdStub);
         })
