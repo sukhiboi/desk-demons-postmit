@@ -62,7 +62,7 @@ class Datastore {
   }
 
   getAllPostLikers(postId) {
-    return this.all(queries.select('likes', 'postId', 'userId'), [postId]);
+    return this.all(queries.postLikers, [postId]);
   }
 
   savePost(userId, postId, content) {
@@ -98,8 +98,7 @@ class Datastore {
   }
 
   getFollowers(userId) {
-    const query = queries.select('followers', 'followerId', 'userId');
-    return this.all(query, [userId]);
+    return this.all(queries.followers, [userId]);
   }
 
   getIdByUsername(username) {

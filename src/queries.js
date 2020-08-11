@@ -15,6 +15,8 @@ const queries = {
     'select * from posts join users on posts.userId=users.userId where posts.userId=? ORDER BY posts.postedAt DESC;',
   following:
     'select users.* from followers join users on followers.followerId=users.userId where followers.userId=?;',
+  followers:
+    'select users.* from followers join users on followers.userId=users.userId where followers.followerId=?;',
   savePost:
     "INSERT INTO posts(postId, userId, message, postedAt) VALUES(?, ?, ?, datetime('now','localtime'));",
   unlikePost: 'DELETE FROM likes WHERE postId=? AND userId=?',
@@ -46,7 +48,10 @@ const queries = {
     'UPDATE users SET username=?, name=?, bio=?, dob=? WHERE userId=?',
   reposts:
     'select posts.*,users.* from posts JOIN reposts ON posts.postId=reposts.postId JOIN users on users.userId=posts.userId where reposts.userId=?',
-  allReposts: 'select * from reposts where postId=?',
+  allReposts:
+    'select  users.* from reposts join users on reposts.userId=users.userId  where reposts.postId=?;',
+  postLikers:
+    'select  users.* from likes join users on likes.userId=users.userId  where likes.postId=?;',
 };
 
 module.exports = queries;

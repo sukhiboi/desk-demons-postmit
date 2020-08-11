@@ -620,7 +620,7 @@ describe('#Handlers', () => {
     it('should serve followings of given user', done => {
       const datastore = {
         getUserDetails: sinon.stub().resolves(userDetails),
-        getFollowing: sinon.stub().resolves([{ userId: 2 }]),
+        getFollowing: sinon.stub().resolves([{ userId: 2, name: 'Ram' }]),
         getFollowers: sinon.stub().resolves([]),
         getIdByUsername: sinon.stub().resolves({ userId }),
       };
@@ -630,7 +630,7 @@ describe('#Handlers', () => {
         .set('Cookie', ['userId=1'])
         .expect(OK_STATUS_CODE)
         .expect(() => {
-          sinon.assert.calledThrice(datastore.getUserDetails);
+          sinon.assert.calledTwice(datastore.getUserDetails);
           sinon.assert.calledOnce(datastore.getFollowing);
           sinon.assert.calledOnce(datastore.getIdByUsername);
         })
@@ -643,7 +643,7 @@ describe('#Handlers', () => {
       const datastore = {
         getUserDetails: sinon.stub().resolves(userDetails),
         getFollowing: sinon.stub().resolves([]),
-        getFollowers: sinon.stub().resolves([{ userId: 2 }]),
+        getFollowers: sinon.stub().resolves([{ userId: 2, name: 'Ram' }]),
         getIdByUsername: sinon.stub().resolves({ userId }),
       };
       expressApp.locals.app = createApp(datastore);
@@ -652,7 +652,7 @@ describe('#Handlers', () => {
         .set('Cookie', ['userId=1'])
         .expect(OK_STATUS_CODE)
         .expect(() => {
-          sinon.assert.calledThrice(datastore.getUserDetails);
+          sinon.assert.calledTwice(datastore.getUserDetails);
           sinon.assert.calledTwice(datastore.getFollowers);
           sinon.assert.calledOnce(datastore.getIdByUsername);
         })
@@ -740,7 +740,7 @@ describe('#Handlers', () => {
         .set('Cookie', ['userId=1'])
         .expect(() => {
           sinon.assert.calledOnceWithExactly(getFollowersStub, userId);
-          sinon.assert.calledTwice(getUserDetailsStub);
+          sinon.assert.calledOnceWithExactly(getUserDetailsStub, userId);
           sinon.assert.calledOnceWithExactly(getAllPostLikersStub, postId);
         })
         .expect(/john/, done);
@@ -959,7 +959,7 @@ describe('#Handlers', () => {
 
   describe('POST /post/:postId/reposts', () => {
     it('should update the user details', done => {
-      const getAllRepostsStub = sinon.stub().resolves([{ userId }]);
+      const getAllRepostsStub = sinon.stub().resolves([userDetails]);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getFollowersStub = sinon.stub().resolves([]);
       expressApp.locals.app = createApp({

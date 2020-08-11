@@ -245,9 +245,8 @@ class App {
   }
 
   async updateUsersList(list) {
-    const updatedList = list.map(async ({ userId }) => {
-      const user = await this.datastore.getUserDetails(userId);
-      const followers = await this.datastore.getFollowers(userId);
+    const updatedList = list.map(async user => {
+      const followers = await this.datastore.getFollowers(user.userId);
       user.initials = extractInitials(user.name);
       user.isFollowingMe = isUserPresentInList(this.userId, followers);
       return user;
