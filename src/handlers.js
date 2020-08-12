@@ -1,4 +1,9 @@
 const serveIndexPage = async function (request, response) {
+  const userId = request.cookies.userId;
+  if (userId) {
+    response.redirect('/home');
+    return;
+  }
   response.render('index');
 };
 

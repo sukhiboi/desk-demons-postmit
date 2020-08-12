@@ -34,6 +34,13 @@ describe('#Handlers', () => {
         .expect(OK_STATUS_CODE)
         .expect(/POSTMIT/, done);
     });
+    it('should serve the home page when the user is already loggedin', done => {
+      request(expressApp)
+        .get('/')
+        .set('Cookie', ['userId=1'])
+        .expect(FOUND_STATUS_CODE)
+        .expect(/Found. Redirecting to \/home/, done);
+    });
   });
 
   describe('GET /auth', () => {
