@@ -5,22 +5,18 @@ const {
 } = require('./helperFunctions');
 
 class User {
-  constructor(datastore) {
+  constructor(datastore, details) {
     this.datastore = datastore;
-    this.username;
-    this.fullName;
-    this.userId;
+    this.userId = details.userId;
+    this.username = details.username;
+    this.fullName = details.name;
+    this.imageUrl = details.imageUrl;
+    this.initials = extractInitials(details.name);
   }
 
-  async updateUser(userId) {
-    const { name, username, imageUrl } = await this.datastore.getUserDetails(
-      userId
-    );
-    this.username = username;
-    this.fullName = name;
-    this.userId = userId;
-    this.imageUrl = imageUrl;
-    this.initials = extractInitials(name);
+  static async create(datastore, userId) {
+    const details = await datastore.getUserDetails(userId);
+    return new User(datastore, details);
   }
 
   async getValidMentions(message) {
@@ -32,7 +28,7 @@ class User {
         .getIdByUsername(username)
         .catch(() => {});
       if (user && user.userId) {
-        validMentions.push(mention.slice(1));
+        validMentions.push(username);
       }
     }
     return validMentions;
@@ -140,19 +136,19 @@ class User {
     return this.datastore.removePost(postId);
   }
 
-  async isUsernameAvailable(username) {
-    if (username === this.username) {
-      return true;
-    }
-    const id = await this.datastore.getIdByUsername(username);
-    return id === undefined;
-  }
+  // async isUsernameAvailable(username) {
+  //   if (username === this.username) {
+  //     return true;
+  //   }
+  //   const id = await this.datastore.getIdByUsername(username);
+  //   return id === undefined;
+  // }
 
-  async saveUser(userDetails) {
-    const { username } = userDetails;
-    await this.datastore.saveUser(userDetails);
-    return await this.datastore.getIdByUsername(username);
-  }
+  // async saveUser(userDetails) {
+  //   const { username } = userDetails;
+  //   await this.datastore.saveUser(userDetails);
+  //   return await this.datastore.getIdByUsername(username);
+  // }
 
   // eslint-disable-next-line max-statements
   async getUserResponsesWithPosts(userId) {
@@ -285,9 +281,9 @@ class User {
     };
   }
 
-  async getUserId(githubUsername) {
-    return await this.datastore.getIdByGithubUsername(githubUsername);
-  }
+  // async getUserId(githubUsername) {
+  //   return await this.datastore.getIdByGithubUsername(githubUsername);
+  // }
 
   async getPostLikers(postId) {
     const likedUserIds = await this.datastore.getAllPostLikers(postId);

@@ -1,7 +1,6 @@
 const request = require('supertest');
 const sinon = require('sinon');
 const expressApp = require('../src/routes');
-const User = require('../src/user');
 const Auth = require('../src/auth');
 
 const OK_STATUS_CODE = 200;
@@ -22,14 +21,6 @@ describe('#Handlers', () => {
     { postId: 2, message: 'hi', postedAt: new Date(), ...userDetails },
   ];
 
-  const createUser = function (datastore) {
-    const user = new User(datastore);
-    user.userId = userId;
-    user.username = userDetails.username;
-    user.fullName = userDetails.name;
-    return user;
-  };
-
   const createDummyPosts = function () {
     return [
       { postId: postId, ...userDetails, postedAt: new Date(), message: 'hi' },
@@ -38,13 +29,111 @@ describe('#Handlers', () => {
 
   describe('GET /', () => {
     it('should serve the login page', done => {
-      const getUserDetailsStub = sinon.stub().resolves(userDetails);
-      const user = createUser({ getUserDetails: getUserDetailsStub });
-      expressApp.locals.user = user;
       request(expressApp)
         .get('/')
         .expect(OK_STATUS_CODE)
         .expect(/POSTMIT/, done);
+    });
+  });
+
+  describe('GET /auth', () => {
+    it('should redirect me to the authorize url', done => {
+      const auth = sinon.createStubInstance(Auth);
+      auth.getAuthorizeUrl = sinon.stub().returns('/redirect');
+      expressApp.locals.auth = auth;
+      request(expressApp)
+        .get('/auth')
+        .expect(FOUND_STATUS_CODE)
+        .expect(/Found. Redirecting to \/redirect/, done);
+    });
+  });
+
+  describe('GET /callback', () => {
+    it('should redirect to /home if userId cookie is present', done => {
+      const getIdByGithubUsernameStub = sinon.stub().resolves({ userId });
+      const auth = sinon.createStubInstance(Auth);
+      auth.fetchUserDetails = sinon.stub().resolves({ login: 'sukhiboi' });
+      const datastore = { getIdByGithubUsername: getIdByGithubUsernameStub };
+      expressApp.locals.datastore = datastore;
+      expressApp.locals.auth = auth;
+      request(expressApp)
+        .get('/callback?code="12345')
+        .set('Cookie', ['userId=1'])
+        .expect(FOUND_STATUS_CODE)
+        .expect(/Found. Redirecting to \/home/, done);
+    });
+    it('should redirect to / any login error occurred', done => {
+      const auth = sinon.createStubInstance(Auth);
+      auth.fetchUserDetails = sinon.stub().resolves({ login: 'sukhiboi' });
+      expressApp.locals.datastore = {};
+      expressApp.locals.auth = auth;
+      request(expressApp)
+        .get('/callback?error="access denied')
+        .expect(FOUND_STATUS_CODE)
+        .expect(/Found. Redirecting to \//, done);
+    });
+    it('should render extraUserDetails page if iam a new user', done => {
+      const getIdByGithubUsernameStub = sinon.stub().resolves();
+      const auth = sinon.createStubInstance(Auth);
+      auth.fetchUserDetails = sinon.stub().resolves({ login: 'sukhiboi' });
+      const datastore = {
+        getIdByGithubUsername: getIdByGithubUsernameStub,
+      };
+      expressApp.locals.datastore = datastore;
+      expressApp.locals.auth = auth;
+      request(expressApp)
+        .get('/callback?code="12345')
+        .expect(OK_STATUS_CODE)
+        .expect(/sukhiboi/, done);
+    });
+  });
+
+  describe('POST /isUsernameAvailable', () => {
+    it('should respond with true if the username is available', done => {
+      const getIdByUsernameStub = sinon.stub().resolves();
+      expressApp.locals.datastore = { getIdByUsername: getIdByUsernameStub };
+      request(expressApp)
+        .post('/isUsernameAvailable')
+        .send({ username: 'john' })
+        .expect(OK_STATUS_CODE)
+        .expect({ status: true }, done);
+    });
+    it('should respond with false if the username is not available', done => {
+      const getIdByUsernameStub = sinon.stub().resolves({ userId });
+      expressApp.locals.datastore = { getIdByUsername: getIdByUsernameStub };
+      request(expressApp)
+        .post('/isUsernameAvailable')
+        .send({ username: 'sukhiboi' })
+        .expect(OK_STATUS_CODE)
+        .expect({ status: false }, done);
+    });
+  });
+
+  describe('POST /save-user', () => {
+    it('should save a user in database', done => {
+      const userDetails = {
+        githubUsername: 'hello',
+        username: 'me',
+        dob: '2001-02-18',
+        bio: 'something',
+        name: 'someone',
+      };
+      const saveUserStub = sinon.stub().resolves();
+      const getIdByUsernameStub = sinon.stub().resolves({ userId });
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      expressApp.locals.datastore = {
+        getUserDetails: getUserDetailsStub,
+        saveUser: saveUserStub,
+        getIdByUsername: getIdByUsernameStub,
+      };
+      request(expressApp)
+        .post('/save-user')
+        .send(userDetails)
+        .expect(OK_STATUS_CODE)
+        .expect(() => {
+          sinon.assert.calledOnceWithExactly(saveUserStub, userDetails);
+        })
+        .expect({ status: true }, done);
     });
   });
 
@@ -60,7 +149,7 @@ describe('#Handlers', () => {
       const getAllResponsesStub = sinon.stub().resolves(responses);
       const getRepostsByUserIdStub = sinon.stub().resolves([]);
       const getAllRepostsStub = sinon.stub().resolves([]);
-      const user = createUser({
+      const datastore = {
         getReplyingTo: getReplyingToStub,
         getAllReposts: getAllRepostsStub,
         getRepostsByUserId: getRepostsByUserIdStub,
@@ -71,8 +160,8 @@ describe('#Handlers', () => {
         getUserPosts: getUserPostsStub,
         getAllPostLikers: getAllPostLikersStub,
         getBookmarks: getBookmarksStub,
-      });
-      expressApp.locals.user = user;
+      };
+      expressApp.locals.datastore = datastore;
       request(expressApp)
         .get('/home')
         .set('Cookie', ['userId=1'])
@@ -85,9 +174,9 @@ describe('#Handlers', () => {
 
     it('Should redirect to / when user is not logged in', done => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
-      expressApp.locals.user = createUser({
+      expressApp.locals.datastore = {
         getUserDetails: getUserDetailsStub,
-      });
+      };
       request(expressApp)
         .get('/home')
         .expect(FOUND_STATUS_CODE)
@@ -99,10 +188,10 @@ describe('#Handlers', () => {
     it('should response back with status true of newly added post', done => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const savePostStub = sinon.stub().resolves();
-      expressApp.locals.user = createUser({
+      expressApp.locals.datastore = {
         getUserDetails: getUserDetailsStub,
         savePost: savePostStub,
-      });
+      };
       request(expressApp)
         .post('/add-new-post')
         .send({ message: 'hi' })
@@ -120,11 +209,11 @@ describe('#Handlers', () => {
       const getAllPostLikersStub = sinon.stub().resolves([]);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const likePostStub = sinon.stub().resolves();
-      expressApp.locals.user = createUser({
+      expressApp.locals.datastore = {
         getUserDetails: getUserDetailsStub,
         likePost: likePostStub,
         getAllPostLikers: getAllPostLikersStub,
-      });
+      };
       request(expressApp)
         .post('/toggleLike')
         .set('Cookie', ['userId=1'])
@@ -140,11 +229,11 @@ describe('#Handlers', () => {
       const getAllPostLikersStub = sinon.stub().resolves([{ userId }]);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const unlikePostStub = sinon.stub().resolves();
-      expressApp.locals.user = createUser({
+      expressApp.locals.datastore = {
         getUserDetails: getUserDetailsStub,
         unlikePost: unlikePostStub,
         getAllPostLikers: getAllPostLikersStub,
-      });
+      };
       request(expressApp)
         .post('/toggleLike')
         .set('Cookie', ['userId=1'])
@@ -164,10 +253,10 @@ describe('#Handlers', () => {
         .stub()
         .resolves([{ username: 'john', name: 'john' }]);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
-      expressApp.locals.user = createUser({
+      expressApp.locals.datastore = {
         getUserDetails: getUserDetailsStub,
         getMatchingUsers: getMatchingUsersStub,
-      });
+      };
       request(expressApp)
         .post('/search')
         .set('Cookie', ['userId=1'])
@@ -177,34 +266,6 @@ describe('#Handlers', () => {
           sinon.assert.calledOnceWithExactly(getMatchingUsersStub, 'j');
         })
         .expect([{ username: 'john', name: 'john', initials: 'J' }], done);
-    });
-  });
-
-  describe('POST /save-user', () => {
-    it('should save a user in database', done => {
-      const userDetails = {
-        githubUsername: 'hello',
-        username: 'me',
-        dob: '2001-02-18',
-        bio: 'something',
-        name: 'someone',
-      };
-      const saveUserStub = sinon.stub().resolves();
-      const getIdByUsernameStub = sinon.stub().resolves({ userId });
-      const getUserDetailsStub = sinon.stub().resolves(userDetails);
-      expressApp.locals.user = createUser({
-        getUserDetails: getUserDetailsStub,
-        saveUser: saveUserStub,
-        getIdByUsername: getIdByUsernameStub,
-      });
-      request(expressApp)
-        .post('/save-user')
-        .send(userDetails)
-        .expect(OK_STATUS_CODE)
-        .expect(() => {
-          sinon.assert.calledOnceWithExactly(saveUserStub, userDetails);
-        })
-        .expect({ status: true }, done);
     });
   });
 
@@ -226,7 +287,7 @@ describe('#Handlers', () => {
       const getUserResponsesStub = sinon.stub().resolves([]);
       const getRepostsByUserIdStub = sinon.stub().resolves([]);
       const getAllRepostsStub = sinon.stub().resolves([]);
-      expressApp.locals.user = createUser({
+      expressApp.locals.datastore = {
         getAllReposts: getAllRepostsStub,
         getRepostsByUserId: getRepostsByUserIdStub,
         getUserResponses: getUserResponsesStub,
@@ -241,7 +302,7 @@ describe('#Handlers', () => {
         getFollowers: getFollowersStub,
         getLikedPosts: getLikedPostsStub,
         getBookmarks: getBookmarksStub,
-      });
+      };
       request(expressApp)
         .get('/user/jani')
         .set('Cookie', ['userId=1'])
@@ -271,7 +332,7 @@ describe('#Handlers', () => {
       const getUserResponsesStub = sinon.stub().resolves([]);
       const getRepostsByUserIdStub = sinon.stub().resolves([]);
       const getAllRepostsStub = sinon.stub().resolves([]);
-      expressApp.locals.user = createUser({
+      expressApp.locals.datastore = {
         getAllReposts: getAllRepostsStub,
         getRepostsByUserId: getRepostsByUserIdStub,
         getUserResponses: getUserResponsesStub,
@@ -286,7 +347,7 @@ describe('#Handlers', () => {
         getFollowers: getFollowersStub,
         getLikedPosts: getLikedPostsStub,
         getBookmarks: getBookmarksStub,
-      });
+      };
       request(expressApp)
         .get('/user/john')
         .set('Cookie', ['userId=1'])
@@ -334,7 +395,7 @@ describe('#Handlers', () => {
       const userId = 2;
       const userDetails = { username: 'jani', name: 'jani', userId };
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
-      expressApp.locals.user = createUser({
+      expressApp.locals.datastore = {
         getUserResponses: getUserResponsesStub,
         getAllReposts: getAllRepostsStub,
         getRepostsByUserId: getRepostsByUserIdStub,
@@ -349,7 +410,7 @@ describe('#Handlers', () => {
         getFollowers: getFollowersStub,
         getLikedPosts: getLikedPostsStub,
         getBookmarks: getBookmarksStub,
-      });
+      };
       request(expressApp)
         .get('/user/jani/likes')
         .set('Cookie', ['userId=1'])
@@ -363,7 +424,7 @@ describe('#Handlers', () => {
     });
     it('should serve the Profile Page of searched user with liked posts', done => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
-      expressApp.locals.user = createUser({
+      expressApp.locals.datastore = {
         getRepostsByUserId: getRepostsByUserIdStub,
         getAllReposts: getAllRepostsStub,
         getUserResponses: getUserResponsesStub,
@@ -378,7 +439,7 @@ describe('#Handlers', () => {
         getFollowers: getFollowersStub,
         getLikedPosts: getLikedPostsStub,
         getBookmarks: getBookmarksStub,
-      });
+      };
       request(expressApp)
         .get('/user/john/likes')
         .set('Cookie', ['userId=1'])
@@ -430,7 +491,7 @@ describe('#Handlers', () => {
       const userId = 2;
       const userDetails = { username: 'jani', name: 'jani', userId };
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
-      expressApp.locals.user = createUser({
+      expressApp.locals.datastore = {
         getAllReposts: getAllRepostsStub,
         getUserResponses: getUserResponsesStub,
         getPost: getPostStub,
@@ -446,7 +507,7 @@ describe('#Handlers', () => {
         getFollowers: getFollowersStub,
         getLikedPosts: getLikedPostsStub,
         getBookmarks: getBookmarksStub,
-      });
+      };
       request(expressApp)
         .get('/user/jani/replies')
         .set('Cookie', ['userId=1'])
@@ -460,7 +521,7 @@ describe('#Handlers', () => {
     });
     it('should serve the Profile Page of searched user with replied posts', done => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
-      expressApp.locals.user = createUser({
+      expressApp.locals.datastore = {
         getAllReposts: getAllRepostsStub,
         getPost: getPostStub,
         getUserResponses: getUserResponsesStub,
@@ -476,7 +537,7 @@ describe('#Handlers', () => {
         getLikedPosts: getLikedPostsStub,
         getBookmarks: getBookmarksStub,
         getRepostsByUserId: getRepostsByUserIdStub,
-      });
+      };
       request(expressApp)
         .get('/user/john/replies')
         .set('Cookie', ['userId=1'])
@@ -491,107 +552,19 @@ describe('#Handlers', () => {
     });
   });
 
-  describe('GET /auth', () => {
-    it('should redirect me to the authorize url', done => {
-      const user = createUser({});
-      const auth = sinon.createStubInstance(Auth);
-      auth.getAuthorizeUrl = sinon.stub().returns('/redirect');
-      expressApp.locals.user = user;
-      expressApp.locals.auth = auth;
-      request(expressApp)
-        .get('/auth')
-        .expect(FOUND_STATUS_CODE)
-        .expect(/Found. Redirecting to \/redirect/, done);
-    });
-  });
-
-  describe('GET /callback', () => {
-    it('should redirect to /home if userId cookie is present', done => {
-      const getIdByGithubUsernameStub = sinon.stub().resolves({ userId });
-      const user = createUser({
-        getIdByGithubUsername: getIdByGithubUsernameStub,
-      });
-      const auth = sinon.createStubInstance(Auth);
-      auth.fetchUserDetails = sinon.stub().resolves({ login: 'sukhiboi' });
-      expressApp.locals.user = user;
-      expressApp.locals.auth = auth;
-      request(expressApp)
-        .get('/callback?code="12345')
-        .set('Cookie', ['userId=1'])
-        .expect(FOUND_STATUS_CODE)
-        .expect(/Found. Redirecting to \/home/, done);
-    });
-    it('should redirect to / any login error occurred', done => {
-      const user = createUser({});
-      const auth = sinon.createStubInstance(Auth);
-      auth.fetchUserDetails = sinon.stub().resolves({ login: 'sukhiboi' });
-      expressApp.locals.user = user;
-      expressApp.locals.auth = auth;
-      request(expressApp)
-        .get('/callback?error="access denied')
-        .expect(FOUND_STATUS_CODE)
-        .expect(/Found. Redirecting to \//, done);
-    });
-    it('should render extraUserDetails page if iam a new user', done => {
-      const getUserIdByGithubUsernameStub = sinon.stub().resolves();
-      const user = createUser({
-        getUserIdByGithubUsername: getUserIdByGithubUsernameStub,
-      });
-      const auth = sinon.createStubInstance(Auth);
-      auth.fetchUserDetails = sinon.stub().resolves({ login: 'sukhiboi' });
-      expressApp.locals.user = user;
-      expressApp.locals.auth = auth;
-      request(expressApp)
-        .get('/callback?code="12345')
-        .expect(OK_STATUS_CODE)
-        .expect(/sukhiboi/, done);
-    });
-  });
-
-  describe('POST /isUsernameAvailable', () => {
-    it('should respond with true if the username is available', done => {
-      const getIdByUsernameStub = sinon.stub().resolves();
-      const user = createUser({ getIdByUsername: getIdByUsernameStub });
-      expressApp.locals.user = user;
-      request(expressApp)
-        .post('/isUsernameAvailable')
-        .send({ username: 'john' })
-        .expect(OK_STATUS_CODE)
-        .expect({ status: true }, done);
-    });
-    it('should respond with true if the same username is asked for', done => {
-      const getIdByUsernameStub = sinon.stub().resolves({ userId });
-      const user = createUser({ getIdByUsername: getIdByUsernameStub });
-      expressApp.locals.user = user;
-      request(expressApp)
-        .post('/isUsernameAvailable')
-        .send({ username: 'john' })
-        .expect(OK_STATUS_CODE)
-        .expect({ status: true }, done);
-    });
-    it('should respond with false if the username is not available', done => {
-      const getIdByUsernameStub = sinon.stub().resolves({ userId });
-      const user = createUser({ getIdByUsername: getIdByUsernameStub });
-      expressApp.locals.user = user;
-      request(expressApp)
-        .post('/isUsernameAvailable')
-        .send({ username: 'sukhiboi' })
-        .expect(OK_STATUS_CODE)
-        .expect({ status: false }, done);
-    });
-  });
-
   describe('POST /toggleFollow', () => {
     it('should respond with true when the follow happened', done => {
       const getIdByUsernameStub = sinon.stub().resolves({ userId: 1 });
       const getFollowersStub = sinon.stub().resolves([]);
       const followUserStub = sinon.stub().resolves(true);
-      const user = createUser({
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const datastore = {
+        getUserDetails: getUserDetailsStub,
         getIdByUsername: getIdByUsernameStub,
         followUser: followUserStub,
         getFollowers: getFollowersStub,
-      });
-      expressApp.locals.user = user;
+      };
+      expressApp.locals.datastore = datastore;
       request(expressApp)
         .post('/toggleFollow')
         .set('Cookie', ['userId=1'])
@@ -603,12 +576,14 @@ describe('#Handlers', () => {
       const getIdByUsernameStub = sinon.stub().resolves({ userId });
       const getFollowersStub = sinon.stub().resolves([{ userId }]);
       const unFollowUserStub = sinon.stub().resolves(true);
-      const user = createUser({
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const datastore = {
+        getUserDetails: getUserDetailsStub,
         getIdByUsername: getIdByUsernameStub,
         unFollowUser: unFollowUserStub,
         getFollowers: getFollowersStub,
-      });
-      expressApp.locals.user = user;
+      };
+      expressApp.locals.datastore = datastore;
       request(expressApp)
         .post('/toggleFollow')
         .set('Cookie', ['userId=1'])
@@ -626,7 +601,7 @@ describe('#Handlers', () => {
         getFollowers: sinon.stub().resolves([]),
         getIdByUsername: sinon.stub().resolves({ userId }),
       };
-      expressApp.locals.user = createUser(datastore);
+      expressApp.locals.datastore = datastore;
       request(expressApp)
         .get('/user/john/following')
         .set('Cookie', ['userId=1'])
@@ -648,7 +623,7 @@ describe('#Handlers', () => {
         getFollowers: sinon.stub().resolves([{ userId: 2, name: 'Ram' }]),
         getIdByUsername: sinon.stub().resolves({ userId }),
       };
-      expressApp.locals.user = createUser(datastore);
+      expressApp.locals.datastore = datastore;
       request(expressApp)
         .get('/user/john/followers')
         .set('Cookie', ['userId=1'])
@@ -665,8 +640,11 @@ describe('#Handlers', () => {
   describe('POST /deletePost', () => {
     it('should respond status true when deletion happened successfully', done => {
       const removePostStub = sinon.stub().resolves(postId);
-      const user = createUser({ removePost: removePostStub });
-      expressApp.locals.user = user;
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      expressApp.locals.datastore = {
+        removePost: removePostStub,
+        getUserDetails: getUserDetailsStub,
+      };
       request(expressApp)
         .post('/deletePost')
         .send({ postId })
@@ -676,8 +654,11 @@ describe('#Handlers', () => {
     });
     it('should respond status false when deletion is not happened', done => {
       const removePostStub = sinon.stub().rejects(new Error('table not found'));
-      const user = createUser({ removePost: removePostStub });
-      expressApp.locals.user = user;
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      expressApp.locals.datastore = {
+        removePost: removePostStub,
+        getUserDetails: getUserDetailsStub,
+      };
       request(expressApp)
         .post('/deletePost')
         .send({ postId })
@@ -703,7 +684,7 @@ describe('#Handlers', () => {
       const getAllResponsesStub = sinon.stub().resolves(responses);
       const getReplyingToStub = sinon.stub().resolves();
       const getAllRepostsStub = sinon.stub().resolves([]);
-      const user = createUser({
+      const datastore = {
         getAllReposts: getAllRepostsStub,
         getReplyingTo: getReplyingToStub,
         getAllResponses: getAllResponsesStub,
@@ -712,8 +693,8 @@ describe('#Handlers', () => {
         getUserDetails: getUserDetailsStub,
         getAllPostLikers: getAllPostLikersStub,
         getBookmarks: getBookmarksStub,
-      });
-      expressApp.locals.user = user;
+      };
+      expressApp.locals.datastore = datastore;
       request(expressApp)
         .get(`/post/${postId}`)
         .set('Cookie', ['userId=1'])
@@ -731,12 +712,12 @@ describe('#Handlers', () => {
       const getAllPostLikersStub = sinon.stub().resolves([userDetails]);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getFollowersStub = sinon.stub().resolves([]);
-      const user = createUser({
+      const datastore = {
         getAllPostLikers: getAllPostLikersStub,
         getUserDetails: getUserDetailsStub,
         getFollowers: getFollowersStub,
-      });
-      expressApp.locals.user = user;
+      };
+      expressApp.locals.datastore = datastore;
       request(expressApp)
         .get(`/post/${postId}/likes`)
         .set('Cookie', ['userId=1'])
@@ -765,7 +746,7 @@ describe('#Handlers', () => {
       const getHashtagsByPostIdStub = sinon.stub().resolves(hashtags);
       const getReplyingToStub = sinon.stub().resolves();
       const getAllRepostsStub = sinon.stub().resolves([]);
-      const user = createUser({
+      const datastore = {
         getAllReposts: getAllRepostsStub,
         getReplyingTo: getReplyingToStub,
         getAllResponses: getAllResponsesStub,
@@ -774,8 +755,8 @@ describe('#Handlers', () => {
         getAllPostLikers: getAllPostLikersStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
         getBookmarks: getBookmarksStub,
-      });
-      expressApp.locals.user = user;
+      };
+      expressApp.locals.datastore = datastore;
       request(expressApp)
         .get('/hashtag/html')
         .set('Cookie', ['userId=1'])
@@ -798,7 +779,7 @@ describe('#Handlers', () => {
       const getAllResponsesStub = sinon.stub().resolves(responses);
       const getReplyingToStub = sinon.stub().resolves();
       const getAllRepostsStub = sinon.stub().resolves([]);
-      const user = createUser({
+      const datastore = {
         getAllReposts: getAllRepostsStub,
         getReplyingTo: getReplyingToStub,
         getAllResponses: getAllResponsesStub,
@@ -806,8 +787,8 @@ describe('#Handlers', () => {
         getUserDetails: getUserDetailsStub,
         getAllPostLikers: getAllPostLikersStub,
         getHashtagsByPostId: getHashtagsByPostIdStub,
-      });
-      expressApp.locals.user = user;
+      };
+      expressApp.locals.datastore = datastore;
       request(expressApp)
         .get('/user/bookmarks')
         .set('Cookie', ['userId=1'])
@@ -826,11 +807,13 @@ describe('#Handlers', () => {
     it('should add the post in bookmarks if it is not bookmarked', done => {
       const getBookmarksStub = sinon.stub().resolves([]);
       const addBookmarkStub = sinon.stub().resolves();
-      const user = createUser({
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const datastore = {
+        getUserDetails: getUserDetailsStub,
         getBookmarks: getBookmarksStub,
         addBookmark: addBookmarkStub,
-      });
-      expressApp.locals.user = user;
+      };
+      expressApp.locals.datastore = datastore;
       request(expressApp)
         .post('/toggleBookmark')
         .send({ postId })
@@ -846,11 +829,13 @@ describe('#Handlers', () => {
     it('should remove the post from bookmarks if it is bookmarked', done => {
       const getBookmarksStub = sinon.stub().resolves(createDummyPosts());
       const removeBookmarkStub = sinon.stub().resolves();
-      const user = createUser({
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const datastore = {
+        getUserDetails: getUserDetailsStub,
         getBookmarks: getBookmarksStub,
         removeBookmark: removeBookmarkStub,
-      });
-      expressApp.locals.user = user;
+      };
+      expressApp.locals.datastore = datastore;
       request(expressApp)
         .post('/toggleBookmark')
         .send({ postId })
@@ -871,8 +856,8 @@ describe('#Handlers', () => {
   describe('GET /logout()', () => {
     it('should clear the userCookies', done => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
-      const user = createUser({ getUserDetails: getUserDetailsStub });
-      expressApp.locals.user = user;
+      const datastore = { getUserDetails: getUserDetailsStub };
+      expressApp.locals.datastore = datastore;
       request(expressApp)
         .get('/logout')
         .set('Cookie', ['userId=1'])
@@ -888,10 +873,10 @@ describe('#Handlers', () => {
     it('should add the new response', done => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const savePostStub = sinon.stub().resolves();
-      expressApp.locals.user = createUser({
+      expressApp.locals.datastore = {
         getUserDetails: getUserDetailsStub,
         savePost: savePostStub,
-      });
+      };
       request(expressApp)
         .post('/saveResponse')
         .send({ message: 'hi', postId })
@@ -904,7 +889,7 @@ describe('#Handlers', () => {
     });
   });
 
-  describe('POST /update-user()', () => {
+  describe('POST /edit-profile()', () => {
     const updateDetails = {
       name: 'newName',
       username: 'newUsername',
@@ -913,9 +898,11 @@ describe('#Handlers', () => {
     };
     it('should update the user details', done => {
       const updateUserDetailsStub = sinon.stub().resolves();
-      expressApp.locals.user = createUser({
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      expressApp.locals.datastore = {
+        getUserDetails: getUserDetailsStub,
         updateUserDetails: updateUserDetailsStub,
-      });
+      };
       request(expressApp)
         .post('/edit-profile')
         .send(updateDetails)
@@ -938,12 +925,14 @@ describe('#Handlers', () => {
       const undoRepostStub = sinon.stub().resolves();
       const repostStub = sinon.stub().resolves();
       const updateUserDetailsStub = sinon.stub().resolves();
-      expressApp.locals.user = createUser({
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      expressApp.locals.datastore = {
+        getUserDetails: getUserDetailsStub,
         updateUserDetails: updateUserDetailsStub,
         getAllReposts: getAllRepostsStub,
         undoRepost: undoRepostStub,
         repost: repostStub,
-      });
+      };
       request(expressApp)
         .post('/toggleRepost')
         .send({ postId })
@@ -961,11 +950,11 @@ describe('#Handlers', () => {
       const getAllRepostsStub = sinon.stub().resolves([userDetails]);
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const getFollowersStub = sinon.stub().resolves([]);
-      expressApp.locals.user = createUser({
+      expressApp.locals.datastore = {
         getAllReposts: getAllRepostsStub,
         getUserDetails: getUserDetailsStub,
         getFollowers: getFollowersStub,
-      });
+      };
       request(expressApp)
         .get('/post/1/reposts')
         .set('Cookie', ['userId=1'])

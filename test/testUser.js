@@ -35,39 +35,34 @@ describe('#User', () => {
     ];
   };
   const createUser = function (datastore) {
-    const user = new User(datastore);
-    user.userId = userId;
-    user.username = userDetails.username;
-    user.fullName = userDetails.name;
-    user.imageUrl = 'url';
-    user.initials = 'JS';
-    return user;
+    return new User(datastore, { ...userDetails, imageUrl: 'url' });
   };
 
   const expectedTableError = new Error('Error: Table not found');
   const expectedUserDetailsError = new Error('Error: Invalid userId');
 
-  describe('updateUser()', () => {
-    const getUserDetailsStub = sinon.stub().resolves(userDetails);
+  describe('static create()', () => {
     it('should update the userDetails in User if user is present', async () => {
-      const user = new User({ getUserDetails: getUserDetailsStub });
-      await user.updateUser(userId);
+      const getUserDetailsStub = sinon.stub().resolves(userDetails);
+      const user = await User.create(
+        { getUserDetails: getUserDetailsStub },
+        userId
+      );
+      assert.instanceOf(user, User);
       assert.strictEqual(user.userId, userId);
       assert.strictEqual(user.username, userDetails.username);
       assert.strictEqual(user.fullName, userDetails.name);
+      assert.strictEqual(user.imageUrl, 'url');
+      assert.strictEqual(user.initials, 'JS');
       sinon.assert.calledOnceWithExactly(getUserDetailsStub, userId);
     });
 
     it('should reject any error', async () => {
       const getUserDetailsStub = sinon.stub().rejects(expectedUserDetailsError);
-      const user = new User({ getUserDetails: getUserDetailsStub });
       try {
-        await user.updateUser(userId);
+        await User.create({ getUserDetails: getUserDetailsStub }, userId);
       } catch (err) {
         assert.deepStrictEqual(err, expectedUserDetailsError);
-        assert.isUndefined(user.userId);
-        assert.isUndefined(user.username);
-        assert.isUndefined(user.fullName);
         sinon.assert.calledOnceWithExactly(getUserDetailsStub, userId);
       }
     });
@@ -548,59 +543,6 @@ describe('#User', () => {
     });
   });
 
-  describe('isUsernameAvailable()', () => {
-    it('should return true when username is available', async () => {
-      const getIdByUsernameStub = sinon.stub().resolves();
-      const user = createUser({ getIdByUsername: getIdByUsernameStub });
-      assert.isTrue(await user.isUsernameAvailable('naveen'));
-      sinon.assert.calledOnceWithExactly(getIdByUsernameStub, 'naveen');
-    });
-
-    it('should return false when username is not available', async () => {
-      const getIdByUsernameStub = sinon.stub().resolves({ userId });
-      const user = createUser({ getIdByUsername: getIdByUsernameStub });
-      assert.isFalse(await user.isUsernameAvailable('naveen'));
-      sinon.assert.calledOnceWithExactly(getIdByUsernameStub, 'naveen');
-    });
-
-    it('should reject any error', async () => {
-      const getIdByUsernameStub = sinon.stub().rejects(expectedTableError);
-      const user = createUser({ getIdByUsername: getIdByUsernameStub });
-      try {
-        await user.isUsernameAvailable('naveen');
-      } catch (err) {
-        assert.deepStrictEqual(err, expectedTableError);
-        sinon.assert.calledOnceWithExactly(getIdByUsernameStub, 'naveen');
-      }
-    });
-  });
-
-  describe('saveUser()', () => {
-    it('should save a user and return the userId', async () => {
-      const getIdByUsernameStub = sinon.stub().resolves({ userId });
-      const saveUserStub = sinon.stub().resolves();
-      const user = createUser({
-        getIdByUsername: getIdByUsernameStub,
-        saveUser: saveUserStub,
-      });
-      assert.deepStrictEqual(await user.saveUser(userDetails), { userId });
-      sinon.assert.calledOnceWithExactly(saveUserStub, userDetails);
-      const username = userDetails.username;
-      sinon.assert.calledOnceWithExactly(getIdByUsernameStub, username);
-    });
-
-    it('should reject any error', async () => {
-      const saveUserStub = sinon.stub().rejects(expectedTableError);
-      const user = createUser({ saveUser: saveUserStub });
-      try {
-        await user.saveUser(userDetails);
-      } catch (err) {
-        sinon.assert.calledOnceWithExactly(saveUserStub, userDetails);
-        assert.deepStrictEqual(err, expectedTableError);
-      }
-    });
-  });
-
   describe('getProfilePosts()', () => {
     it('should give both liked and posted posts of given user', async () => {
       const getUserPostsStub = sinon.stub().resolves(createDummyPosts());
@@ -923,31 +865,6 @@ describe('#User', () => {
       } catch (err) {
         sinon.assert.calledOnceWithExactly(getIdByUsernameStub, 'naveen');
         assert.deepStrictEqual(err, expectedTableError);
-      }
-    });
-  });
-
-  describe('getUserId()', () => {
-    it('should resolve to the userId based on github username', async () => {
-      const getIdByGithubUsernameStub = sinon.stub().resolves({ userId });
-      const user = createUser({
-        getIdByGithubUsername: getIdByGithubUsernameStub,
-      });
-      assert.deepStrictEqual(await user.getUserId('naveen'), { userId });
-      sinon.assert.calledOnceWithExactly(getIdByGithubUsernameStub, 'naveen');
-    });
-
-    it('should reject any error', async () => {
-      const getIdByGithubUsernameStub = sinon
-        .stub()
-        .rejects(expectedTableError);
-      const user = createUser({
-        getIdByGithubUsername: getIdByGithubUsernameStub,
-      });
-      try {
-        await user.getUserId('naveen');
-      } catch (err) {
-        sinon.assert.calledOnceWithExactly(getIdByGithubUsernameStub, 'naveen');
       }
     });
   });

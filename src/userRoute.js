@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const handlers = require('./userHandlers');
+const User = require('./user');
 
 const userRoute = express.Router();
 userRoute.use(bodyParser.json({ extended: true }));
@@ -14,11 +15,10 @@ const isUserLoggedIn = function (request, response, next) {
   response.redirect('/auth');
 };
 
-const updateUser = function (request, response, next) {
+const updateUser = async function (request, response, next) {
   const id = request.cookies.userId;
-  request.cookies.userId = Number(id);
-  const user = request.app.locals.user;
-  user.updateUser(Number(id)).catch(() => {});
+  const datastore = request.app.locals.datastore;
+  request.user = await User.create(datastore, Number(id));
   next();
 };
 
