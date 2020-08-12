@@ -135,21 +135,7 @@ class User {
   deletePost(postId) {
     return this.datastore.removePost(postId);
   }
-
-  // async isUsernameAvailable(username) {
-  //   if (username === this.username) {
-  //     return true;
-  //   }
-  //   const id = await this.datastore.getIdByUsername(username);
-  //   return id === undefined;
-  // }
-
-  // async saveUser(userDetails) {
-  //   const { username } = userDetails;
-  //   await this.datastore.saveUser(userDetails);
-  //   return await this.datastore.getIdByUsername(username);
-  // }
-
+  
   // eslint-disable-next-line max-statements
   async getUserResponsesWithPosts(userId) {
     const responseAndPostIds = await this.datastore.getUserResponses(userId);
@@ -280,10 +266,6 @@ class User {
       imageUrl: this.imageUrl,
     };
   }
-
-  // async getUserId(githubUsername) {
-  //   return await this.datastore.getIdByGithubUsername(githubUsername);
-  // }
 
   async getPostLikers(postId) {
     const likedUserIds = await this.datastore.getAllPostLikers(postId);
