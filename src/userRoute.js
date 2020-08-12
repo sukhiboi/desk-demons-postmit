@@ -17,8 +17,8 @@ const isUserLoggedIn = function (request, response, next) {
 const updateUser = function (request, response, next) {
   const id = request.cookies.userId;
   request.cookies.userId = Number(id);
-  const app = request.app.locals.app;
-  app.updateUser(Number(id)).catch(() => {});
+  const user = request.app.locals.user;
+  user.updateUser(Number(id)).catch(() => {});
   next();
 };
 

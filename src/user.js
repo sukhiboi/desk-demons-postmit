@@ -4,7 +4,7 @@ const {
   isUserPresentInList,
 } = require('./helperFunctions');
 
-class App {
+class User {
   constructor(datastore) {
     this.datastore = datastore;
     this.username;
@@ -352,4 +352,4 @@ class App {
   }
 }
 
-module.exports = App;
+module.exports = User;
