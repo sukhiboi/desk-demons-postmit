@@ -409,7 +409,7 @@ describe('#App', () => {
       const savePostStub = sinon.stub().resolves(null);
       const app = createApp({ savePost: savePostStub });
       const content = 'hello';
-      assert.isNumber(await app.savePost(content));
+      assert.isNull(await app.savePost(content));
       sinon.assert.calledOnce(savePostStub);
     });
 
@@ -1226,38 +1226,13 @@ describe('#App', () => {
     });
   });
 
-  describe('saveHashtag()', () => {
-    it('should save the hashtag to db', async () => {
-      const addHashtagStub = sinon.stub().resolves(null);
-      const app = createApp({ addHashtag: addHashtagStub });
-      await app.saveHashTag('#html', postId);
-      sinon.assert.calledOnceWithExactly(addHashtagStub, 'html', postId);
-    });
-
-    it('should give error when hashtag table not found', async () => {
-      const addHashtagStub = sinon.stub().rejects(expectedTableError);
-      const app = createApp({ addHashtag: addHashtagStub });
-      try {
-        await app.saveHashTag('#html', postId);
-      } catch (err) {
-        assert.deepStrictEqual(err, expectedTableError);
-        sinon.assert.calledOnceWithExactly(addHashtagStub, 'html', postId);
-      }
-    });
-  });
-
   describe('saveResponse()', () => {
     it('should save a response', async () => {
       const savePostStub = sinon.stub().resolves(null);
-      const addResponseStub = sinon.stub().resolves(null);
-      const app = createApp({
-        savePost: savePostStub,
-        addResponse: addResponseStub,
-      });
+      const app = createApp({ savePost: savePostStub });
       const content = 'hello';
       assert.isNull(await app.saveResponse(content, postId));
       sinon.assert.calledOnce(savePostStub);
-      sinon.assert.calledOnce(addResponseStub);
     });
 
     it('should give error when table not found', async () => {

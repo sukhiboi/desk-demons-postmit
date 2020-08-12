@@ -1,7 +1,6 @@
 const {
   extractInitials,
   sortByDate,
-  createPostId,
   isUserPresentInList,
 } = require('./helperFunctions');
 
@@ -110,24 +109,12 @@ class App {
     };
   }
 
-  async saveHashTag(message, postId) {
-    const hashtags = Array.from(new Set(message.match(/\B#\w*-*\w*\b/gi)));
-    for (const hashtag of hashtags) {
-      const tag = hashtag.slice(1);
-      await this.datastore.addHashtag(tag, postId);
-    }
+  savePost(message) {
+    return this.datastore.savePost(this.userId, message);
   }
 
-  async savePost(content) {
-    const postId = createPostId(this.userId, new Date());
-    await this.datastore.savePost(this.userId, postId, content);
-    await this.saveHashTag(content, postId);
-    return postId;
-  }
-
-  async saveResponse(content, postId) {
-    const responseId = await this.savePost(content);
-    return this.datastore.addResponse(postId, responseId);
+  saveResponse(message, postId) {
+    return this.datastore.savePost(this.userId, message, postId);
   }
 
   async toggleLikeOnPost(postId) {

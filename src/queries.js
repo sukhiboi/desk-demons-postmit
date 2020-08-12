@@ -5,10 +5,25 @@ const select = function (table, field, selection) {
 const insert = function (table) {
   return `INSERT INTO ${table} VALUES (?,?)`;
 };
+const savePost = function (message, userId, postId, responseParentId) {
+  const hashtags = Array.from(new Set(message.match(/\B#\w*-*\w*\b/gi)));
+  const saveQuery = `INSERT INTO posts VALUES(${postId}, ${userId}, '${message}', datetime('now','localtime'));`;
+  const hashtagQuery = hashtags.reduce(
+    (query, hashtag) =>
+      query + `INSERT INTO hashtags VALUES (${postId},'${hashtag.slice(1)}');`,
+    ''
+  );
+  const responseQuery =
+    responseParentId !== undefined
+      ? `INSERT INTO responses VALUES(${responseParentId},${postId});`
+      : '';
+  return `BEGIN TRANSACTION; ${saveQuery}${hashtagQuery}${responseQuery} COMMIT TRANSACTION;`;
+};
 
 const queries = {
   select: select,
   insert: insert,
+  savePost,
   getPost:
     'SELECT * FROM posts JOIN users ON users.userId=posts.userId WHERE posts.postId=?',
   userPosts:
@@ -16,9 +31,7 @@ const queries = {
   following:
     'SELECT users.* FROM followers JOIN users ON followers.followerId=users.userId WHERE followers.userId=?;',
   followers:
-    'SELECT users.* FROM followers JOIN users ON followers.userId=users.userId WHERE followers.followerId=?;',
-  savePost:
-    "INSERT INTO posts(postId, userId, message, postedAt) VALUES(?, ?, ?, datetime('now','localtime'));",
+    'select users.* from followers join users on followers.userId=users.userId where followers.followerId=?;',
   unlikePost: 'DELETE FROM likes WHERE postId=? AND userId=?',
   undoRepost: 'DELETE FROM reposts WHERE postId=? AND userId=?',
   removePost: function (postId) {

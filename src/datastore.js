@@ -65,8 +65,11 @@ class Datastore {
     return this.all(queries.postLikers, [postId]);
   }
 
-  savePost(userId, postId, content) {
-    return this.run(queries.savePost, [postId, userId, content]);
+  savePost(userId, message, responseParentId) {
+    const postId = userId + new Date().getTime();
+    return this.exec(
+      queries.savePost(message, userId, postId, responseParentId)
+    );
   }
 
   unlikePost(postId, userId) {
@@ -145,10 +148,6 @@ class Datastore {
     return this.all(queries.postsByHashtag, [hashtag]);
   }
 
-  addHashtag(hashtag, postId) {
-    return this.run(queries.insert('hashtags'), [postId, hashtag]);
-  }
-
   addBookmark(postId, userId) {
     return this.run(queries.insert('bookmarks'), [postId, userId]);
   }
@@ -159,10 +158,6 @@ class Datastore {
 
   getAllResponses(postId) {
     return this.all(queries.responses, [postId]);
-  }
-
-  addResponse(postId, responseId) {
-    return this.run(queries.insert('responses'), [postId, responseId]);
   }
 
   getReplyingTo(postId) {

@@ -882,15 +882,13 @@ describe('#Handlers', () => {
     });
   });
 
-  describe('POST /add-new-post', () => {
+  describe('POST /saveResponse', () => {
     it('should add the new response', done => {
       const getUserDetailsStub = sinon.stub().resolves(userDetails);
       const savePostStub = sinon.stub().resolves();
-      const addResponseStub = sinon.stub().resolves();
       expressApp.locals.app = createApp({
         getUserDetails: getUserDetailsStub,
         savePost: savePostStub,
-        addResponse: addResponseStub,
       });
       request(expressApp)
         .post('/saveResponse')
@@ -899,7 +897,6 @@ describe('#Handlers', () => {
         .expect(OK_STATUS_CODE)
         .expect(() => {
           sinon.assert.calledOnce(savePostStub);
-          sinon.assert.calledOnce(addResponseStub);
         })
         .expect({ status: true }, done);
     });

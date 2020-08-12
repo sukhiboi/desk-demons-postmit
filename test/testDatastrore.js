@@ -68,23 +68,37 @@ describe('#Datastore', () => {
 
   describe('savePost()', () => {
     it('should save the details of the post', async () => {
-      const postDetails = { user_id: 1, message: 'hi' };
-      const runStub = sinon.stub().yields(null);
-      const client = new Datastore({ run: runStub });
-      const latestPostDetails = await client.savePost(postDetails);
+      const execStub = sinon.stub().yields(null);
+      const client = new Datastore({ exec: execStub });
+      const latestPostDetails = await client.savePost(userId, 'hi');
       assert.isUndefined(latestPostDetails);
-      sinon.assert.calledOnce(runStub);
+      sinon.assert.calledOnce(execStub);
+    });
+
+    it('should save the details of the post with hashtags', async () => {
+      const execStub = sinon.stub().yields(null);
+      const client = new Datastore({ exec: execStub });
+      const latestPostDetails = await client.savePost(userId, 'hi #html');
+      assert.isUndefined(latestPostDetails);
+      sinon.assert.calledOnce(execStub);
+    });
+
+    it('should save the response of a post', async () => {
+      const execStub = sinon.stub().yields(null);
+      const client = new Datastore({ exec: execStub });
+      const latestPostDetails = await client.savePost(userId, 'hi', postId);
+      assert.isUndefined(latestPostDetails);
+      sinon.assert.calledOnce(execStub);
     });
 
     it('should give error when the post table not found', async () => {
-      const runStub = sinon.stub().yields(expectedTableError);
-      const client = new Datastore({ run: runStub });
-      const postDetails = { user_id: 2, message: 'hello' };
+      const execStub = sinon.stub().yields(expectedTableError);
+      const client = new Datastore({ exec: execStub });
       try {
-        await client.savePost(postDetails);
+        await client.savePost(userId, 'hi');
       } catch (err) {
         assert.strictEqual(err, expectedTableError);
-        sinon.assert.calledOnce(runStub);
+        sinon.assert.calledOnce(execStub);
       }
     });
   });
@@ -516,26 +530,6 @@ describe('#Datastore', () => {
     });
   });
 
-  describe('addHashtag', () => {
-    it('should save a hashtag to hashtag table', async () => {
-      const runStub = sinon.stub().yields(null);
-      const client = new Datastore({ run: runStub });
-      assert.isUndefined(await client.addHashtag('html', postId));
-      sinon.assert.calledOnce(runStub);
-    });
-
-    it('should give error when hashtag table not found', async () => {
-      const runStub = sinon.stub().yields(expectedTableError);
-      const client = new Datastore({ run: runStub });
-      try {
-        await client.addHashtag('html', postId);
-      } catch (err) {
-        assert.deepStrictEqual(err, expectedTableError);
-        sinon.assert.calledOnce(runStub);
-      }
-    });
-  });
-
   describe('addBookmark()', () => {
     it('should save a hashtag to hashtag table', async () => {
       const runStub = sinon.stub().yields(null);
@@ -616,27 +610,6 @@ describe('#Datastore', () => {
       } catch (err) {
         assert.deepStrictEqual(err, expectedTableError);
         sinon.assert.calledOnce(allStub);
-      }
-    });
-  });
-
-  describe('addResponse()', () => {
-    const responseId = 2;
-    it('should add response into responses table', async () => {
-      const runStub = sinon.stub().yields(null);
-      const client = new Datastore({ run: runStub });
-      assert.isUndefined(await client.addResponse(postId, responseId));
-      sinon.assert.calledOnce(runStub);
-    });
-
-    it('should give error when responses table not found', async () => {
-      const runStub = sinon.stub().yields(expectedTableError);
-      const client = new Datastore({ run: runStub });
-      try {
-        await client.addResponse(postId, responseId);
-      } catch (err) {
-        assert.strictEqual(err, expectedTableError);
-        sinon.assert.calledOnce(runStub);
       }
     });
   });

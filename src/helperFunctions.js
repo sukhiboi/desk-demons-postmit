@@ -18,13 +18,8 @@ const isUserPresentInList = function (userId, list) {
   return list.some(user => user.userId === userId);
 };
 
-const createPostId = function (userId, postedAt) {
-  return userId + new Date(postedAt).getTime();
-};
-
 module.exports = {
   extractInitials,
   sortByDate,
   isUserPresentInList,
-  createPostId,
 };
