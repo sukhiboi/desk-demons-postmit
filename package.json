@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "setup-db": "./bin/setup-db.sh",
-    "start": "export CONFIG_PATH='./.env' && node server.js",
-    "test": "export CONFIG_PATH='./.test.env' && nyc mocha",
+    "start": "export NODE_ENV='development' && node server.js",
+    "test": "export NODE_ENV='test' && nyc mocha",
     "lint": "eslint --ignore-pattern 'node_modules/' . --ext .js",
     "setup": "./bin/setup.sh",
     "ci": "npm test && npm run lint"
@@ -35,7 +35,6 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "dotenv": "^8.2.0",
     "morgan": "^1.10.0",
     "sinon": "^9.0.2",
     "supertest": "^4.0.2"
