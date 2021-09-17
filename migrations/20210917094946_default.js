@@ -7,7 +7,7 @@ exports.up = function (knex) {
       table.string('name', 50);
       table.string('bio', 160);
       table.date('dob');
-      table.date('joinedData').notNullable();
+      table.date('joinedDate').notNullable();
       table.string('imageUrl', 255);
     })
     .createTable('posts', function (table) {
@@ -17,20 +17,20 @@ exports.up = function (knex) {
       table.timestamp('postedAt').notNullable();
     })
     .createTable('responses', function (table) {
-      table.integer('responseId').primary();
       table.integer('postId').notNullable();
+      table.integer('responseId').primary();
     })
     .createTable('likes', function (table) {
-      table.integer('userId').notNullable();
       table.integer('postId').notNullable();
+      table.integer('userId').notNullable();
     })
     .createTable('reposts', function (table) {
-      table.integer('userId').notNullable();
       table.integer('postId').notNullable();
+      table.integer('userId').notNullable();
     })
     .createTable('bookmarks', function (table) {
-      table.integer('userId').notNullable();
       table.integer('postId').notNullable();
+      table.integer('userId').notNullable();
     })
     .createTable('followers', function (table) {
       table.integer('userId').notNullable();
