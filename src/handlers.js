@@ -20,7 +20,7 @@ const handleUserProfile = async function (request, response) {
   }
   const { auth, datastore } = request.app.locals;
   const { login, avatar_url } = await auth.fetchUserDetails(code);
-  const id = await datastore.getIdByGithubUsername(login).catch(() => {});
+  const id = await datastore.users.getIdByGithubUsername(login).catch(() => {});
   if (id && Number(id.userId)) {
     response.cookie('userId', id.userId);
     return response.redirect('/home');
@@ -34,17 +34,16 @@ const handleUserProfile = async function (request, response) {
 const saveUser = async function (request, response) {
   const details = request.body;
   const datastore = request.app.locals.datastore;
-  await datastore.saveUser(details);
-  const id = await datastore.getIdByUsername(details.username);
-  response.cookie('userId', id.userId);
+  const [id] = await datastore.users.saveUser(details);
+  response.cookie('userId', id);
   response.json({ status: true });
 };
 
 const checkUsernameAvailability = async function (request, response) {
   const username = request.body.username;
   const datastore = request.app.locals.datastore;
-  const id = await datastore.getIdByUsername(username);
-  response.json({ status: id === undefined });
+  const id = await datastore.users.getIdByUsername(username);
+  response.json({ status: !id.length });
 };
 
 module.exports = {

@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "source ./env/dev.txt && node server.js",
-    "test": "source ./env/test.txt && nyc mocha",
     "seed": "knex seed:run",
     "migration": "knex migrate:latest && knex migrate:up",
+    "dev": "source ./env/dev.txt && npm run migration && node server.js",
+    "test": "source ./env/test.txt && npm run migration && nyc mocha",
     "lint": "eslint --ignore-pattern 'node_modules/' . --ext .js",
     "ci": "npm test && npm run lint"
   },

@@ -15,7 +15,7 @@ class User {
   }
 
   static async create(datastore, userId) {
-    const details = await datastore.getUserDetails(userId);
+    const [details] = await datastore.users.getUserDetails(userId);
     return new User(datastore, details);
   }
 
@@ -25,6 +25,7 @@ class User {
     for (const mention of mentions) {
       const username = mention.slice(1);
       const user = await this.datastore
+        .users
         .getIdByUsername(username)
         .catch(() => {});
       if (user && user.userId) {
@@ -35,17 +36,17 @@ class User {
   }
 
   async getReposts(userId, username) {
-    const reposts = await this.datastore.getRepostsByUserId(userId);
+    const reposts = await this.datastore.posts.getRepostsByUserId(userId);
     return reposts.map(repost => ({ ...repost, repostedBy: username }));
   }
 
   // eslint-disable-next-line max-statements
   async updatePostActions(userId, post) {
     const updatedPost = { ...post };
-    updatedPost.likedUsers = await this.datastore.getAllPostLikers(post.postId);
-    const responses = await this.datastore.getAllResponses(post.postId);
+    updatedPost.likedUsers = await this.datastore.posts.getAllPostLikers(post.postId);
+    const responses = await this.datastore.posts.getAllResponses(post.postId);
     updatedPost.responseCount = responses.length;
-    const reposts = await this.datastore.getAllReposts(post.postId);
+    const reposts = await this.datastore.posts.getAllReposts(post.postId);
     updatedPost.repostCount = reposts.length;
     updatedPost.isLiked = isUserPresentInList(userId, updatedPost.likedUsers);
     updatedPost.isReposted = isUserPresentInList(userId, reposts);
@@ -60,9 +61,9 @@ class User {
       updatedPost.initials = extractInitials(post.name);
       updatedPost.postedAt = post.postedAt;
       updatedPost.mentions = await this.getValidMentions(post.message);
-      const hashtags = await this.datastore.getHashtagsByPostId(post.postId);
+      const hashtags = await this.datastore.posts.getHashtagsByPostId(post.postId);
       updatedPost.hashtags = hashtags.map(({ hashtag }) => hashtag);
-      const replyingTo = await this.datastore.getReplyingTo(post.postId);
+      const replyingTo = await this.datastore.posts.getReplyingTo(post.postId);
       if (replyingTo) {
         updatedPost.replyingTo = replyingTo.username;
       }
@@ -72,9 +73,9 @@ class User {
   }
 
   async getPostDetails(postId) {
-    const post = await this.datastore.getPost(postId);
+    const post = await this.datastore.posts.getPost(postId);
     const [postDetails] = await this.updatePosts(this.userId, [post]);
-    const responseIds = await this.datastore.getAllResponses(postId);
+    const responseIds = await this.datastore.posts.getAllResponses(postId);
     const responses = await this.updatePosts(this.userId, responseIds);
     return {
       fullName: this.fullName,
@@ -87,10 +88,10 @@ class User {
   }
 
   async getUserFeed() {
-    const followings = await this.datastore.getFollowing(this.userId);
+    const followings = await this.datastore.users.getFollowing(this.userId);
     followings.push({ userId: this.userId, username: this.username });
     const postIds = followings.map(async user => {
-      const posts = await this.datastore.getUserPosts(user.userId);
+      const posts = await this.datastore.posts.getUserPosts(user.userId);
       return posts.concat(await this.getReposts(user.userId, user.username));
     });
     const posts = await Promise.all(postIds);
@@ -106,43 +107,43 @@ class User {
   }
 
   savePost(message) {
-    return this.datastore.savePost(this.userId, message);
+    return this.datastore.posts.savePost(this.userId, message);
   }
 
   saveResponse(message, postId) {
-    return this.datastore.savePost(this.userId, message, postId);
+    return this.datastore.posts.savePost(this.userId, message, postId);
   }
 
   async toggleLikeOnPost(postId) {
-    const likedUsers = await this.datastore.getAllPostLikers(postId);
+    const likedUsers = await this.datastore.posts.getAllPostLikers(postId);
     const isPostLikeByUser = isUserPresentInList(this.userId, likedUsers);
     if (isPostLikeByUser) {
-      return this.datastore.unlikePost(postId, this.userId);
+      return this.datastore.posts.unlikePost(postId, this.userId);
     }
-    return this.datastore.likePost(postId, this.userId);
+    return this.datastore.posts.likePost(postId, this.userId);
   }
 
   async toggleFollowingAUser(followerName) {
-    const follower = await this.datastore.getIdByUsername(followerName);
-    const followers = await this.datastore.getFollowers(follower.userId);
+    const follower = await this.datastore.users.getIdByUsername(followerName);
+    const followers = await this.datastore.users.getFollowers(follower.userId);
     const isFollowing = isUserPresentInList(this.userId, followers);
     if (isFollowing) {
-      return this.datastore.unFollowUser(this.userId, follower.userId);
+      return this.datastore.users.unFollowUser(this.userId, follower.userId);
     }
-    return this.datastore.followUser(this.userId, follower.userId);
+    return this.datastore.users.followUser(this.userId, follower.userId);
   }
 
   deletePost(postId) {
-    return this.datastore.removePost(postId);
+    return this.datastore.posts.removePost(postId);
   }
   
   // eslint-disable-next-line max-statements
   async getUserResponsesWithPosts(userId) {
-    const responseAndPostIds = await this.datastore.getUserResponses(userId);
+    const responseAndPostIds = await this.datastore.posts.getUserResponses(userId);
     const responses = [];
     for (const { postId, responseId } of responseAndPostIds) {
-      const postData = await this.datastore.getPost(postId);
-      const responseData = await this.datastore.getPost(responseId);
+      const postData = await this.datastore.posts.getPost(postId);
+      const responseData = await this.datastore.posts.getPost(responseId);
       postData.parentPost = true;
       responseData.childPost = true;
       const array = responses.find(([post]) => post.postId === postId);
@@ -158,9 +159,9 @@ class User {
   }
 
   async getProfilePosts(user) {
-    const userPosts = await this.datastore.getUserPosts(user.userId);
+    const userPosts = await this.datastore.posts.getUserPosts(user.userId);
     const reposts = await this.getReposts(user.userId, user.username);
-    const rawLikedPosts = await this.datastore.getLikedPosts(user.userId);
+    const rawLikedPosts = await this.datastore.posts.getLikedPosts(user.userId);
     const likedPosts = await this.updatePosts(this.userId, rawLikedPosts);
     const responsePosts = await this.getUserResponsesWithPosts(user.userId);
     userPosts.push(...reposts);
@@ -170,14 +171,14 @@ class User {
   }
 
   async getUserProfile(username) {
-    const user = await this.datastore.getIdByUsername(username);
-    const userDetails = await this.datastore.getUserDetails(user.userId);
+    const user = await this.datastore.users.getIdByUsername(username);
+    const userDetails = await this.datastore.users.getUserDetails(user.userId);
     const initials = extractInitials(userDetails.name);
     const { posts, likedPosts, responsePosts } = await this.getProfilePosts(
       userDetails
     );
-    const following = await this.datastore.getFollowing(user.userId);
-    const followers = await this.datastore.getFollowers(user.userId);
+    const following = await this.datastore.users.getFollowing(user.userId);
+    const followers = await this.datastore.users.getFollowers(user.userId);
     const isFollowing = isUserPresentInList(this.userId, followers);
     return {
       ...userDetails,
@@ -200,11 +201,11 @@ class User {
     const isUser = searchInput[0] === '@';
     const searchText = searchInput.slice(1);
     if (isHashTag) {
-      const hashtags = await this.datastore.getMatchingHashtags(searchText);
+      const hashtags = await this.datastore.search.getMatchingHashtags(searchText);
       return hashtags.map(({ hashtag }) => hashtag);
     }
     if (isUser) {
-      const users = await this.datastore.getMatchingUsers(searchText);
+      const users = await this.datastore.search.getMatchingUsers(searchText);
       return users.map(user => {
         user.initials = extractInitials(user.name);
         return user;
@@ -215,7 +216,7 @@ class User {
 
   async updateUsersList(list) {
     const updatedList = list.map(async user => {
-      const followers = await this.datastore.getFollowers(user.userId);
+      const followers = await this.datastore.users.getFollowers(user.userId);
       user.initials = extractInitials(user.name);
       user.isFollowingMe = isUserPresentInList(this.userId, followers);
       return user;
@@ -224,10 +225,10 @@ class User {
   }
 
   async getFollowingList(username) {
-    const user = await this.datastore.getIdByUsername(username);
-    const profile = await this.datastore.getUserDetails(user.userId);
+    const user = await this.datastore.users.getIdByUsername(username);
+    const profile = await this.datastore.users.getUserDetails(user.userId);
     profile.initials = extractInitials(profile.name);
-    let followingList = await this.datastore.getFollowing(user.userId);
+    let followingList = await this.datastore.users.getFollowing(user.userId);
     followingList = await this.updateUsersList(followingList);
     return {
       fullName: this.fullName,
@@ -240,10 +241,10 @@ class User {
   }
 
   async getFollowersList(username) {
-    const user = await this.datastore.getIdByUsername(username);
-    const profile = await this.datastore.getUserDetails(user.userId);
+    const user = await this.datastore.users.getIdByUsername(username);
+    const profile = await this.datastore.users.getUserDetails(user.userId);
     profile.initials = extractInitials(profile.name);
-    let followersList = await this.datastore.getFollowers(user.userId);
+    let followersList = await this.datastore.users.getFollowers(user.userId);
     followersList = await this.updateUsersList(followersList);
     return {
       fullName: this.fullName,
@@ -256,7 +257,7 @@ class User {
   }
 
   async getRepostedUsers(postId) {
-    const allReposts = await this.datastore.getAllReposts(postId);
+    const allReposts = await this.datastore.posts.getAllReposts(postId);
     return {
       repostedUsers: await this.updateUsersList(allReposts),
       fullName: this.fullName,
@@ -268,7 +269,7 @@ class User {
   }
 
   async getPostLikers(postId) {
-    const likedUserIds = await this.datastore.getAllPostLikers(postId);
+    const likedUserIds = await this.datastore.posts.getAllPostLikers(postId);
     return {
       fullName: this.fullName,
       likers: await this.updateUsersList(likedUserIds),
@@ -280,7 +281,7 @@ class User {
   }
 
   async getHashtagRelatedPosts(hashtag) {
-    const posts = await this.datastore.getPostsByHashtag(hashtag);
+    const posts = await this.datastore.posts.getPostsByHashtag(hashtag);
     return {
       posts: await this.updatePosts(this.userId, posts),
       fullName: this.fullName,
@@ -292,20 +293,20 @@ class User {
   }
 
   async isBookmarked(postId) {
-    const bookmarks = await this.datastore.getBookmarks(this.userId);
+    const bookmarks = await this.datastore.bookmarks.getBookmarks(this.userId);
     return bookmarks.some(bookmark => bookmark.postId === postId);
   }
 
   async toggleBookmarkOnPost(postId) {
     const isBookMarked = await this.isBookmarked(postId);
     if (isBookMarked) {
-      return this.datastore.removeBookmark(postId, this.userId);
+      return this.datastore.bookmarks.removeBookmark(postId, this.userId);
     }
-    return this.datastore.addBookmark(postId, this.userId);
+    return this.datastore.bookmarks.addBookmark(postId, this.userId);
   }
 
   async getBookmarks() {
-    const bookmarks = await this.datastore.getBookmarks(this.userId);
+    const bookmarks = await this.datastore.bookmarks.getBookmarks(this.userId);
     const posts = await this.updatePosts(this.userId, bookmarks);
     return {
       posts,
@@ -317,16 +318,16 @@ class User {
   }
 
   async toggleRepost(postId) {
-    const allReposts = await this.datastore.getAllReposts(postId);
+    const allReposts = await this.datastore.posts.getAllReposts(postId);
     const isRepostedByUser = isUserPresentInList(this.userId, allReposts);
     if (isRepostedByUser) {
-      return this.datastore.undoRepost(postId, this.userId);
+      return this.datastore.posts.undoRepost(postId, this.userId);
     }
-    return this.datastore.repost(postId, this.userId);
+    return this.datastore.posts.repost(postId, this.userId);
   }
 
   async updateUserDetails(newDetails) {
-    return this.datastore.updateUserDetails(this.userId, newDetails);
+    return this.datastore.users.updateUserDetails(this.userId, newDetails);
   }
 }
 

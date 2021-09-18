@@ -15,11 +15,32 @@ class PostsHandler {
   }
 
   savePost(userId, message, responseParentId) {
-    // return this.db.transaction(trx => {
-    //   const postId = userId + new Date().getTime();
-    //   const hashtags = Array.from(new Set(message.match(/\B#\w*-*\w*\b/gi)));
-    //   return
-    // })
+    return this.db.transaction(trx => {
+      const postId = userId + new Date().getTime();
+      const hashtags = Array.from(new Set(message.match(/\B#\w*-*\w*\b/gi)));
+      trx
+        .insert({postId, userId, message, postedAt: new Date()})
+        .into('posts')
+        .then(() => {
+          return Promise.all(hashtags.map(hashtag => {
+            return trx
+              .insert({postId, hashtag: hashtag.slice(1)})
+              .into('hashtags');
+          }));
+        })
+        .then(() => {
+          if (responseParentId == undefined) {
+            return new Promise(() => undefined);
+          }
+          return trx
+            .insert({responseId: responseParentId, postId})
+            .into('responses');
+        });
+    }).then(() => {
+      console.log('new Post added to db');
+    }).catch(() => {
+      console.log('you messed up');
+    });
   }
 
   removePost(postId) {
@@ -74,10 +95,10 @@ class PostsHandler {
 
   getRepostsByUserId(userId) {
     return this.posts
+      .select('posts.*', 'users.*')
       .join('reposts', 'posts.postId', '=', 'reposts.postId')
       .join('users', 'posts.userId', '=', 'users.userId')
-      .where('reposts.userId', userId)
-      .select('posts.*', 'users.*');
+      .where('reposts.userId', userId);
   }
 
   getAllReposts(postId) {
@@ -154,18 +175,22 @@ class UserHandler {
 
   getIdByUsername(username) {
     return this.users
-      .where({username})
-      .select('id');
+      .select()
+      .where('username', username)
+      .returning('userId');
   }
 
   getIdByGithubUsername(githubUsername) {
     return this.users
       .where({githubUsername})
-      .select('id');
+      .select('userId');
   }
 
   saveUser(userDetails) {
-    return this.users.insert({...userDetails, joinedDate: new Date()});
+    return this.users.insert({
+      ...userDetails,
+      joinedDate: new Date()
+    }).returning('userId');
   }
 
   updateUserDetails(userId, newDetails) {
@@ -220,7 +245,6 @@ class BookmarkHandler {
 
 class Database {
   constructor(db) {
-    this.db = db;
     this.posts = new PostsHandler(db);
     this.users = new UserHandler(db);
     this.search = new Search(db);
