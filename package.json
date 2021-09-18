@@ -4,13 +4,12 @@
   "description": "a microbloging app",
   "main": "index.js",
   "scripts": {
-    "setup-db": "./bin/setup-db.sh",
-    "start": "export NODE_ENV='development' && node server.js",
+    "start": "node server.js",
+    "dev": "source ./env/dev.txt && node server.js",
+    "test": "source ./env/test.txt && nyc mocha",
     "seed": "knex seed:run",
     "migration": "knex migrate:latest && knex migrate:up",
-    "test": "export NODE_ENV='test' && nyc mocha",
     "lint": "eslint --ignore-pattern 'node_modules/' . --ext .js",
-    "setup": "./bin/setup.sh",
     "ci": "npm test && npm run lint"
   },
   "repository": {

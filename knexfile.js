@@ -1,13 +1,16 @@
 // Update with your config settings.
+/* eslint-disable no-process-env */
 
 module.exports = {
 
-  development: {
-    client: 'postgresql',
+  dev: {
+    client: 'pg',
     connection: {
-      database: 'postmit',
-      user: 'sukhdev',
-      password: 'root'
+      host: process.env.PG_HOST,
+      port: process.env.PG_PORT,
+      user: process.env.PG_USER,
+      password: process.env.PG_PASS,
+      database: process.env.PG_DB,
     },
     pool: {
       min: 2,
@@ -21,36 +24,50 @@ module.exports = {
     }
   },
 
-  staging: {
-    client: 'postgresql',
-    connection: {
-      database: 'my_db',
-      user: 'username',
-      password: 'password'
+  test: {
+    development: {
+      client: 'pg',
+      connection: {
+        host: process.env.PG_HOST,
+        port: process.env.PG_PORT,
+        user: process.env.PG_USER,
+        password: process.env.PG_PASS,
+        database: process.env.PG_DB,
+      },
+      pool: {
+        min: 2,
+        max: 10
+      },
+      migrations: {
+        tableName: 'knex_migrations'
+      },
+      seeds: {
+        directory: './seeds'
+      }
     },
-    pool: {
-      min: 2,
-      max: 10
-    },
-    migrations: {
-      tableName: 'knex_migrations'
-    }
   },
 
-  production: {
-    client: 'postgresql',
-    connection: {
-      database: 'my_db',
-      user: 'username',
-      password: 'password'
+  prod: {
+    development: {
+      client: 'pg',
+      connection: {
+        host: process.env.PG_HOST,
+        port: process.env.PG_PORT,
+        user: process.env.PG_USER,
+        password: process.env.PG_PASS,
+        database: process.env.PG_DB,
+      },
+      pool: {
+        min: 2,
+        max: 10
+      },
+      migrations: {
+        tableName: 'knex_migrations'
+      },
+      seeds: {
+        directory: './seeds'
+      }
     },
-    pool: {
-      min: 2,
-      max: 10
-    },
-    migrations: {
-      tableName: 'knex_migrations'
-    }
   }
 
 };
