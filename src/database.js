@@ -1,62 +1,122 @@
-const queries = require('./queries');
-
 class PostsHandler {
   constructor(db) {
     this.db = db;
+    this.posts = db('posts');
+    this.likes = db('likes');
+    this.resposts = db('reposts');
   }
 
   getUserPosts(userId) {
+    return this.posts
+      .join('users', 'posts.userId', '=', 'users.userId')
+      .where('posts.userId', userId)
+      .orderBy('posts.postedAt', 'desc')
+      .select();
   }
 
   savePost(userId, message, responseParentId) {
-  }
-
-  likePost(postId, userId) {
-  }
-
-  unlikePost(postId, userId) {
-  }
-
-  repost(postId, userId) {
-  }
-
-  undoRepost(postId, userId) {
+    // return this.db.transaction(trx => {
+    //   const postId = userId + new Date().getTime();
+    //   const hashtags = Array.from(new Set(message.match(/\B#\w*-*\w*\b/gi)));
+    //   return
+    // })
   }
 
   removePost(postId) {
   }
 
-  getLikedPosts(userId) {
+  getPost(postId) {
+    return this.posts
+      .join('users', 'posts.userId', '=', 'users.userId')
+      .where('posts.postId', postId)
+      .select();
   }
 
-  getPost(postId) {
+  likePost(postId, userId) {
+    return this.likes.insert({postId, userId});
+  }
+
+  unlikePost(postId, userId) {
+    return this.likes.where({postId, userId}).del();
+  }
+
+  getLikedPosts(userId) {
+    return this.posts
+      .join('likes', 'posts.postId', '=', 'likes.postId')
+      .join('users', 'posts.userId', '=', 'users.userId')
+      .where('likes.userId', userId)
+      .orderBy('posts.postedAt', 'desc')
+      .select('posts.*', 'users.*');
+  }
+
+  repost(postId, userId) {
+    return this.resposts.insert({postId, userId});
+  }
+
+  undoRepost(postId, userId) {
+    return this.resposts.where({postId, userId}).del();
   }
 
   getHashtagsByPostId(postId) {
-  }
-
-  getRepostsByUserId(userId) {
-  }
-
-  getAllReposts(postId) {
-
-  }
-
-  getAllPostLikers(postId) {
-
+    this.db('hashtags')
+      .where({postId})
+      .select('hashtag');
   }
 
   getPostsByHashtag(hashtag) {
+    return this.posts
+      .join('hashtags', 'posts.postId', '=', 'hashtags.postId')
+      .join('users', 'posts.userId', '=', 'users.userId')
+      .where('hashtags.hashtag', hashtag)
+      .orderBy('posts.postedAt', 'desc')
+      .select('posts.*', 'users.*');
+  }
+
+  getRepostsByUserId(userId) {
+    return this.posts
+      .join('reposts', 'posts.postId', '=', 'reposts.postId')
+      .join('users', 'posts.userId', '=', 'users.userId')
+      .where('reposts.userId', userId)
+      .select('posts.*', 'users.*');
+  }
+
+  getAllReposts(postId) {
+    return this.db('reposts')
+      .join('users', 'reposts.userId', '=', 'users.userId')
+      .where('reposts.postId', postId)
+      .select('users.*');//check req.
+  }
+
+  getAllPostLikers(postId) {
+    return this.likes
+      .join('users', 'likes.userId', '=', 'users.userId')
+      .where('likes.postId', postId)
+      .select('users.*');
   }
 
   getAllResponses(postId) {
+    return this.posts
+      .join('responses', 'posts.postId', '=', 'responses.responseId')
+      .join('users', 'posts.userId', '=', 'users.userId')
+      .where('responses.postId', postId)
+      .orderBy('posts.postedAt', 'desc')
+      .select('posts.*', 'users.*');
   }
 
   getReplyingTo(postId) {
+    return this.db('users')
+      .join('posts', 'users.userId', '=', 'posts.userId')
+      .join('responses', 'posts.postId', '=', 'responses.postId')
+      .where('responses.responseId', postId)
+      .select('users.username');
   }
 
   getUserResponses(userId) {
-
+    return this.db('responses')
+      .join('posts', 'responses.responseId', '=', 'posts.postId')
+      .where('posts.userId', userId)
+      .orderBy('posts.postedAt', 'desc')
+      .select('responses.postId', 'responses.responseId');
   }
 }
 
@@ -116,210 +176,55 @@ class UserHandler {
 class Search {
   constructor(db) {
     this.db = db;
+    this.users = db('users');
   }
 
   getMatchingUsers(searchInput) {
+    return this.users
+      .where('name', 'like', searchInput + '%')
+      .orWhere('username', 'like', searchInput + '%')
+      .select('name', 'username', 'imageUrl');
+
   }
 
   getMatchingHashtags(searchInput) {
+    return this.db('hashtags')
+      .where('hashtag', 'like', searchInput + '%')
+      .distinct('hashtag');
   }
 }
 
 class BookmarkHandler {
   constructor(db) {
     this.db = db;
+    this.bookmarks = db('bookmarks');
   }
 
   getBookmarks(userId) {
+    return this.bookmarks
+      .join('posts', 'bookmarks.postId', '=', 'posts.postId')
+      .join('users', 'posts.userId', '=', 'users.userId')
+      .where('bookmarks.userId', userId)
+      .orderBy('posts.postedAt', 'desc')
+      .select('posts.*', 'users.*');
   }
 
   addBookmark(postId, userId) {
+    return this.bookmarks.insert({postId, userId});
   }
 
   removeBookmark(postId, userId) {
+    return this.bookmarks.where({postId, userId}).del();
   }
 }
 
 class Database {
   constructor(db) {
     this.db = db;
-  }
-
-  get(query, params) {
-    return new Promise((resolve, reject) => {
-      this.db.get(query, params, (err, row) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(row);
-      });
-    });
-  }
-
-  all(query, params) {
-    return new Promise((resolve, reject) => {
-      this.db.all(query, params, (err, row) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(row);
-      });
-    });
-  }
-
-  run(query, params) {
-    return new Promise((resolve, reject) => {
-      this.db.run(query, params, err => {
-        if (err) {
-          reject(err);
-        }
-        resolve();
-      });
-    });
-  }
-
-  exec(query) {
-    return new Promise((resolve, reject) => {
-      this.db.exec(query, err => {
-        if (err) {
-          reject(err);
-        }
-        resolve();
-      });
-    });
-  }
-
-  getUserDetails(userId) {
-    return this.get(queries.select('users', 'userId', '*'), [userId]);
-  }
-
-  getUserPosts(userId) {
-    return this.all(queries.userPosts, [userId]);
-  }
-
-  getFollowing(userId) {
-    return this.all(queries.following, [userId]);
-  }
-
-  getAllPostLikers(postId) {
-    return this.all(queries.postLikers, [postId]);
-  }
-
-  savePost(userId, message, responseParentId) {
-    const postId = userId + new Date().getTime();
-    return this.exec(
-      queries.savePost(message, userId, postId, responseParentId)
-    );
-  }
-
-  unlikePost(postId, userId) {
-    return this.run(queries.unlikePost, [postId, userId]);
-  }
-
-  likePost(postId, userId) {
-    return this.run(queries.insert('likes'), [postId, userId]);
-  }
-
-  undoRepost(postId, userId) {
-    return this.run(queries.undoRepost, [postId, userId]);
-  }
-
-  repost(postId, userId) {
-    return this.run(queries.insert('reposts'), [postId, userId]);
-  }
-
-  removePost(postId) {
-    return this.exec(queries.removePost(postId));
-  }
-
-  followUser(userId, followerId) {
-    return this.run(queries.insert('followers'), [userId, followerId]);
-  }
-
-  unFollowUser(userId, followerId) {
-    return this.run(queries.unFollowUser, [userId, followerId]);
-  }
-
-  getFollowers(userId) {
-    return this.all(queries.followers, [userId]);
-  }
-
-  getIdByUsername(username) {
-    return this.get(queries.select('users', 'username', 'userId'), [username]);
-  }
-
-  saveUser(userDetails) {
-    const {githubUsername, username, name, dob, bio, imageUrl} = userDetails;
-    const details = [username, githubUsername, name, bio, dob, imageUrl];
-    return this.run(queries.saveUser, details);
-  }
-
-  getLikedPosts(userId) {
-    return this.all(queries.likedPosts, [userId]);
-  }
-
-  getMatchingUsers(searchInput) {
-    const searchString = `${searchInput}%`;
-    return this.all(queries.matchingUsers, [searchString, searchString]);
-  }
-
-  getMatchingHashtags(searchInput) {
-    return this.all(queries.matchingHashtags, [`${searchInput}%`]);
-  }
-
-  getIdByGithubUsername(githubUsername) {
-    const query = queries.select('users', 'githubUsername', 'userId');
-    return this.get(query, [githubUsername]);
-  }
-
-  getPost(postId) {
-    return this.get(queries.getPost, [postId]);
-  }
-
-  getHashtagsByPostId(postId) {
-    return this.all(queries.select('hashtags', 'postId', 'hashtag'), [postId]);
-  }
-
-  getBookmarks(userId) {
-    return this.all(queries.bookmarks, [userId]);
-  }
-
-  getPostsByHashtag(hashtag) {
-    return this.all(queries.postsByHashtag, [hashtag]);
-  }
-
-  addBookmark(postId, userId) {
-    return this.run(queries.insert('bookmarks'), [postId, userId]);
-  }
-
-  removeBookmark(postId, userId) {
-    return this.run(queries.removeBookmark, [postId, userId]);
-  }
-
-  getAllResponses(postId) {
-    return this.all(queries.responses, [postId]);
-  }
-
-  getReplyingTo(postId) {
-    return this.get(queries.replyingTo, [postId]);
-  }
-
-  getUserResponses(userId) {
-    return this.all(queries.userResponses, [userId]);
-  }
-
-  updateUserDetails(userId, newDetails) {
-    const {username, name, bio, dob} = newDetails;
-    const details = [username, name, bio, dob, userId];
-    return this.run(queries.updateUser, details);
-  }
-
-  getRepostsByUserId(userId) {
-    return this.all(queries.reposts, [userId]);
-  }
-
-  getAllReposts(postId) {
-    return this.all(queries.allReposts, [postId]);
+    this.posts = new PostsHandler(db);
+    this.users = new UserHandler(db);
+    this.search = new Search(db);
+    this.bookmarks = new BookmarkHandler(db);
   }
 }
 
