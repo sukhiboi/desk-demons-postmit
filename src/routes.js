@@ -12,7 +12,7 @@ const app = express();
 app.engine('pug', require('pug').__express);
 app.set('view engine', 'pug');
 
-app.use(morgan('dev', { skip: () => process.env.ENV === 'test' }));
+app.use(morgan('dev', { skip: () => process.env.NODE_ENV === 'test' }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(cookieEncrypter(process.env.COOKIE_SECRET));
 app.use(express.json());

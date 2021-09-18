@@ -5,7 +5,7 @@ const Database = require('./src/database');
 const Auth = require('./src/auth');
 const app = require('./src/routes');
 
-const pg = require('knex')(require('./knexfile')[process.env.ENV]);
+const pg = require('knex')(require('./knexfile')[process.env.NODE_ENV]);
 app.locals.datastore = new Database(pg);
 
 app.locals.auth =
